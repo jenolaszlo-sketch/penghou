@@ -12,6 +12,16 @@
 
 ## Pending
 
+- Host/Luban preview resolution and immutable resolved plans, with explicit
+  coverage and observed/proposed/unresolved effects; this library owns resource
+  requirements rather than the plan API or language executor.
+- Whole-known-set admission and a trusted commit barrier before previewable
+  mutations; final per-resource checks remain mandatory. See
+  [preview/commit requirements](docs/preview-commit-contract.md).
+- Qualification for WhatIf with no requested mutations/tool dispatch, incomplete
+  coverage blocking, frozen manifests, stale observations, post-start partial
+  outcomes and restart revalidation. No new runtime feature is implemented.
+
 - A real provider for workspace files and directories with platform-specific
   path handling, bounds, preconditions, and per-candidate authorization.
 - A real web provider with URL and redirect policy, response bounds, and

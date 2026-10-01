@@ -21,3 +21,10 @@ process escape hatches, arbitrary callbacks, or an unbounded System.IO mirror.
 Do not add a runtime backend or a fake authorizer as scaffolding. Document
 provider preconditions and limits before introducing behavior. Hufu remains
 independent; any adapter belongs in a separate integration package.
+
+Read docs/preview-commit-contract.md and ADR 0002 before implementing providers.
+Keep static preflight separate from authorized read-only resolution. WhatIf
+must not invoke requested mutations or opaque/lazy tools. Planned governed
+mutations bind to the exact host-admitted plan/segment and released commit
+barrier; every concrete access still needs a live check. Incomplete coverage or
+denial cannot become lazy fallback. No global transaction or sandbox is implied.

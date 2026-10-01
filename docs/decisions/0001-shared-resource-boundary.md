@@ -2,6 +2,11 @@
 
 Status: accepted for the initial scaffold
 
+Refined by [ADR 0002](0002-preview-resolution-commit-barrier.md): the earlier
+advisory preview means static preflight. Authorized read-only resolution and a
+host-owned commit barrier are additional planned stages, with final concrete
+checks preserved. No provider or barrier implementation is claimed.
+
 ## Context
 
 Luban owns semantic effects and Hufu owns authority and grants. Shared

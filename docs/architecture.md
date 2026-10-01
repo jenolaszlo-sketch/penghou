@@ -30,11 +30,21 @@ The host validates syntax, types, and execution profile before I/O. Luban owns
 semantic typed effects and finite dataflow; Fuwen and Zhinu own workflow
 control and durability. Preflight checks all nodes' known static effects and
 exact targets before upstream reads or artifact creation, so a known denied
-write blocks the document early. This preview reserves no authority and cannot
+write blocks the document early. This static preflight reserves no authority and cannot
 replace the provider's final current-authority check. Dynamic targets require
 bounded, already-authorized discovery. Intermediate dataflow should remain
 lazy, bounded, and cancellable. Persistence and debug/release artifacts require
 explicit authorization. No global pipeline atomicity is promised.
+
+[ADR 0002](decisions/0002-preview-resolution-commit-barrier.md) and the
+[preview/commit contract](preview-commit-contract.md) add planned authorized
+read-only resolution and whole-known-mutation-set admission before an executor
+barrier. Resolution performs real authorized observations; it is different from
+static preflight and pure policy simulation. The host binds each concrete
+mutation to an immutable admitted plan/segment, without adding a language-plan
+dependency to this library. WhatIf leaves requested mutations and opaque/lazy
+tools unexecuted. Required incomplete coverage blocks, and final live checks
+remain. This admission boundary is not an atomic transaction or race closure.
 
 Workspace paths are relative to an opaque workspace identity and use `/` as
 the contract separator. Providers validate segments and reject absolute,

@@ -5,6 +5,12 @@ contracts, not implemented or verified runtime guarantees in this repository.
 
 ## Preflight and access checks
 
+The [preview/commit contract](preview-commit-contract.md), accepted by
+[ADR 0002](decisions/0002-preview-resolution-commit-barrier.md), extends this
+static preflight with planned authorized resolution and a commit barrier. These
+are provider requirements; no enforcing implementation or resolved-plan API
+exists in this interface library.
+
 The host validates the complete pipeline's syntax, types, and execution
 profile before I/O. Preflight checks known static effects and exact targets for
 all nodes before upstream reads or artifact creation. If preflight determines
@@ -24,6 +30,16 @@ if live authority changes later, but a denied write never occurs. Keep
 intermediates lazy, bounded, and cancellable. Persistence and debug/release
 artifacts require explicit authorization. There is no global atomicity guarantee
 across a pipeline.
+
+Authorized resolution may use the read interfaces to freeze targets, payloads
+and preconditions. Before dispatching a previewable mutation, a governed
+provider verifies its exact admitted plan/segment and trusted barrier state in
+host mappings, then performs the ordinary current-authority/resource/version
+checks. WhatIf never dispatches requested mutations or opaque/lazy tools.
+Incomplete target coverage or a known denied mutation blocks the batch; neither
+may silently downgrade to lazy execution. Later failures after commit begins
+may leave partial outcomes. Shared providers do not own the language plan or
+create another execution/authority store.
 
 ## Invocation and request identity
 
