@@ -355,7 +355,7 @@ public sealed class LocalWorkspaceReader : IWorkspaceReader, IDisposable
         internal string? Pending { get; set; }
         internal long Expires { get; set; }
         internal bool Matches(DirectoryListRequest other, WorkspacePath otherPath) => request.Workspace == other.Workspace &&
-            string.Equals(path.Value, otherPath.Value, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(WindowsWorkspacePath.ToIdentityPath(path), WindowsWorkspacePath.ToIdentityPath(otherPath), StringComparison.Ordinal) &&
             request.MaxEntries == other.MaxEntries && request.MaxCandidatesScanned == other.MaxCandidatesScanned && request.MaxOutputBytes == other.MaxOutputBytes &&
             request.Invocation with { RequestIdentity = default } == other.Invocation with { RequestIdentity = default };
         public void Dispose() => Enumerator.Dispose();

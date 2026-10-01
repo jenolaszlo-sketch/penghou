@@ -16,6 +16,8 @@ public static class ResourceRequestIdentity
 {
     public const int SchemaVersion = 1;
     public const string IdentityPrefix = "penghou-io:request:v1:sha256:";
+    public const int MaximumPayloadBytes = 16 * 1024 * 1024;
+    public const int MaximumPatchCount = 4096;
 
     private const string Domain = "Penghou.IO.ResourceRequestIdentity";
     private static readonly UTF8Encoding StrictUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
@@ -52,6 +54,9 @@ public static class ResourceRequestIdentity
     public static RequestIdentity Compute(FileWriteRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(request.Limits);
+        if (request.Content.Length > request.Limits.MaxBytes || request.Content.Length > MaximumPayloadBytes)
+            throw new ArgumentException("Write payload exceeds its declared or encoding bound.", nameof(request));
         var content = request.Content.ToArray();
         using var writer = Start(Operation.WriteFile);
         WriteWorkspacePath(writer, request.Workspace, request.Path, allowRoot: false);
@@ -71,10 +76,17 @@ public static class ResourceRequestIdentity
         // the canonical encoding, so one hash does not enumerate caller storage
         // multiple times.
         var patchCount = request.Patches.Count;
+        if (request.Limits.MaxPatchCount is < 1 or > MaximumPatchCount || patchCount < 0 || patchCount > request.Limits.MaxPatchCount ||
+            request.Limits.MaxReplacementBytes is < 0 or > MaximumPayloadBytes || request.Limits.MaxOutputBytes is < 0 or > MaximumPayloadBytes)
+            throw new ArgumentException("Patch bounds exceed the finite encoding profile.", nameof(request));
         var patches = new PatchSnapshot[patchCount];
+        var replacementBytes = 0;
         for (var index = 0; index < patchCount; index++)
         {
             var patch = request.Patches[index] ?? throw new ArgumentException("Patch collection cannot contain null entries.", nameof(request));
+            if (patch.ReplacementUtf8.Length > request.Limits.MaxReplacementBytes - replacementBytes)
+                throw new ArgumentException("Replacement bytes exceed their declared bound.", nameof(request));
+            replacementBytes += patch.ReplacementUtf8.Length;
             patches[index] = new PatchSnapshot(patch.StartOffset, patch.DeleteLength, patch.ReplacementUtf8.ToArray());
         }
 
@@ -167,6 +179,8 @@ public static class ResourceRequestIdentity
     private static void WriteLimits(CanonicalWriter writer, IoLimits limits)
     {
         ArgumentNullException.ThrowIfNull(limits);
+        if (limits.MaxBytes is < 0 or > MaximumPayloadBytes)
+            throw new ArgumentException("Byte limit exceeds the finite encoding profile.", nameof(limits));
         writer.WriteInt32(limits.MaxBytes);
     }
 
@@ -179,8 +193,8 @@ public static class ResourceRequestIdentity
 
     private static string RequiredToken(string? value, string parameterName)
     {
-        if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException("Version tokens must be nonempty.", parameterName);
+        if (string.IsNullOrWhiteSpace(value) || value.Length > 256 || value.Any(char.IsControl) || StrictUtf8.GetByteCount(value) > 1024)
+            throw new ArgumentException("Version tokens must be nonempty bounded UTF-8 without controls.", parameterName);
         return value;
     }
 
@@ -241,6 +255,7 @@ public static class ResourceRequestIdentity
         {
             ArgumentNullException.ThrowIfNull(value);
             var byteCount = Utf8.GetByteCount(value);
+            if (byteCount > 16 * 1024) throw new ArgumentException("String exceeds the finite encoding bound.");
             WriteInt32(byteCount);
             var destination = _buffer.GetSpan(byteCount);
             var written = Utf8.GetBytes(value.AsSpan(), destination);

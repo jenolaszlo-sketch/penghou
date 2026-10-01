@@ -67,7 +67,8 @@ public static class WindowsWorkspacePath
         return new WorkspacePath(value);
     }
 
-    internal static string ToIdentityPath(WorkspacePath path, bool allowRoot)
+    /// <summary>Returns the validated ASCII-folded path used by request and continuation bindings.</summary>
+    public static string ToIdentityPath(WorkspacePath path, bool allowRoot = true)
     {
         var normalized = Normalize(path, allowRoot);
         // Windows filesystem upcase behavior is not identical across every
