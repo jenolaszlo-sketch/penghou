@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Penghou.IO.Abstractions/Penghou.IO.Abstractions.csproj" />
+  </Folder>
+</Solution>
