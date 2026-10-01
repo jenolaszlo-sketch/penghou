@@ -5,7 +5,7 @@ Status: accepted for the initial scaffold
 Refined by [ADR 0002](0002-preview-resolution-commit-barrier.md): the earlier
 advisory preview means static preflight. Authorized read-only resolution and a
 host-owned commit barrier are additional planned stages, with final concrete
-checks preserved. No provider or barrier implementation is claimed.
+checks preserved. The initial scaffold claimed no implementation; the separate read-only Local provider is now qualified under its documented profile. Barrier execution remains pending.
 
 ## Context
 
@@ -25,7 +25,8 @@ identifiers or enforce checks. The provider checks each concrete action and
 workspace path or URL through an injected authorizer, including reads,
 metadata, listing candidates, and each mutation endpoint. Mutations use explicit
 version or nonexistence preconditions and return typed results. No runtime
-backend or permissive test authorizer ships in this repository.
+backend belongs in the abstractions library and no permissive authorizer ships.
+The separate Local project now supplies the documented read-only backend.
 
 The host validates the complete pipeline and preflights all known static
 effects before I/O; a known denied write blocks upstream reads and artifact

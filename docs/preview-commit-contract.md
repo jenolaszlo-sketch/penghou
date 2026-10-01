@@ -1,8 +1,8 @@
 # Resource providers under preview resolution and a commit barrier
 
 Status: Proposed provider integration requirements, 2026-10-01. The project
-contains interfaces only. No preview executor, resolved-plan API, enforcing
-provider, commit barrier or Hufu adapter is implemented.
+includes a qualified read-only Local provider and canonical request codec. No
+preview executor, resolved-plan API, writer, commit barrier or Hufu adapter is implemented.
 
 The host/Luban execution design uses four separate safeguards:
 

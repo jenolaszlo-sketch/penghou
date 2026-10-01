@@ -1,7 +1,8 @@
 # Provider contract
 
 These requirements define intended provider behavior. They are design
-contracts, not implemented or verified runtime guarantees in this repository.
+contracts. The [Windows read-only profile](local-reader-profile.md) implements
+the qualified read subset; mutation/web/plan guarantees remain pending.
 
 ## Preflight and access checks
 
@@ -183,5 +184,6 @@ Operating-system access errors remain distinct from authorization denials.
 Path checks and subsequent path-based operations can race with concurrent local
 filesystem changes. A provider without handle-relative APIs cannot guarantee
 that the object used is the exact object previously authorized. A provider that
-cannot uphold required version atomicity must return `Unsupported`. No provider
-implementation exists here, and no runtime security property is claimed.
+cannot uphold required version atomicity must return `Unsupported`. No mutation
+implementation exists here. The read-only profile states its qualified bounds
+and its path-race limitations.

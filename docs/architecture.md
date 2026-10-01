@@ -5,8 +5,10 @@ It provides a read-only `IWorkspaceReader`, mutation-only
 `IWorkspaceWriter`, a combined `IWorkspaceFileSystem`, and a bounded web GET
 contract. Consumers can depend on the narrower interface they need. Interface
 narrowing is an API composition choice; it does not authenticate a host or
-prove enforcement. This repository includes no provider or authorizer
-implementation.
+prove enforcement. The separate Penghou.IO.Local project implements the
+[Windows read-only profile](local-reader-profile.md). The pure
+[canonical identity codec](canonical-request-identity.md) is shared by callers
+and providers. Authorization policy remains host-supplied.
 
 Requests carry a host-authenticated invocation with subject, effect, attempt,
 scope references, and a request identity. The request records themselves are

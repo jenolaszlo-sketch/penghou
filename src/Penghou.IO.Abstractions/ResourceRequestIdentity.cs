@@ -1,0 +1,274 @@
+using System.Buffers;
+using System.Buffers.Binary;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace Penghou.IO.Abstractions;
+
+/// <summary>
+/// Computes versioned, domain-separated identities for concrete backend
+/// requests. Invocation and supplied request identity fields are intentionally
+/// excluded. Providers must still snapshot inputs before both computing the
+/// identity and using those inputs for I/O.
+/// </summary>
+public static class ResourceRequestIdentity
+{
+    public const int SchemaVersion = 1;
+    public const string IdentityPrefix = "penghou-io:request:v1:sha256:";
+
+    private const string Domain = "Penghou.IO.ResourceRequestIdentity";
+    private static readonly UTF8Encoding StrictUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
+
+    public static RequestIdentity Compute(FileReadRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        using var writer = Start(Operation.ReadFile);
+        WriteWorkspacePath(writer, request.Workspace, request.Path, allowRoot: false);
+        WriteLimits(writer, request.Limits);
+        return Finish(writer);
+    }
+
+    public static RequestIdentity Compute(FileMetadataRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        using var writer = Start(Operation.FileMetadata);
+        WriteWorkspacePath(writer, request.Workspace, request.Path, allowRoot: false);
+        return Finish(writer);
+    }
+
+    public static RequestIdentity Compute(DirectoryListRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        using var writer = Start(Operation.ListDirectory);
+        WriteWorkspacePath(writer, request.Workspace, request.Path, allowRoot: true);
+        writer.WriteInt32(request.MaxEntries);
+        writer.WriteInt32(request.MaxCandidatesScanned);
+        writer.WriteInt32(request.MaxOutputBytes);
+        writer.WriteNullableString(request.Continuation?.Value);
+        return Finish(writer);
+    }
+
+    public static RequestIdentity Compute(FileWriteRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        var content = request.Content.ToArray();
+        using var writer = Start(Operation.WriteFile);
+        WriteWorkspacePath(writer, request.Workspace, request.Path, allowRoot: false);
+        WriteLimits(writer, request.Limits);
+        writer.WriteBytes(content);
+        WritePrecondition(writer, request.Precondition);
+        return Finish(writer);
+    }
+
+    public static RequestIdentity Compute(FilePatchRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(request.Patches);
+        ArgumentNullException.ThrowIfNull(request.Limits);
+
+        // Copy the collection and every replacement before writing any bytes to
+        // the canonical encoding, so one hash does not enumerate caller storage
+        // multiple times.
+        var patchCount = request.Patches.Count;
+        var patches = new PatchSnapshot[patchCount];
+        for (var index = 0; index < patchCount; index++)
+        {
+            var patch = request.Patches[index] ?? throw new ArgumentException("Patch collection cannot contain null entries.", nameof(request));
+            patches[index] = new PatchSnapshot(patch.StartOffset, patch.DeleteLength, patch.ReplacementUtf8.ToArray());
+        }
+
+        using var writer = Start(Operation.PatchFile);
+        WriteWorkspacePath(writer, request.Workspace, request.Path, allowRoot: false);
+        writer.WriteString(RequiredToken(request.ExpectedVersion.Value, nameof(request.ExpectedVersion)));
+        writer.WriteInt32(request.Limits.MaxPatchCount);
+        writer.WriteInt32(request.Limits.MaxReplacementBytes);
+        writer.WriteInt32(request.Limits.MaxOutputBytes);
+        writer.WriteInt32(patches.Length);
+        foreach (var patch in patches)
+        {
+            writer.WriteInt32(patch.StartOffset);
+            writer.WriteInt32(patch.DeleteLength);
+            writer.WriteBytes(patch.ReplacementUtf8);
+        }
+
+        return Finish(writer);
+    }
+
+    public static RequestIdentity Compute(FileDeleteRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        using var writer = Start(Operation.DeleteFile);
+        WriteWorkspacePath(writer, request.Workspace, request.Path, allowRoot: false);
+        writer.WriteString(RequiredToken(request.ExpectedVersion.Value, nameof(request.ExpectedVersion)));
+        return Finish(writer);
+    }
+
+    public static RequestIdentity Compute(DirectoryCreateRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        using var writer = Start(Operation.CreateDirectory);
+        WriteWorkspacePath(writer, request.Workspace, request.Path, allowRoot: false);
+        return Finish(writer);
+    }
+
+    public static RequestIdentity Compute(FileMoveRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(request.DestinationPrecondition);
+        using var writer = Start(Operation.MoveFile);
+        WriteWorkspace(writer, request.Workspace);
+        writer.WriteString(WindowsWorkspacePath.ToIdentityPath(request.Source, allowRoot: false));
+        writer.WriteString(WindowsWorkspacePath.ToIdentityPath(request.Destination, allowRoot: false));
+        writer.WriteString(RequiredToken(request.ExpectedSourceVersion.Value, nameof(request.ExpectedSourceVersion)));
+        WritePrecondition(writer, request.DestinationPrecondition);
+        return Finish(writer);
+    }
+
+    public static RequestIdentity Compute(WebReadRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        using var writer = Start(Operation.WebRead);
+        writer.WriteString(CanonicalHttpRequestUrl(request.Url));
+        WriteLimits(writer, request.Limits);
+        return Finish(writer);
+    }
+
+    private static CanonicalWriter Start(Operation operation)
+    {
+        var writer = new CanonicalWriter();
+        writer.WriteRaw(StrictUtf8.GetBytes(Domain));
+        writer.WriteByte(0);
+        writer.WriteInt32(SchemaVersion);
+        writer.WriteByte((byte)operation);
+        return writer;
+    }
+
+    private static RequestIdentity Finish(CanonicalWriter writer)
+    {
+        var digest = SHA256.HashData(writer.WrittenSpan);
+        return new RequestIdentity(IdentityPrefix + Convert.ToHexString(digest).ToLowerInvariant());
+    }
+
+    private static void WriteWorkspacePath(CanonicalWriter writer, WorkspaceId workspace, WorkspacePath path, bool allowRoot)
+    {
+        WriteWorkspace(writer, workspace);
+        writer.WriteString(WindowsWorkspacePath.ToIdentityPath(path, allowRoot));
+    }
+
+    private static void WriteWorkspace(CanonicalWriter writer, WorkspaceId workspace)
+    {
+        var value = workspace.Value;
+        if (string.IsNullOrWhiteSpace(value) || value.Length > 256 || value.Any(char.IsControl))
+            throw new ArgumentException("Workspace identity must be nonempty, bounded, and free of control characters.", nameof(workspace));
+        writer.WriteString(value);
+    }
+
+    private static void WriteLimits(CanonicalWriter writer, IoLimits limits)
+    {
+        ArgumentNullException.ThrowIfNull(limits);
+        writer.WriteInt32(limits.MaxBytes);
+    }
+
+    private static void WritePrecondition(CanonicalWriter writer, WritePrecondition precondition)
+    {
+        ArgumentNullException.ThrowIfNull(precondition);
+        writer.WriteInt32((int)precondition.Kind);
+        writer.WriteNullableString(precondition.Version?.Value);
+    }
+
+    private static string RequiredToken(string? value, string parameterName)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentException("Version tokens must be nonempty.", parameterName);
+        return value;
+    }
+
+    private static string CanonicalHttpRequestUrl(WebUrl webUrl)
+    {
+        var uri = webUrl.Value ?? throw new ArgumentException("Web URL cannot be null.", nameof(webUrl));
+        if (!uri.IsAbsoluteUri ||
+            !(uri.Scheme.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase) ||
+              uri.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) ||
+            string.IsNullOrEmpty(uri.Host) ||
+            !string.IsNullOrEmpty(uri.UserInfo))
+        {
+            throw new ArgumentException("Web request identity requires an absolute HTTP or HTTPS URL without user information.", nameof(webUrl));
+        }
+
+        // HttpRequestUrl deliberately excludes a URI fragment: fragments are not
+        // sent in an HTTP request. Uri canonicalizes scheme/host and escaping.
+        return uri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.UriEscaped);
+    }
+
+    private enum Operation : byte
+    {
+        ReadFile = 1,
+        FileMetadata = 2,
+        ListDirectory = 3,
+        WriteFile = 4,
+        PatchFile = 5,
+        DeleteFile = 6,
+        CreateDirectory = 7,
+        MoveFile = 8,
+        WebRead = 9
+    }
+
+    private readonly record struct PatchSnapshot(int StartOffset, int DeleteLength, byte[] ReplacementUtf8);
+
+    private sealed class CanonicalWriter : IDisposable
+    {
+        private readonly ArrayBufferWriter<byte> _buffer = new();
+        private static readonly UTF8Encoding Utf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
+
+        internal ReadOnlySpan<byte> WrittenSpan => _buffer.WrittenSpan;
+
+        internal void WriteByte(byte value)
+        {
+            var span = _buffer.GetSpan(sizeof(byte));
+            span[0] = value;
+            _buffer.Advance(sizeof(byte));
+        }
+
+        internal void WriteInt32(int value)
+        {
+            var span = _buffer.GetSpan(sizeof(int));
+            BinaryPrimitives.WriteInt32LittleEndian(span, value);
+            _buffer.Advance(sizeof(int));
+        }
+
+        internal void WriteString(string value)
+        {
+            ArgumentNullException.ThrowIfNull(value);
+            var byteCount = Utf8.GetByteCount(value);
+            WriteInt32(byteCount);
+            var destination = _buffer.GetSpan(byteCount);
+            var written = Utf8.GetBytes(value.AsSpan(), destination);
+            _buffer.Advance(written);
+        }
+
+        internal void WriteNullableString(string? value)
+        {
+            WriteByte(value is null ? (byte)0 : (byte)1);
+            if (value is not null)
+                WriteString(value);
+        }
+
+        internal void WriteBytes(ReadOnlySpan<byte> value)
+        {
+            WriteInt32(value.Length);
+            var destination = _buffer.GetSpan(value.Length);
+            value.CopyTo(destination);
+            _buffer.Advance(value.Length);
+        }
+
+        internal void WriteRaw(ReadOnlySpan<byte> value)
+        {
+            var destination = _buffer.GetSpan(value.Length);
+            value.CopyTo(destination);
+            _buffer.Advance(value.Length);
+        }
+
+        public void Dispose() => _buffer.Clear();
+    }
+}

@@ -1,23 +1,24 @@
 # Penghou I/O roadmap
 
 Status: Revised 2026-10-01. Neutral .NET 8/.NET 10 I/O interfaces and provider
-requirements are scaffolded. No backend, authorizer, codec, plan/barrier executor
-or Hufu adapter is implemented. See the [implementation plan](docs/implementation-plan.md).
+requirements, canonical identity codec and the Windows read-only Local provider
+are implemented. Luban uses the shared reader. Writer/web, authority policy,
+plan/barrier executor and Hufu adapter remain pending. See the [implementation plan](docs/implementation-plan.md).
 
-## Next delivery
+## Delivered foundation and next gates
 
-Freeze versioned canonical resource-request identity and provider profile, then
-implement/test a real Windows read-only Penghou.IO.Local project alongside the
-abstractions. Its first consumer is Luban Read/Find/SearchText. Keep implementations
-out of Penghou.IO.Abstractions; no parser or Hufu/CedarSharp dependency blocks it.
+Versioned [request identity](docs/canonical-request-identity.md) and the
+[Windows read-only profile](docs/local-reader-profile.md) now support Luban
+Read/Find/SearchText. The next Luban slice is typed IR/static preflight; the next
+resource-provider slice is a qualified writer after resolution and barrier readiness.
 
 ## Ordered gates
 
-1. **Contract and read provider.** One neutral canonical identity codec; bounded
+1. **Contract and read provider — complete.** One neutral canonical identity codec; bounded
    reads/file metadata/direct listing; explicit host authorizer and parent
    bindings; candidate exclusions, paging, versions, cancellation and honest
    path/race guarantees. Real workspace tests on .NET 8 and 10.
-2. **Luban migration.** Existing effect checks and typed outputs preserved on
+2. **Luban migration — complete.** Existing effect checks and typed outputs preserved on
    the real shared reader. Document a pinned sibling-checkout integration build
    rather than depend on unpublished packages or duplicate contract code.
 3. **Qualified writer.** After Luban resolution/admission/barrier is available,

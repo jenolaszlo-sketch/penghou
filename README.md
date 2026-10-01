@@ -2,8 +2,10 @@
 
 Penghou.IO.Abstractions defines neutral, bounded contracts for workspace file
 and directory access and for reading one web resource. It targets .NET 8 and
-.NET 10. The library contains contracts only: no provider, runtime backend,
-authorization implementation, or Hufu adapter is included.
+.NET 10. The abstractions library contains contracts and a pure canonical request
+identity codec. The separate Penghou.IO.Local project implements bounded Windows
+reads, file metadata and directory pages with a required host authorizer. No
+writer, web backend, authorization policy implementation or Hufu adapter is included.
 
 Every operation carries a host-authenticated `HostInvocation` with subject,
 effect, attempt, scope references, and request identity. These records are data
@@ -37,14 +39,15 @@ See [architecture](docs/architecture.md), [provider contract](docs/provider-cont
 the [roadmap](ROADMAP.md), and [decision 0001](docs/decisions/0001-shared-resource-boundary.md).
 The [Apache-2.0 license](LICENSE) applies.
 
-The [implementation plan](docs/implementation-plan.md) makes the next delivery
-a Windows read-only `Penghou.IO.Local` provider, followed by Luban's existing-read
-migration. That provider is planned; the library above remains interfaces only.
+The [implementation plan](docs/implementation-plan.md) records
+the Windows read-only `Penghou.IO.Local` provider and Luban's read migration
+as completed slices. See its qualified [profile](docs/local-reader-profile.md)
+and [identity encoding](docs/canonical-request-identity.md); mutations and web remain pending.
 
 Build with the .NET 10 SDK:
 
 ```sh
-dotnet build Penghou.IO.slnx -c Release
+dotnet test Penghou.IO.slnx -c Release
 ```
 
 The build produces libraries for .NET 8 and .NET 10. Package publication is
