@@ -34,8 +34,7 @@ control and durability. Preflight checks all nodes' known static effects and
 exact targets before upstream reads or artifact creation, so a known denied
 write blocks the document early. This static preflight reserves no authority and cannot
 replace the provider's final current-authority check. Dynamic targets require
-bounded, already-authorized discovery. Intermediate dataflow should remain
-lazy, bounded, and cancellable. Persistence and debug/release artifacts require
+bounded, already-authorized discovery. Current consumer operators use finite buffered intermediates with byte/work bounds and cancellation; lazy production and backpressure are not guaranteed. Persistence and debug/release artifacts require
 explicit authorization. No global pipeline atomicity is promised.
 
 [ADR 0002](decisions/0002-preview-resolution-commit-barrier.md) and the
@@ -79,12 +78,7 @@ The provider profile documents DNS, connect, response-header, total-operation,
 redirect, wire-byte, decoded-byte, and SSRF address limits. The result contains
 status, effective URL, and content, without a filesystem version token.
 
-Path-based authorization cannot alone close time-of-check/time-of-use races.
-Unless a provider implements stronger handle-relative operations, a concurrent
-local process may replace a checked path between authorization and use. Direct
-`System.IO` calls, other process access, and APIs that bypass a provider are
-outside this library's coverage. The contracts do not claim sandboxing or
-confinement. No web provider or SSRF protection is implemented here.
+Path-based authorization cannot alone close time-of-check/time-of-use races. The narrow [Local patch profile](local-patch-profile.md) pins ordinary directory and file opens and applies one patch through one locked file handle, but it does not defend against privileged processes, raw-volume writes, or every namespace race. Direct `System.IO` calls and APIs that bypass a provider are outside this library's coverage. The contracts do not claim sandboxing or confinement. No web provider or SSRF protection is implemented here.
 
 Hufu owns grants, revocation, and authority evidence and remains independent.
 An adapter can be added as a separate integration package; no Hufu dependency

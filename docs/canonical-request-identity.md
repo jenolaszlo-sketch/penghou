@@ -66,10 +66,7 @@ then its nullable version string. Current values are `MustNotExist = 0` and
 `MustMatchVersion = 1`. Providers separately validate that the combination is
 supported and enforce it atomically; an identity does not validate or grant it.
 
-Patch byte ranges and replacement payloads are encoded exactly as supplied,
-after snapshotting. The codec does not sort patches, translate unified diff,
-normalize UTF-8, or validate range semantics; providers validate patches
-against the exact original version.
+Patch byte ranges and replacement payloads are encoded exactly as supplied, after snapshotting. The codec does not sort patches, translate unified diff, normalize UTF-8, or validate range semantics; providers validate patches against the exact original version. The codec bounds the canonical request to 16 MiB and rejects patch counts above 4,096 before copying caller patch payloads. The Local single-patch profile applies a stricter 128-patch limit and its own file/replacement/output ceilings.
 
 ## Golden vectors
 

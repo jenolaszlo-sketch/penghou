@@ -1,11 +1,6 @@
 # Resource providers under preview resolution and a commit barrier
 
-Status: Proposed provider integration requirements, 2026-10-01. The project
-includes a qualified read-only Local provider and canonical request codec. Luban's
-separate programmatic capture-only WhatIf profile now uses this reader and
-retains immutable edit payloads/provider observations. Its plans cannot commit.
-This neutral repository owns no preview-plan API; writer, commit barrier and
-Hufu adapters remain pending.
+Status: Provider integration requirements, 2026-10-01. The project includes a qualified read-only Local provider and canonical request codec, plus a narrow Local existing-file patcher described in [local-patch-profile.md](local-patch-profile.md). Luban's separate programmatic capture-only WhatIf profile uses the reader and retains immutable edit payloads/provider observations; its plans cannot commit or dispatch the standalone executor. This neutral repository owns no preview-plan API. General writer methods, multi-target barrier, Hufu adapter and durable workflow integration remain pending.
 
 The host/Luban execution design uses four separate safeguards:
 

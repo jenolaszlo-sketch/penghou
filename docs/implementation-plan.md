@@ -1,11 +1,16 @@
 # Shared I/O implementation plan
 
-Status: First two slices implemented, 2026-10-01. The canonical request codec,
-Windows read-only Penghou.IO.Local provider and Luban read migration are implemented
-and tested on .NET 8 and 10. See the [profile](local-reader-profile.md) and
-[encoding](canonical-request-identity.md). Mutation/web providers, authority policy,
-writer/admission/barrier execution and Hufu integration remain pending. Luban
-owns the implemented read-language and capture-only WhatIf consumers.
+Status: Read slices and controlled single-patch profile implemented, 2026-10-01. The canonical request codec, Windows read-only Local provider, Luban read migration, and the explicitly host-controlled Local patcher with Luban's separate single-target executor are implemented. See the [read profile](local-reader-profile.md), [patch profile](local-patch-profile.md), and [identity encoding](canonical-request-identity.md). Native evidence is recorded below. The full writer interface, web, general batch admission/barrier, production Hufu adapter, and durable Hufu/Zhinu integration remain pending.
+
+Native qualification passes 81/81 tests on each .NET target, and Luban's
+separate executor/read/capture suite passes 145/145. Native tests demonstrated
+that a hard link can be created while the leaf handle is exclusive. A subsequent
+check refused the observed attack before mutation, but cannot close every alias
+race. Default and unknown namespaces return Unsupported before I/O; trusted
+composition must explicitly select HostControlled and ensure untrusted actors
+cannot alter aliases, root/mount/reparse/case configuration. Case-sensitive
+directory enablement remains unverified on this host. General confinement and
+production durable adapters remain pending.
 
 The first real consumer is Luban's implemented read runtime. Its delivery plan
 defines effect, language, resolution and barrier work; those stay outside this repository's
@@ -74,26 +79,17 @@ Gate: Luban's existing behavior suite passes against the real provider, and
 parent/child scope, identity, output/cancellation and unavailable-service cases
 are verified. A parser, Hufu or CedarSharp is not a prerequisite for this slice.
 
-## Mutation provider after resolution
+## Narrow Local patch profile — implemented
 
-Implement IWorkspaceWriter incrementally after Luban can capture/admit immutable
-plans and enforce the barrier. Start with one existing-file byte patch. Freeze
-provider ResourceVersion semantics and the mapping from observed content hashes;
-tokens are not assumed to equal a source --hash. TextPatch byte ranges apply
-against the original UTF-8 snapshot. Unified-hunk translation belongs to Luban's
-trusted bounded adapter, not to a generic resource API.
+`Penghou.IO.Local.LocalWorkspacePatcher` implements only one existing-file original-version UTF-8 byte patch on a fixed-drive NTFS workspace. It rejects UNC/device roots, non-NTFS/fixed volumes, reparse components, case-sensitive directories, and files with more than one hard link. Directory handles are held with sharing that denies ordinary new write/delete opens; the target is opened existing, no-share, and mutated through that same handle. This provides a narrow object-bound version/check/write profile against ordinary concurrent file opens, not a defense against privileged processes or raw-volume writes. The captured `local-read-v1:sha256` token binds content only: preview does not prove that the captured pathname still denotes the same native file object at execution.
 
-Prove a supported object-bound version/check/commit protocol against concurrent
-writers, or return Unsupported for the required guarantee. The read provider's
-path profile does not establish it. Require exact plan/segment/barrier bindings
-in host mappings, final live authority and authorized precondition probes.
-Per-resource authorization does not replace batch admission. Journal/start
-ordering must be supplied and qualified before claiming recoverable dispatch.
+The patcher bounds the original at 16 MiB, edits at 128, replacement bytes at 1 MiB, and output at 16 MiB; input and output are strict UTF-8, edits are ordered, nonoverlapping original-version byte ranges with scalar-boundary offsets. It writes, flushes, and verifies through the same handle. In-place mutation can tear on crash and is not an atomic replacement. Any post-start uncertainty is `AmbiguousOutcome`, requiring reconciliation with no blind retry.
 
-Gate: denied/stale input gives zero mutation; changing target/payload/version
-cannot reuse permission; post-start cancellation/failure yields attributable
-success or ambiguous outcome, never implied rollback. Later Copy/Move/Delete/
-CreateDirectory and bounded batches earn their own role/precondition profiles.
+Luban's `SinglePatchExecutor` accepts exactly one complete literal-target patch plan. It recomputes the plan and observation identities and checks that the writer's recomputed proposed hash/length match capture. A required trusted `IPatchExecutionHost` performs whole-plan admission before provider access, live exact-resource checks, and a start call that must serialize current admission/revision/fence/revocation and durably record start evidence before returning `Started`. The provider records `NoMutation`, `Completed`, or `Ambiguous`; acknowledged completion is required for success. This is a standalone host contract, not a production Hufu/Zhinu adapter or durable journal.
+
+The execution profile reserves operation time and read budgets before mutation; aggregate original plus post-verification bytes must fit the document read cap. The reader's captured version remains a content precondition, not historical object identity. `PreviewRuntime.WhatIfAsync` is unchanged, read-only, has no writer callback, and `ResolvedEffectPlan.CanCommit` remains false. See the [Luban executor profile](../../Penghou.Luban/docs/single-patch-execution-profile.md).
+
+Remaining gates: stronger namespace/alias guarantees and case-sensitive-directory qualification; production host/Hufu admission and Zhinu journaling/fences/recovery; multi-node/multi-target batch admission; selected-glob execution; textual-hunk conversion; other mutation methods and web. No multi-file transaction or crash-atomicity claim is made.
 
 ## Later integration and web
 

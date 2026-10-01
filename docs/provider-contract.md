@@ -1,8 +1,6 @@
 # Provider contract
 
-These requirements define intended provider behavior. They are design
-contracts. The [Windows read-only profile](local-reader-profile.md) implements
-the qualified read subset; mutation/web/plan guarantees remain pending.
+These requirements define intended provider behavior. The [Windows read-only profile](local-reader-profile.md) implements the qualified read subset. The separate [Local patch profile](local-patch-profile.md) implements one existing file patch under a narrow standalone host/journal contract. Other mutation, web, Hufu, and multi-target plan guarantees remain pending.
 
 ## Preflight and access checks
 
@@ -27,8 +25,7 @@ Dynamic paths or destinations are checked after bounded, authorized discovery;
 preflight must not perform eager unauthorized reads under another name. The
 provider checks current authority and binds each final action to its concrete
 resource immediately before protected access. Earlier reads can have occurred
-if live authority changes later, but a denied write never occurs. Keep
-intermediates lazy, bounded, and cancellable. Persistence and debug/release
+if live authority changes later, but a denied write never occurs. Current consumers use bounded buffered intermediates; lazy production and backpressure are not guaranteed. Persistence and debug/release
 artifacts require explicit authorization. There is no global atomicity guarantee
 across a pipeline.
 
@@ -181,9 +178,4 @@ filesystem details. Unexpected provider faults map to `ProviderFailure`; raw
 exceptions, streams, and native handles are not part of these contracts.
 Operating-system access errors remain distinct from authorization denials.
 
-Path checks and subsequent path-based operations can race with concurrent local
-filesystem changes. A provider without handle-relative APIs cannot guarantee
-that the object used is the exact object previously authorized. A provider that
-cannot uphold required version atomicity must return `Unsupported`. No mutation
-implementation exists here. The read-only profile states its qualified bounds
-and its path-race limitations.
+Path checks and subsequent path-based operations can race with concurrent local filesystem changes. A provider without handle-relative APIs cannot guarantee that the object used is the exact object previously authorized. A provider that cannot uphold required version consistency must return `Unsupported`. The separate Local patcher implements only the NTFS existing-file profile in [local-patch-profile.md](local-patch-profile.md); this general contract and the other mutation methods remain requirements rather than implemented providers.
