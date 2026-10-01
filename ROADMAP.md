@@ -3,14 +3,16 @@
 Status: Revised 2026-10-01. Neutral .NET 8/.NET 10 I/O interfaces and provider
 requirements, canonical identity codec and the Windows read-only Local provider
 are implemented. Luban uses the shared reader. Writer/web, authority policy,
-plan/barrier executor and Hufu adapter remain pending. See the [implementation plan](docs/implementation-plan.md).
+writer/admission/barrier execution and Hufu adapters remain pending. Luban's
+read language and separate capture-only WhatIf consumer are implemented. See the [implementation plan](docs/implementation-plan.md).
 
 ## Delivered foundation and next gates
 
 Versioned [request identity](docs/canonical-request-identity.md) and the
 [Windows read-only profile](docs/local-reader-profile.md) now support Luban
-Read/Find/SearchText. The next Luban slice is typed IR/static preflight; the next
-resource-provider slice is a qualified writer after resolution and barrier readiness.
+Read/Find/SearchText. Luban's typed read language/static preflight and capture-only WhatIf are
+implemented. The next resource-provider gate is an existing-file writer's
+object/version consistency and the host admission/start protocol.
 
 ## Ordered gates
 

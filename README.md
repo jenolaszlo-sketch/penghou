@@ -32,8 +32,9 @@ debug/release artifacts require explicit authorization.
 planned [preview resolution and commit barrier](docs/preview-commit-contract.md):
 authorized discovery resolves dynamic mutation targets, the complete known
 mutation set is admitted before writes begin, and every actual I/O still receives
-live checks. WhatIf leaves opaque tools unexecuted. Resolution and the barrier
-are not implemented, and batch admission does not promise atomic multi-file writes.
+live checks. WhatIf leaves opaque tools unexecuted. Luban now implements a separate programmatic capture-only WhatIf profile using
+this reader; its plans cannot commit. Writer/admission/barrier execution remains
+pending, and batch admission does not promise atomic multi-file writes.
 
 See [architecture](docs/architecture.md), [provider contract](docs/provider-contract.md),
 the [roadmap](ROADMAP.md), and [decision 0001](docs/decisions/0001-shared-resource-boundary.md).

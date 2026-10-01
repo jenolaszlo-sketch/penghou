@@ -4,7 +4,8 @@ Status: First two slices implemented, 2026-10-01. The canonical request codec,
 Windows read-only Penghou.IO.Local provider and Luban read migration are implemented
 and tested on .NET 8 and 10. See the [profile](local-reader-profile.md) and
 [encoding](canonical-request-identity.md). Mutation/web providers, authority policy,
-preview/barrier execution and Hufu integration remain pending.
+writer/admission/barrier execution and Hufu integration remain pending. Luban
+owns the implemented read-language and capture-only WhatIf consumers.
 
 The first real consumer is Luban's implemented read runtime. Its delivery plan
 defines effect, language, resolution and barrier work; those stay outside this repository's

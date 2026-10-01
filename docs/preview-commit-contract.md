@@ -1,8 +1,11 @@
 # Resource providers under preview resolution and a commit barrier
 
 Status: Proposed provider integration requirements, 2026-10-01. The project
-includes a qualified read-only Local provider and canonical request codec. No
-preview executor, resolved-plan API, writer, commit barrier or Hufu adapter is implemented.
+includes a qualified read-only Local provider and canonical request codec. Luban's
+separate programmatic capture-only WhatIf profile now uses this reader and
+retains immutable edit payloads/provider observations. Its plans cannot commit.
+This neutral repository owns no preview-plan API; writer, commit barrier and
+Hufu adapters remain pending.
 
 The host/Luban execution design uses four separate safeguards:
 
@@ -29,7 +32,7 @@ may still write under host policy; WhatIf is not a claim of zero host I/O.
 
 ## Host bindings and the final provider gate
 
-The planned resolved plan belongs to Luban/the host, not this neutral interface
+The resolved capture plan and future commit admission belong to Luban/the host, not this neutral interface
 library. It binds semantic IR identity, exact nodes/dependencies, concrete target
 roles, stable payload digests, observation versions, preconditions, limits,
 catalogue/provider profiles, coverage and unresolved reasons. Source fingerprints
