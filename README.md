@@ -37,6 +37,10 @@ See [architecture](docs/architecture.md), [provider contract](docs/provider-cont
 the [roadmap](ROADMAP.md), and [decision 0001](docs/decisions/0001-shared-resource-boundary.md).
 The [Apache-2.0 license](LICENSE) applies.
 
+The [implementation plan](docs/implementation-plan.md) makes the next delivery
+a Windows read-only `Penghou.IO.Local` provider, followed by Luban's existing-read
+migration. That provider is planned; the library above remains interfaces only.
+
 Build with the .NET 10 SDK:
 
 ```sh

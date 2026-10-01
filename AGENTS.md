@@ -18,7 +18,9 @@ File references establish provenance only; they do not convey permission.
 
 Keep APIs bounded and typed. Do not expose raw streams, native handles, shell or
 process escape hatches, arbitrary callbacks, or an unbounded System.IO mirror.
-Do not add a runtime backend or a fake authorizer as scaffolding. Document
+Keep backends out of Penghou.IO.Abstractions. A real Penghou.IO.Local provider
+belongs in its own project when implementation is authorized; do not add fake
+backends or authorizers as scaffolding. Read docs/implementation-plan.md. Document
 provider preconditions and limits before introducing behavior. Hufu remains
 independent; any adapter belongs in a separate integration package.
 
