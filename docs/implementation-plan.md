@@ -1,9 +1,40 @@
 # Shared I/O implementation plan
 
+Active corrective delivery is now specified in
+[resource-abstractions-corrective-plan.md](resource-abstractions-corrective-plan.md).
+Use the [Sol handoff](resource-abstractions-sol-handoff.md) for the next exact
+work item and working-tree precautions. The finish line now includes corrected
+code ownership, CI/NuGet publication, and actual Luban/Hufu adoption of published
+versions; design and local-feed checks are intermediate. The earlier delivery narrative below
+remains historical/qualification context; it is not a competing implementation queue.
+
+## Current corrective priority — RA-1 through RA-5
+
+Implementation update: [ADR 0003](decisions/0003-replaceable-resource-providers.md)
+selects provider composition and a Local conditional byte writer. The semantic
+patch DTOs/materializer live in Luban; shared codec/path algorithms live in
+IO.Protocols. Earlier Local patcher descriptions below are historical regression
+evidence. Follow the [delivery ledger](resource-abstractions-corrective-plan.md)
+for current qualification and the remaining publication/adoption gates.
+
+Follow the [architecture baseline and review](resource-abstractions-architecture.md)
+before extending the implementation below. [RA-0 inventory](resource-abstractions-inventory.md)
+is complete as documentation; no corrective API or provider work is complete.
+Resolve the enforcement, identity/path, conditional-write and migration gates,
+then relocate implementation, inject Luban capabilities, qualify Hufu interception
+and prove package-only consumption. Existing qualified behavior remains the
+regression baseline, including candidate checks and mutation uncertainty.
+
+The codec-in-Abstractions and provider-internal authorizer descriptions below
+explain the current slice, not the intended final package boundary. Keep one
+versioned codec implementation outside the contract assembly after RA-1 selects
+its owner. Test-only conformance spies are permitted; no production VFS is in scope.
+VFS-1 through VFS-10 remain deferred under the canonical architecture.
+
 Status: Read slices and controlled single-patch profile implemented, 2026-10-01. The canonical request codec, Windows read-only Local provider, Luban read migration, and the explicitly host-controlled Local patcher with Luban's separate single-target executor are implemented. See the [read profile](local-reader-profile.md), [patch profile](local-patch-profile.md), and [identity encoding](canonical-request-identity.md). Native evidence is recorded below. The full writer interface, web, general batch admission/barrier, production Hufu adapter, and durable Hufu/Zhinu integration remain pending.
 
-Native qualification passes 81/81 tests on each .NET target, and Luban's
-separate executor/read/capture suite passes 145/145. Native tests demonstrated
+Native qualification passes 86/86 tests on each .NET target, and Luban's
+separate executor/read/capture suite passes 167/167. Native tests demonstrated
 that a hard link can be created while the leaf handle is exclusive. A subsequent
 check refused the observed attack before mutation, but cannot close every alias
 race. Default and unknown namespaces return Unsupported before I/O; trusted

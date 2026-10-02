@@ -10,20 +10,10 @@ public sealed class AuditRegressionTests
     private static readonly WorkspaceId Workspace = new("audit");
     private static readonly HostInvocation Invocation = new("i", "s", "e", "a", "scope", null, default);
     [Fact]
-    public void CodecRejectsHugePatchCountBeforeIndexingOrAllocation()
-    {
-        var request = new FilePatchRequest(Invocation, Workspace, new("a.txt"), new("v"),
-            new HostileList(), new(1, 1, 1));
-        Assert.Throws<ArgumentException>(() => ResourceRequestIdentity.Compute(request));
-    }
-    [Fact]
     public void CodecRejectsOversizedWriteAndAggregateReplacement()
     {
         Assert.Throws<ArgumentException>(() => ResourceRequestIdentity.Compute(new FileWriteRequest(
             Invocation, Workspace, new("a.txt"), new byte[2], new(1), new(WritePreconditionKind.MustNotExist))));
-        Assert.Throws<ArgumentException>(() => ResourceRequestIdentity.Compute(new FilePatchRequest(
-            Invocation, Workspace, new("a.txt"), new("v"),
-            [new(0, 0, new byte[2]), new(1, 0, new byte[2])], new(2, 3, 4))));
     }
     [Fact]
     public async Task ContinuationRejectsUnicodeCaseVariantOutsideCanonicalEquivalence()
@@ -53,12 +43,5 @@ public sealed class AuditRegressionTests
     {
         public ValueTask<ResourceAuthorizationDecision> AuthorizeAsync(ResourceAuthorizationRequest request, CancellationToken cancellationToken = default)
             => ValueTask.FromResult(new ResourceAuthorizationDecision(AuthorizationStatus.Permit));
-    }
-    private sealed class HostileList : IReadOnlyList<TextPatch>
-    {
-        public int Count => int.MaxValue;
-        public TextPatch this[int index] => throw new InvalidOperationException("Must not index.");
-        public IEnumerator<TextPatch> GetEnumerator() => throw new InvalidOperationException("Must not enumerate.");
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

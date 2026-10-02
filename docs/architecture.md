@@ -1,5 +1,11 @@
 # Architecture
 
+Direction update, 2026-10-02: the [resource-abstractions baseline](resource-abstractions-architecture.md)
+governs the pending RA correction and deferred VFS work. This document remains
+the current profile/design reference until a versioned replacement is qualified.
+In particular, preserve concrete checks and identity vectors during relocation;
+capture-only WhatIf and future overlay execution are distinct modes.
+
 Penghou.IO.Abstractions defines contracts at the concrete resource boundary.
 It provides a read-only `IWorkspaceReader`, mutation-only
 `IWorkspaceWriter`, a combined `IWorkspaceFileSystem`, and a bounded web GET

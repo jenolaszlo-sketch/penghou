@@ -65,7 +65,6 @@ public sealed class ResourceRequestIdentityTests
             ResourceRequestIdentity.Compute(new FileMetadataRequest(Invocation, Workspace, new("src/Foo.cs"))),
             ResourceRequestIdentity.Compute(List("src")),
             ResourceRequestIdentity.Compute(Write("src/Foo.cs", [1, 2, 3])),
-            ResourceRequestIdentity.Compute(Patch("src/Foo.cs", new ResourceVersion("v1"))),
             ResourceRequestIdentity.Compute(new FileDeleteRequest(Invocation, Workspace, new("src/Foo.cs"), new("v1"))),
             ResourceRequestIdentity.Compute(new DirectoryCreateRequest(Invocation, Workspace, new("src/new"))),
             ResourceRequestIdentity.Compute(new FileMoveRequest(Invocation, Workspace, new("src/a"), new("src/b"), new("v1"), new(WritePreconditionKind.MustNotExist))),
@@ -107,25 +106,6 @@ public sealed class ResourceRequestIdentityTests
         {
             DestinationPrecondition = new(WritePreconditionKind.MustMatchVersion, new ResourceVersion("destination-v1"))
         }));
-    }
-
-    [Fact]
-    public void PatchIdentitySnapshotsAndBindsEveryPatchAndLimit()
-    {
-        var replacement = new byte[] { (byte)'n', (byte)'e', (byte)'w' };
-        var baseline = ResourceRequestIdentity.Compute(Patch("src/Foo.cs", new ResourceVersion("base-v1"), replacement));
-        replacement[0] = (byte)'N';
-        var changed = ResourceRequestIdentity.Compute(Patch("src/Foo.cs", new ResourceVersion("base-v1"), replacement));
-
-        Assert.NotEqual(baseline, changed);
-        Assert.NotEqual(baseline, ResourceRequestIdentity.Compute(Patch("src/Foo.cs", new ResourceVersion("base-v2"))));
-        Assert.NotEqual(baseline, ResourceRequestIdentity.Compute(Patch("src/Foo.cs", new ResourceVersion("base-v1"), limits: new(10, 200, 1000))));
-        Assert.NotEqual(baseline, ResourceRequestIdentity.Compute(Patch("src/Foo.cs", new ResourceVersion("base-v1"), offset: 2)));
-        Assert.NotEqual(baseline, ResourceRequestIdentity.Compute(Patch("src/Foo.cs", new ResourceVersion("base-v1"), deleteLength: 3)));
-        Assert.NotEqual(baseline, ResourceRequestIdentity.Compute(Patch("src/Foo.cs", new ResourceVersion("base-v1"), limits: new(9, 100, 1000))));
-        Assert.NotEqual(baseline, ResourceRequestIdentity.Compute(Patch("src/Foo.cs", new ResourceVersion("base-v1"), limits: new(10, 99, 1000))));
-        Assert.NotEqual(baseline, ResourceRequestIdentity.Compute(Patch("src/Foo.cs", new ResourceVersion("base-v1"), limits: new(10, 100, 999))));
-        Assert.NotEqual(baseline, ResourceRequestIdentity.Compute(Patch("src/Foo.cs", new ResourceVersion("base-v1"), patchCount: 2)));
     }
 
     [Fact]
@@ -214,22 +194,6 @@ public sealed class ResourceRequestIdentityTests
 
     private static FileWriteRequest Write(string path, byte[] content, int maxBytes = 100, WritePrecondition? precondition = null) =>
         new(Invocation, Workspace, new WorkspacePath(path), content, new IoLimits(maxBytes), precondition ?? new(WritePreconditionKind.MustNotExist));
-
-    private static FilePatchRequest Patch(
-        string path,
-        ResourceVersion version,
-        byte[]? replacement = null,
-        PatchLimits? limits = null,
-        int offset = 1,
-        int deleteLength = 2,
-        int patchCount = 1)
-    {
-        var patches = Enumerable.Range(0, patchCount)
-            .Select(index => new TextPatch(offset + index * 4, deleteLength, replacement ?? Encoding.UTF8.GetBytes("new")))
-            .ToArray();
-        return new FilePatchRequest(Invocation, Workspace, new WorkspacePath(path), version, patches,
-            limits ?? new PatchLimits(10, 100, 1000));
-    }
 
     private static DirectoryListRequest List(
         string path,

@@ -1,5 +1,10 @@
 # ADR 0002: Support a host-owned preview and commit boundary
 
+Scope clarification, 2026-10-02: this ADR's no-mutation WhatIf rule describes
+capture-only preview. The [resource architecture](../resource-abstractions-architecture.md)
+records a separate, deferred overlay execution mode (VFS-5); it cannot change
+this API's behavior or supply authority to apply virtual changes to real resources.
+
 Status: Accepted design direction, 2026-10-01; integration pending.
 
 Adopt the [preview/commit provider contract](../preview-commit-contract.md).

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <PackageId>Penghou.IO.Protocols</PackageId>
+    <Title>Penghou I/O Protocols</Title>
+    <Description>Versioned resource identity and path protocol implementations shared by Penghou I/O contracts and providers.</Description>
+    <PackageTags>Penghou;resource-io;protocols;identity;paths</PackageTags>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Penghou.IO.Abstractions\Penghou.IO.Abstractions.csproj" />
+  </ItemGroup>
+</Project>

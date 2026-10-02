@@ -1,5 +1,11 @@
 # Canonical resource request identity, schema v1
 
+Direction update, 2026-10-02: the [resource-abstractions baseline](resource-abstractions-architecture.md)
+governs the RA correction and deferred VFS work. The codec implementation now
+lives in IO.Protocols; its namespace and all surviving v1 vectors are preserved.
+In particular, preserve concrete checks and identity vectors during relocation;
+capture-only WhatIf and future overlay execution are distinct modes.
+
 `ResourceRequestIdentity.Compute` identifies one concrete backend request. It
 does not authenticate a host invocation, subject, scope, effect, or permission.
 The provider snapshots mutable request data before hashing and uses that same
@@ -55,7 +61,7 @@ fragment because fragments are not sent to an HTTP server.
 | `02` | `FileMetadataRequest` | Workspace string; normalized file path string |
 | `03` | `DirectoryListRequest` | Workspace string; normalized path string (root allowed); `MaxEntries`, `MaxCandidatesScanned`, `MaxOutputBytes` int32; nullable continuation value |
 | `04` | `FileWriteRequest` | Workspace string; normalized file path string; `MaxBytes` int32; content bytes; write precondition |
-| `05` | `FilePatchRequest` | Workspace string; normalized file path string; expected version string; `MaxPatchCount`, `MaxReplacementBytes`, `MaxOutputBytes` int32; patch count int32; each patch's `StartOffset` int32, `DeleteLength` int32, replacement bytes |
+| `05` | Reserved former text-patch opcode | No resource-codec API; Luban materializes patches and issues conditional `FileWriteRequest` (`04`). |
 | `06` | `FileDeleteRequest` | Workspace string; normalized file path string; expected version string |
 | `07` | `DirectoryCreateRequest` | Workspace string; normalized non-root path string |
 | `08` | `FileMoveRequest` | Workspace string; normalized source path string; normalized destination path string; expected source version string; destination write precondition |
@@ -66,7 +72,10 @@ then its nullable version string. Current values are `MustNotExist = 0` and
 `MustMatchVersion = 1`. Providers separately validate that the combination is
 supported and enforce it atomically; an identity does not validate or grant it.
 
-Patch byte ranges and replacement payloads are encoded exactly as supplied, after snapshotting. The codec does not sort patches, translate unified diff, normalize UTF-8, or validate range semantics; providers validate patches against the exact original version. The codec bounds the canonical request to 16 MiB and rejects patch counts above 4,096 before copying caller patch payloads. The Local single-patch profile applies a stricter 128-patch limit and its own file/replacement/output ceilings.
+The codec bounds canonical requests to 16 MiB. Text-patch identities and
+materialization are now Luban semantics; Local receives a frozen byte payload
+and a version precondition. Existing read/list/write/delete/move/web encodings
+and golden vectors remain v1. Opcode `05` is reserved and must not be reused.
 
 ## Golden vectors
 

@@ -1,5 +1,46 @@
 # Penghou I/O roadmap
 
+Active delivery queue: [corrective plan](docs/resource-abstractions-corrective-plan.md).
+Resume with [Sol's handoff](docs/resource-abstractions-sol-handoff.md):
+the current ledger and [ADR 0003](docs/decisions/0003-replaceable-resource-providers.md).
+RA-0/RA-1 are complete. Corrective code and package candidates are being qualified;
+NuGet publication and actual published-package adoption remain open.
+The plan supplies owners, dependencies, exit criteria and qualification evidence.
+
+## Architecture correction takes precedence for new work — 2026-10-02
+
+The [resource-abstractions architecture](docs/resource-abstractions-architecture.md)
+and [original specification](docs/resource-abstractions-proposal.md) define the
+intended replaceable capability boundary. The earlier milestones below record
+qualified implementation history; their package layout is not the target design.
+The [public-type inventory](docs/resource-abstractions-inventory.md) completes RA-0.
+
+- [x] **RA-1:** resolve the linked G1-G5/G8 contract, enforcement, patch and compatibility gates in ADR 0003.
+- [ ] **RA-2:** keep contract DTOs/interfaces in Abstractions; relocate Windows path
+  behavior and the canonical codec implementation with preserved identity vectors.
+  Record separate future ownership for HTTP; do not redesign it in this correction.
+- [ ] **RA-3:** coordinate Luban's injected capabilities and isolate physical composition.
+- [ ] **RA-4:** qualify a Hufu.IO boundary with discovered-resource and commit checks.
+- [ ] **RA-5A:** architecture/conformance tests, build/test/pack CI and local-feed qualification.
+- [ ] **RA-5B:** controlled NuGet release workflow and published corrected IO.Abstractions/Local versions.
+- [ ] **RA-5C:** Luban and Hufu use those published versions with passing consumer integration checks.
+
+The finish line is corrected ownership/code, working CI and NuGet delivery, then
+real published-package consumption by both Luban and Hufu. Design work is the
+first stage, not completion; local packages or sibling references do not satisfy it.
+
+Diff/merge already belong to Luban. A simple outer authorization check must not
+replace current child-resource checks or the mutation-start protocol.
+Keep current capture-only WhatIf unchanged until a separate virtual execution
+profile is qualified. No production virtual provider is required for RA completion.
+
+Deferred: **VFS-1** in-memory, **VFS-2** snapshot, **VFS-3** overlay,
+**VFS-4** operation evidence/resource delta, **VFS-5** isolated WhatIf,
+**VFS-6** declared/observed analysis, **VFS-7** approved application,
+**VFS-8** filtered views, **VFS-9** Git, **VFS-10** remote/container integration.
+The canonical architecture gives owners, dependencies and acceptance conditions.
+Every handoff must cite its RA/VFS ID and unresolved gates.
+
 Status: Revised 2026-10-01. Neutral .NET 8/.NET 10 I/O interfaces, canonical
 identity codec, Windows read-only Local provider, and a narrow existing-file
 Local NTFS patch profile are implemented. Luban uses the shared reader and its
@@ -46,4 +87,5 @@ The barrier is not a multi-file transaction. See the
 
 Use Luna for bounded implementation/tests where possible, review identity and
 native consistency gates, and release packages only after qualification and
-separate release authorization. No enforcement claim follows from interfaces.
+the configured release controls. Publication and both consumer migrations are
+part of the clarified delivery goal. No enforcement claim follows from interfaces.

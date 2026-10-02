@@ -153,19 +153,6 @@ public sealed record FileWriteRequest(
     IoLimits Limits,
     WritePrecondition Precondition);
 
-/// <summary>Byte offsets against the exact original UTF-8 content version.</summary>
-public sealed record TextPatch(int StartOffset, int DeleteLength, ReadOnlyMemory<byte> ReplacementUtf8);
-
-public sealed record PatchLimits(int MaxPatchCount, int MaxReplacementBytes, int MaxOutputBytes);
-
-public sealed record FilePatchRequest(
-    HostInvocation Invocation,
-    WorkspaceId Workspace,
-    WorkspacePath Path,
-    ResourceVersion ExpectedVersion,
-    IReadOnlyList<TextPatch> Patches,
-    PatchLimits Limits);
-
 public sealed record FileDeleteRequest(
     HostInvocation Invocation,
     WorkspaceId Workspace,
@@ -224,7 +211,6 @@ public interface IWorkspaceReader
 public interface IWorkspaceWriter
 {
     ValueTask<ResourceResult<ResourceVersion>> WriteFileAsync(FileWriteRequest request, CancellationToken cancellationToken = default);
-    ValueTask<ResourceResult<ResourceVersion>> PatchFileAsync(FilePatchRequest request, CancellationToken cancellationToken = default);
     ValueTask<ResourceResult<bool>> DeleteFileAsync(FileDeleteRequest request, CancellationToken cancellationToken = default);
     ValueTask<ResourceResult<bool>> CreateDirectoryAsync(DirectoryCreateRequest request, CancellationToken cancellationToken = default);
     ValueTask<ResourceResult<ResourceVersion>> MoveFileAsync(FileMoveRequest request, CancellationToken cancellationToken = default);

@@ -18,6 +18,7 @@ digest remains a separate identity.
 Workspace paths use `/`, bounded validated segments and preserved display case.
 The codec folds ASCII letters for identity and preserves non-ASCII spelling
 exactly, avoiding assumptions about filesystem Unicode upcase tables.
+Native metadata/component handles and the actual content handle must resolve to the admitted full path under ASCII case equivalence before attributes or content are used. Unicode case aliases and DOS short names cannot reinterpret the relative target; correct Unicode spelling and ASCII case variants remain supported. The comparison preserves the admitted spelling rather than expanding aliases through Path.GetFullPath. Native metadata opens use extended-length drive/UNC spelling, but UNC qualification remains pending.
 The reader requires case-insensitive
 directories, querying the Windows directory case-sensitivity flag after
 authorization; case-sensitive or unqueryable directories are Unsupported.
@@ -104,3 +105,6 @@ The provider offers no preview execution or barrier. Hosts/Luban own static
 preflight, authorized resolution, immutable plans, whole-plan admission and
 commit ordering. A read permission, continuation or result cannot authorize a
 later write.
+
+
+Local qualification on 2026-10-01 passes 86/86 shared tests on each .NET target, including real Unicode leaf/directory/root alias regressions and an observed DOS short-name alias. Hufu passes 44/44 and Luban 167/167 on each runtime against this reader; see [the authority qualification record](../../Penghou.Hufu/docs/authority-profile-qualification.md). These observations do not close the replacement/confinement limits above.

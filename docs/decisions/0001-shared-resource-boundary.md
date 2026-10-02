@@ -1,5 +1,11 @@
 # Decision 0001: shared concrete-resource boundary
 
+Direction refinement, 2026-10-02: [resource abstractions](../resource-abstractions-architecture.md)
+records the intended contract-only, replaceable-provider architecture. RA-1
+must resolve enforcement cooperation and identity migration before replacing
+this initial profile. Historical implementation choices here do not override
+the corrective direction or authorize weaker resource checks.
+
 Status: accepted for the initial scaffold
 
 Refined by [ADR 0002](0002-preview-resolution-commit-barrier.md): the earlier

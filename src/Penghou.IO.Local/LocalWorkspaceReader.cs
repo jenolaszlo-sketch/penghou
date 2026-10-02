@@ -20,7 +20,7 @@ public sealed record LocalReaderOptions
 }
 
 /// <summary>Windows path-based, bounded reader. Requires a trusted host authorizer; does not provide confinement.</summary>
-public sealed class LocalWorkspaceReader : IWorkspaceReader, IDisposable
+public sealed class LocalWorkspaceReader : IWorkspaceReaderSession
 {
     private readonly WorkspaceId _workspace;
     private readonly string _root;
@@ -60,6 +60,7 @@ public sealed class LocalWorkspaceReader : IWorkspaceReader, IDisposable
             await Qualify(request.Invocation, identity, path, ct).ConfigureAwait(false);
             ct.ThrowIfCancellationRequested();
             await using var stream = new FileStream(Full(path), FileMode.Open, FileAccess.Read, FileShare.Read, 16 * 1024, FileOptions.Asynchronous | FileOptions.SequentialScan);
+            VerifyFinalPath(stream.SafeFileHandle, Full(path));
             if (stream.Length > request.Limits.MaxBytes) throw new Failure(ResourceFailureKind.TooLarge);
             using var output = new MemoryStream();
             var buffer = ArrayPool<byte>.Shared.Rent(Math.Min(request.Limits.MaxBytes + 1, 16 * 1024));
@@ -168,9 +169,8 @@ public sealed class LocalWorkspaceReader : IWorkspaceReader, IDisposable
                     try
                     {
                         ct.ThrowIfCancellationRequested();
-                        childAttributes = File.GetAttributes(candidate);
+                        childAttributes = InspectComponent(candidate);
                         if ((childAttributes & FileAttributes.ReparsePoint) != 0) continue;
-                        if ((childAttributes & FileAttributes.Directory) != 0) RejectCaseSensitiveDirectory(candidate);
                         length = (childAttributes & FileAttributes.Directory) == 0 ? new FileInfo(candidate).Length : null;
                     }
                     catch (FileNotFoundException) { continue; }
@@ -248,9 +248,8 @@ public sealed class LocalWorkspaceReader : IWorkspaceReader, IDisposable
         if (path.Value.Length != 0)
             await Demand(invocation, identity, ResourceAction.ReadMetadata, new ResourceBinding.WorkspaceEntry(_workspace, WorkspacePath.Root), ct).ConfigureAwait(false);
         ct.ThrowIfCancellationRequested();
-        var attributes = File.GetAttributes(_root);
+        var attributes = InspectComponent(_root);
         RejectLink(attributes);
-        if ((attributes & FileAttributes.Directory) != 0) RejectCaseSensitiveDirectory(_root);
         if (path.Value.Length == 0) return attributes;
         var parts = path.Value.Split('/');
         var current = "";
@@ -261,9 +260,8 @@ public sealed class LocalWorkspaceReader : IWorkspaceReader, IDisposable
             if (i < parts.Length - 1)
                 await Demand(invocation, identity, ResourceAction.ReadMetadata, new ResourceBinding.WorkspaceEntry(_workspace, component), ct).ConfigureAwait(false);
             ct.ThrowIfCancellationRequested();
-            attributes = File.GetAttributes(Full(component));
+            attributes = InspectComponent(Full(component));
             RejectLink(attributes);
-            if ((attributes & FileAttributes.Directory) != 0) RejectCaseSensitiveDirectory(Full(component));
         }
         return attributes;
     }
@@ -272,22 +270,76 @@ public sealed class LocalWorkspaceReader : IWorkspaceReader, IDisposable
     {
         if ((attributes & FileAttributes.ReparsePoint) != 0) throw new Failure(ResourceFailureKind.AccessDenied);
     }
-    private static void RejectCaseSensitiveDirectory(string path)
+    private static FileAttributes InspectComponent(string path)
     {
-        // Case-folded request identity is sound only for the qualified insensitive profile.
-        using var handle = CreateFileW(path, 0x80, 7, IntPtr.Zero, 3, 0x02200000, IntPtr.Zero);
-        if (handle.IsInvalid) throw new Failure(ResourceFailureKind.AccessDenied);
-        if (!GetFileInformationByHandleEx(handle, 23, out var info, sizeof(uint)))
+        // All callers supply a full root + validated relative path. Do not run
+        // GetFullPath here: on Windows it can expand an unadmitted DOS alias.
+        var absolute = path;
+        var nativePath = absolute.StartsWith("\\\\?\\", StringComparison.Ordinal) ? absolute :
+            absolute.StartsWith("\\\\", StringComparison.Ordinal) ? "\\\\?\\UNC\\" + absolute[2..] : "\\\\?\\" + absolute;
+        using var handle = CreateFileW(nativePath, 0x80, 7, IntPtr.Zero, 3, 0x02200000, IntPtr.Zero);
+        if (handle.IsInvalid)
+        {
+            var error = Marshal.GetLastWin32Error();
+            if (error == 2) throw new FileNotFoundException();
+            if (error == 3) throw new DirectoryNotFoundException();
+            throw new Failure(ResourceFailureKind.AccessDenied);
+        }
+        VerifyFinalPath(handle, path);
+        if (!GetFileInformationByHandleEx(handle, 9, out AttributeTagInfo attributes, 8))
             throw new Failure(ResourceFailureKind.Unsupported);
-        if ((info.Flags & 1) != 0) throw new Failure(ResourceFailureKind.Unsupported);
+        // Only the admitted ASCII spelling equivalence may reach an object.
+        // Non-ASCII case aliases and DOS short names must not widen exclusions.
+        if ((attributes.Attributes & (uint)FileAttributes.Directory) != 0 &&
+            (attributes.Attributes & (uint)FileAttributes.ReparsePoint) == 0)
+        {
+            if (!GetFileInformationByHandleEx(handle, 23, out CaseSensitiveInfo info, sizeof(uint)))
+                throw new Failure(ResourceFailureKind.Unsupported);
+            if ((info.Flags & 1) != 0) throw new Failure(ResourceFailureKind.Unsupported);
+        }
+        return (FileAttributes)attributes.Attributes;
     }
+    private static void VerifyFinalPath(SafeFileHandle handle, string expected)
+    {
+        var capacity = 512;
+        while (capacity <= 32768)
+        {
+            var buffer = new StringBuilder(capacity);
+            var length = GetFinalPathNameByHandleW(handle, buffer, (uint)capacity, 0);
+            if (length == 0) throw new Failure(ResourceFailureKind.Unsupported);
+            if (length < capacity)
+            {
+                if (!string.Equals(FoldAscii(NormalizeNativePath(buffer.ToString())),
+                    FoldAscii(NormalizeNativePath(expected)), StringComparison.Ordinal))
+                    throw new Failure(ResourceFailureKind.AccessDenied);
+                return;
+            }
+            capacity = checked((int)length + 1);
+        }
+        throw new Failure(ResourceFailureKind.InvalidPath);
+    }
+    private static string NormalizeNativePath(string path)
+    {
+        if (path.StartsWith("\\\\?\\UNC\\", StringComparison.OrdinalIgnoreCase)) path = "\\\\" + path[8..];
+        else if (path.StartsWith("\\\\?\\", StringComparison.Ordinal)) path = path[4..];
+        return path.Length > 3 ? path.TrimEnd('\\') : path;
+    }
+    private static string FoldAscii(string value) => string.Create(value.Length, value, (span, input) =>
+    { for (var i = 0; i < span.Length; i++) span[i] = input[i] is >= 'a' and <= 'z' ? (char)(input[i] - 32) : input[i]; });
     [StructLayout(LayoutKind.Sequential)]
     private struct CaseSensitiveInfo { internal uint Flags; }
+    [StructLayout(LayoutKind.Sequential)]
+    private struct AttributeTagInfo { internal uint Attributes; internal uint ReparseTag; }
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
     private static extern SafeFileHandle CreateFileW(string fileName, uint access, uint share, IntPtr security, uint disposition, uint flags, IntPtr template);
     [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool GetFileInformationByHandleEx(SafeFileHandle handle, int infoClass, out CaseSensitiveInfo info, uint size);
+    [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool GetFileInformationByHandleEx(SafeFileHandle handle, int infoClass, out AttributeTagInfo info, uint size);
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
+    private static extern uint GetFinalPathNameByHandleW(SafeFileHandle handle, StringBuilder path, uint length, uint flags);
     private string Full(WorkspacePath path) => path.Value.Length == 0 ? _root : Path.Combine(_root, path.Value.Replace('/', Path.DirectorySeparatorChar));
 
     private async ValueTask<ResourceResult<T>> Run<T>(Func<CancellationToken, ValueTask<T>> body, CancellationToken caller)

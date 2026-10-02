@@ -1,15 +1,16 @@
-# Local existing-file patch profile
+# Local conditional existing-file write profile
 
-Status: Implemented narrow standalone profile, 2026-10-01. The profile is
-provided by `Penghou.IO.Local.LocalWorkspacePatcher` and used by Luban's
-separate `SinglePatchExecutor`. It is not the full `IWorkspaceWriter`, a batch
-transaction, or a Hufu/Zhinu governed adapter. Luban's capture-only
+Status: corrective implementation, 2026-10-02. The profile is
+provided by `Penghou.IO.Local.LocalWorkspaceWriter`, reached through the
+injected provider by Luban's patch executors. It implements
+`IWorkspaceConditionalWriter`, not the full writer or a batch transaction.
+Text patching and strict UTF-8 materialization belong to Luban. Luban's capture-only
 `PreviewRuntime.WhatIfAsync` has no callback to this writer and
 `ResolvedEffectPlan.CanCommit` remains false.
 
 ## Supported target and binding
 
-The patcher accepts only an existing file below a trusted fixed-drive NTFS
+The writer accepts only an existing file below a trusted fixed-drive NTFS
 workspace root when the caller explicitly selects
 `LocalPatchNamespace.HostControlled`. The default `Unspecified` namespace is
 rejected before target I/O. UNC/device roots, non-NTFS or non-fixed volumes,
@@ -17,11 +18,11 @@ reparse components, files with multiple hard links, and directories whose
 case-sensitive mode is observed enabled are rejected. Enabling case-sensitive
 mode is unsupported by this controlled-namespace profile; rejection of an
 observed enabled flag is implementation behavior, not native qualification.
-The root-to-drive mapping is trusted host configuration. Read, Patch and
+The root-to-drive mapping is trusted host configuration. Read, Write and
 Metadata rights must all be granted where required; missing authorization or
 journal dependencies fail closed.
 
-The patcher pins ancestor directory handles and opens the target existing-only
+The writer pins ancestor directory handles and opens the target existing-only
 with no sharing. It verifies filesystem object identity and performs version
 check, mutation, flush and verification through that same target handle. Parent
 pins block ordinary rename/delete replacement and write opens; an exclusive leaf
@@ -36,27 +37,29 @@ privileged actors or raw-volume writes.
 The explicit namespace mode is part of executor construction and host admission.
 The default or unknown mode returns Unsupported before authorization or journal
 calls. The versioned provider profile is
-`local-windows-ntfs-controlled-patch-v1`.
+`local-windows-ntfs-controlled-write-v1`. The configuration types
+`LocalPatchOptions` and `LocalPatchNamespace` retain their original names for
+this preview migration; they configure the physical writer, not text semantics.
 
 The reader's `local-read-v1:sha256` version is a content precondition. It does
 not prove that the later pathname still denotes the same native file object
 that was read during preview. At execution, the patcher binds the current
 qualified pathname and checks the expected content on the exact locked object
 before writing.
-## Patch semantics and bounds
+## Conditional bytes and bounds
 
-Input and output are strict UTF-8. Patches use ordered, non-overlapping byte
-ranges against the exact original bytes; offsets must lie on Unicode scalar
-boundaries. No text-hunk conversion, fuzzy matching, or automatic retry is
-performed. The provider bounds the original file at 16 MiB, the output at
-16 MiB, patches at 128, each replacement at 1 MiB, and aggregate reads using
+Local accepts arbitrary bytes and interprets no edits or encoding. Requests
+must carry `MustMatchVersion`; create-only is explicitly Unsupported. The writer
+freezes content before hashing, authorization and execution and compares the
+version through its exclusive handle. The provider bounds the original file
+at 16 MiB, the output at 16 MiB, and aggregate reads using
 `MaxReadBytes` (provider default 32 MiB). Luban supplies the document's lower
 limits; aggregate original plus post-write verification bytes must fit that
 document read ceiling and is checked before host admission/provider start. The
 operation deadline is at most 30 seconds; outcome completion uses an independent
 5-second token.
 
-The patch is applied in place through the same locked handle, flushed, and read
+The exact proposed bytes are written in place through the same locked handle, flushed, and read
 back for verification. A crash can leave partial/truncated content; there is no
 rollback or atomic replacement. After mutation may have started, failures or
 missing completion evidence are ambiguous and require reconciliation. Never

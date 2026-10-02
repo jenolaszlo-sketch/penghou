@@ -15,6 +15,91 @@ public sealed class LocalWorkspaceReaderTests
     private static readonly WorkspaceId Workspace = new("test-workspace");
 
     [Fact]
+    public async Task NativeShortNameCannotBroadenTheAdmittedPathSpelling()
+    {
+        using var temp = new TemporaryWorkspace();
+        const string actual = "Sensitive report document.txt";
+        temp.Write(actual, "protected short-name content");
+        var buffer = new StringBuilder(32768);
+        var length = GetShortPathNameW(Path.Combine(temp.Root, actual), buffer, (uint)buffer.Capacity);
+        Assert.InRange(length, 1u, (uint)buffer.Capacity - 1);
+        var nativeSpelling = Path.GetFileName(buffer.ToString());
+        using var reader = new LocalWorkspaceReader(Workspace, temp.Root, new RecordingAuthorizer());
+        var read = await reader.ReadFileAsync(Read(temp.Invocation, nativeSpelling, 128));
+        var metadata = await reader.GetFileMetadataAsync(Metadata(temp.Invocation, nativeSpelling));
+        if (!string.Equals(actual, nativeSpelling, StringComparison.OrdinalIgnoreCase))
+        {
+            Assert.True(File.Exists(Path.Combine(temp.Root, nativeSpelling)));
+            Assert.Equal(ResourceFailureKind.AccessDenied, read.Failure);
+            Assert.True(metadata.Failure == ResourceFailureKind.AccessDenied,
+                $"Native alias metadata result: success={metadata.Succeeded}, exists={metadata.Value?.Exists}, failure={metadata.Failure}");
+            Assert.Null(read.Value);
+            Assert.Null(metadata.Value);
+        }
+        else
+        {
+            // Volumes without 8.3 names return the original spelling; there is
+            // no native alias to qualify on that environment.
+            Assert.True(read.Succeeded);
+            Assert.True(metadata.Succeeded);
+        }
+        var exact = await reader.ReadFileAsync(Read(temp.Invocation, actual, 128));
+        Assert.True(exact.Succeeded);
+    }
+
+    [Theory]
+    [InlineData("É.txt", "é.txt")]
+    [InlineData("É/note.txt", "é/note.txt")]
+    public async Task UnicodeCaseAliasCannotReadOrObserveMetadataDespiteLexicalPermission(string actual, string alias)
+    {
+        using var temp = new TemporaryWorkspace();
+        temp.Write(actual, "unicode protected content");
+        Assert.True(File.Exists(Path.Combine(temp.Root, alias))); // Prove the OS alias exists.
+        using var reader = new LocalWorkspaceReader(Workspace, temp.Root, new RecordingAuthorizer());
+
+        var read = await reader.ReadFileAsync(Read(temp.Invocation, alias, 128));
+        var metadata = await reader.GetFileMetadataAsync(Metadata(temp.Invocation, alias));
+        Assert.Equal(ResourceFailureKind.AccessDenied, read.Failure);
+        Assert.Equal(ResourceFailureKind.AccessDenied, metadata.Failure);
+        Assert.Null(read.Value);
+        Assert.Null(metadata.Value);
+
+        var exact = await reader.ReadFileAsync(Read(temp.Invocation, actual, 128));
+        Assert.True(exact.Succeeded);
+        Assert.Equal("unicode protected content", Encoding.UTF8.GetString(exact.Value!.Content.Span));
+    }
+
+    [Fact]
+    public async Task UnicodeDirectoryAliasCannotListExcludedDirectoryOrQualifyAliasedRoot()
+    {
+        using var temp = new TemporaryWorkspace();
+        temp.Write("É/secret.txt", "hidden");
+        Assert.True(Directory.Exists(Path.Combine(temp.Root, "é")));
+        using var reader = new LocalWorkspaceReader(Workspace, temp.Root, new RecordingAuthorizer());
+        var listing = await reader.ListDirectoryAsync(List(temp.Invocation, "é", 10, 10, 1024));
+        Assert.Equal(ResourceFailureKind.AccessDenied, listing.Failure);
+        Assert.Null(listing.Value);
+        using var aliasedRoot = new LocalWorkspaceReader(Workspace, Path.Combine(temp.Root, "é"), new RecordingAuthorizer());
+        var rootRead = await aliasedRoot.ReadFileAsync(Read(temp.Invocation, "secret.txt", 128));
+        Assert.Equal(ResourceFailureKind.AccessDenied, rootRead.Failure);
+        Assert.Null(rootRead.Value);
+    }
+
+    [Fact]
+    public async Task AsciiCaseAliasesRemainWithinQualifiedIdentityEquivalence()
+    {
+        using var temp = new TemporaryWorkspace();
+        temp.Write("Src/Note.txt", "permitted");
+        using var reader = new LocalWorkspaceReader(Workspace, temp.Root, new RecordingAuthorizer());
+        var read = await reader.ReadFileAsync(Read(temp.Invocation, "src/NOTE.TXT", 128));
+        var metadata = await reader.GetFileMetadataAsync(Metadata(temp.Invocation, "SRC/note.txt"));
+        Assert.True(read.Succeeded);
+        Assert.Equal("permitted", Encoding.UTF8.GetString(read.Value!.Content.Span));
+        Assert.True(metadata.Succeeded);
+        Assert.True(metadata.Value!.Exists);
+    }
+
+    [Fact]
     public async Task ReadFile_AuthorizesBeforeOpening_AndReturnsBoundedContentVersion()
     {
         using var temp = new TemporaryWorkspace();
@@ -479,6 +564,9 @@ public sealed class LocalWorkspaceReaderTests
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true, EntryPoint = "CreateFileW")]
     private static extern SafeFileHandle CreateFileW(string fileName, uint desiredAccess, uint shareMode, IntPtr securityAttributes,
         uint creationDisposition, uint flagsAndAttributes, IntPtr templateFile);
+
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true, ExactSpelling = true)]
+    private static extern uint GetShortPathNameW(string path, StringBuilder output, uint length);
 
     [DllImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]

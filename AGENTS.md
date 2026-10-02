@@ -1,5 +1,27 @@
 # Penghou.IO contributor guidance
 
+Implementation handoff: read [the corrective plan](docs/resource-abstractions-corrective-plan.md)
+and [Sol's resume point](docs/resource-abstractions-sol-handoff.md). Resume from
+the current delivery ledger and ADR 0003; old delivery history is not the active queue. Inspect and preserve
+existing changes across sibling repositories. Complete the decisions and protocol
+traces before changing dependent APIs; do not expand into deferred VFS or package
+reorganizations. Report current evidence rather than copying historical test counts.
+The clarified delivery includes correcting code ownership, CI and NuGet publishing,
+then Luban/Hufu consumption of published versions. Continue beyond design gates;
+local-feed checks or sibling-source builds alone cannot mark the task complete.
+
+Architecture direction: read [resource abstractions](docs/resource-abstractions-architecture.md)
+and its [public-type inventory](docs/resource-abstractions-inventory.md) first.
+They define the RA corrective gates and deferred VFS milestones. The requirements
+below protect today's qualified profiles during migration; do not use their
+current packaging as the target design. Keep contracts free of substantive
+algorithms and OS helpers, use injected provider capabilities, and preserve
+per-resource/commit checks through a qualified neutral cooperation boundary.
+Test-only spies for conformance are allowed; do not ship placeholder providers.
+Current no-mutation WhatIf rules apply to capture-only preview. Future virtual
+execution requires a separate profile and cannot weaken real enforcement.
+Every handoff cites the canonical document, RA/VFS ID, open gates and evidence.
+
 Keep this repository an independent, neutral I/O contract library. Do not add
 dependencies on Luban, Hufu, Fuwen, Zhinu, a host UI, MCP, or an agent runtime.
 Luban owns semantic typed effects and finite dataflow; Fuwen and Zhinu own

@@ -4,6 +4,7 @@
     <PackageId>Penghou.IO.Abstractions</PackageId>
     <Title>Penghou I/O Abstractions</Title>
     <Description>Bounded, explicitly authorized resource I/O contracts.</Description>
-    <IsPackable>false</IsPackable>
+    <PackageTags>Penghou;resource-io;abstractions;contracts;authorization</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 </Project>

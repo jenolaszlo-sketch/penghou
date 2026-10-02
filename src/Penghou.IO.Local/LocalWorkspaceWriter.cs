@@ -6,7 +6,7 @@ using Penghou.IO.Abstractions;
 
 namespace Penghou.IO.Local;
 
-/// <summary>Trusted host ceilings for native patch capture and its verification read.</summary>
+/// <summary>Trusted host ceilings for conditional writes and their verification read.</summary>
 public sealed record LocalPatchOptions(int MaxOriginalBytes = 16 * 1024 * 1024,
     int MaxReadBytes = 32 * 1024 * 1024, int TimeoutMilliseconds = 30_000,
     LocalPatchNamespace Namespace = LocalPatchNamespace.Unspecified);
@@ -15,17 +15,15 @@ public sealed record LocalPatchOptions(int MaxOriginalBytes = 16 * 1024 * 1024,
 public enum LocalPatchNamespace { Unspecified, HostControlled }
 
 /// <summary>
-/// Performs one exact, single-link NTFS text patch through a locked file handle.
+/// Conditionally persists bounded bytes through one exact, single-link NTFS locked file handle.
 /// This provider does not implement whole-workspace transactions or confinement
 /// against privileged processes.
 /// </summary>
-public sealed class LocalWorkspacePatcher
+public sealed class LocalWorkspaceWriter : IWorkspaceConditionalWriter
 {
-    public const string ProviderProfile = "local-windows-ntfs-controlled-patch-v1";
+    public const string ProviderProfile = "local-windows-ntfs-controlled-write-v1";
 
     private const int MaxFileBytes = 16 * 1024 * 1024;
-    private const int MaxPatchCount = 128;
-    private const int MaxReplacementBytes = 1024 * 1024;
     private const int MaxOutputBytes = 16 * 1024 * 1024;
     private const int MaxTextTokenCharacters = 256;
     private const int MaxEvidenceCharacters = 256;
@@ -54,7 +52,7 @@ public sealed class LocalWorkspacePatcher
     private readonly IResourceMutationJournal _journal;
     private readonly LocalPatchOptions _options;
 
-    public LocalWorkspacePatcher(WorkspaceId workspace, string root, IResourceAuthorizer authorizer,
+    public LocalWorkspaceWriter(WorkspaceId workspace, string root, IResourceAuthorizer authorizer,
         IResourceMutationJournal journal, LocalPatchOptions? options = null)
     {
         if (string.IsNullOrWhiteSpace(workspace.Value) || workspace.Value.Length > MaxTextTokenCharacters ||
@@ -82,7 +80,7 @@ public sealed class LocalWorkspacePatcher
         _workspace = workspace;
     }
 
-    public async ValueTask<ResourceResult<ResourceVersion>> PatchFileAsync(FilePatchRequest request, CancellationToken cancellationToken = default)
+    public async ValueTask<ResourceResult<ResourceVersion>> WriteFileAsync(FileWriteRequest request, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         if (!OperatingSystem.IsWindows()) return ResourceResult<ResourceVersion>.Failed(ResourceFailureKind.Unsupported);
@@ -93,7 +91,7 @@ public sealed class LocalWorkspacePatcher
         deadline.CancelAfter(TimeSpan.FromMilliseconds(_options.TimeoutMilliseconds));
         try
         {
-            return await PatchCoreAsync(request, deadline.Token).ConfigureAwait(false);
+            return await WriteCoreAsync(request, deadline.Token).ConfigureAwait(false);
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
@@ -137,7 +135,7 @@ public sealed class LocalWorkspacePatcher
         }
     }
 
-    private async ValueTask<ResourceResult<ResourceVersion>> PatchCoreAsync(FilePatchRequest request, CancellationToken ct)
+    private async ValueTask<ResourceResult<ResourceVersion>> WriteCoreAsync(FileWriteRequest request, CancellationToken ct)
     {
         var snapshot = Snapshot(request);
         var path = snapshot.Path;
@@ -146,7 +144,7 @@ public sealed class LocalWorkspacePatcher
             throw new PatchFailure(ResourceFailureKind.AuthorizationDenied);
 
         // Admit the concrete operations before probing the root, ancestors, or target.
-        await Demand(snapshot.Request.Invocation, identity, ResourceAction.PatchFile,
+        await Demand(snapshot.Request.Invocation, identity, ResourceAction.WriteFile,
             new ResourceBinding.WorkspaceFile(_workspace, path), ct).ConfigureAwait(false);
         await Demand(snapshot.Request.Invocation, identity, ResourceAction.ReadFile,
             new ResourceBinding.WorkspaceFile(_workspace, path), ct).ConfigureAwait(false);
@@ -186,18 +184,16 @@ public sealed class LocalWorkspacePatcher
         {
         var original = await ReadBoundedAsync(stream, Math.Min(_options.MaxOriginalBytes, _options.MaxReadBytes), ct).ConfigureAwait(false);
         var originalVersion = VersionOf(original);
-        if (snapshot.Request.ExpectedVersion != originalVersion)
+        if (snapshot.Request.Precondition.Version != originalVersion)
             throw new PatchFailure(ResourceFailureKind.PreconditionFailed);
-        if (!IsStrictUtf8(original))
-            throw new PatchFailure(ResourceFailureKind.InvalidRequest);
 
-        var proposed = Apply(original, snapshot.Patches, snapshot.Request.Limits.MaxOutputBytes, ct);
+        var proposed = snapshot.Content;
         if ((long)original.Length + proposed.Length > _options.MaxReadBytes)
             throw new PatchFailure(ResourceFailureKind.TooLarge);
         var proposedVersion = VersionOf(proposed);
 
         // Final resource authorization is immediately adjacent to the journal start boundary.
-        await Demand(snapshot.Request.Invocation, identity, ResourceAction.PatchFile,
+        await Demand(snapshot.Request.Invocation, identity, ResourceAction.WriteFile,
             new ResourceBinding.WorkspaceFile(_workspace, path), ct).ConfigureAwait(false);
         var start = new MutationStartRequest(snapshot.Request.Invocation, identity, _workspace, path, ProviderProfile,
             fileId.Canonical, originalVersion, proposedVersion, original.Length, proposed.Length);
@@ -307,57 +303,27 @@ public sealed class LocalWorkspacePatcher
         }
     }
 
-    private SnapshotData Snapshot(FilePatchRequest request)
+    private SnapshotData Snapshot(FileWriteRequest request)
     {
-        if (request is null || request.Limits is null || request.Patches is null || request.Invocation is null)
+        if (request is null || request.Limits is null || request.Precondition is null || request.Invocation is null)
             throw new PatchFailure(ResourceFailureKind.InvalidRequest);
         if (request.Workspace != _workspace)
             throw new PatchFailure(ResourceFailureKind.AuthorizationDenied);
         if (!ValidInvocation(request.Invocation))
             throw new PatchFailure(ResourceFailureKind.InvalidRequest);
-        if (request.Limits.MaxPatchCount is < 1 or > MaxPatchCount ||
-            request.Limits.MaxReplacementBytes is < 0 or > MaxReplacementBytes ||
-            request.Limits.MaxOutputBytes is < 0 or > MaxOutputBytes)
+        if (request.Precondition.Kind != WritePreconditionKind.MustMatchVersion)
+            throw new PatchFailure(ResourceFailureKind.Unsupported);
+        if (request.Precondition.Version is null || !ValidToken(request.Precondition.Version.Value.Value))
             throw new PatchFailure(ResourceFailureKind.InvalidRequest);
-        if (!ValidToken(request.ExpectedVersion.Value))
-            throw new PatchFailure(ResourceFailureKind.InvalidRequest);
-
+        if (request.Limits.MaxBytes is < 0 or > MaxOutputBytes || request.Content.Length > request.Limits.MaxBytes)
+            throw new PatchFailure(ResourceFailureKind.TooLarge);
         WorkspacePath path;
         try { path = WindowsWorkspacePath.Normalize(request.Path, allowRoot: false); }
         catch (ArgumentException) { throw new PatchFailure(ResourceFailureKind.InvalidPath); }
-
-        var count = request.Patches.Count;
-        if (count is < 1 or > MaxPatchCount || count > request.Limits.MaxPatchCount)
-            throw new PatchFailure(ResourceFailureKind.InvalidRequest);
-        var patches = new PatchSnapshot[count];
-        long replacementBytes = 0;
-        var priorStart = -1;
-        long priorEnd = -1;
-        for (var i = 0; i < count; i++)
-        {
-            var patch = request.Patches[i];
-            if (patch is null || patch.StartOffset < 0 || patch.DeleteLength < 0)
-                throw new PatchFailure(ResourceFailureKind.InvalidRequest);
-            var end = (long)patch.StartOffset + patch.DeleteLength;
-            if (end > int.MaxValue || (i != 0 && (patch.StartOffset <= priorStart || patch.StartOffset < priorEnd)))
-                throw new PatchFailure(ResourceFailureKind.InvalidRequest);
-            replacementBytes += patch.ReplacementUtf8.Length;
-            if (replacementBytes > MaxReplacementBytes || replacementBytes > request.Limits.MaxReplacementBytes)
-                throw new PatchFailure(ResourceFailureKind.TooLarge);
-            var replacement = patch.ReplacementUtf8.ToArray();
-            if (!IsStrictUtf8(replacement))
-                throw new PatchFailure(ResourceFailureKind.InvalidRequest);
-            patches[i] = new PatchSnapshot(patch.StartOffset, patch.DeleteLength, replacement);
-            priorStart = patch.StartOffset;
-            priorEnd = end;
-        }
-
-        var snapshotPatches = Array.AsReadOnly(patches.Select(p => new TextPatch(p.StartOffset, p.DeleteLength, p.Replacement)).ToArray());
-        var invocation = request.Invocation;
-        var snapshotRequest = new FilePatchRequest(invocation, _workspace, path, request.ExpectedVersion, snapshotPatches, request.Limits with { });
-        return new(snapshotRequest, path, patches);
+        var content = request.Content.ToArray();
+        var snapshotRequest = request with { Path = path, Content = content, Limits = request.Limits with { }, Precondition = request.Precondition with { } };
+        return new(snapshotRequest, path, content);
     }
-
     private async ValueTask Demand(HostInvocation invocation, RequestIdentity identity, ResourceAction action,
         ResourceBinding binding, CancellationToken ct)
     {
@@ -581,48 +547,6 @@ public sealed class LocalWorkspacePatcher
         return bytes;
     }
 
-    private static byte[] Apply(byte[] original, PatchSnapshot[] patches, int outputMaximum, CancellationToken ct)
-    {
-        if (!IsStrictUtf8(original)) throw new PatchFailure(ResourceFailureKind.InvalidRequest);
-        long size = original.Length;
-        foreach (var patch in patches)
-        {
-            ct.ThrowIfCancellationRequested();
-            var end = (long)patch.StartOffset + patch.DeleteLength;
-            if (end > original.Length || !Boundary(original, patch.StartOffset) || !Boundary(original, (int)end) ||
-                patch.StartOffset < 0 || patch.DeleteLength < 0)
-                throw new PatchFailure(ResourceFailureKind.PreconditionFailed);
-            size += patch.Replacement.Length - (long)patch.DeleteLength;
-        }
-        if (size < 0 || size > outputMaximum || size > MaxOutputBytes)
-            throw new PatchFailure(ResourceFailureKind.TooLarge);
-        var output = new byte[(int)size];
-        var from = 0;
-        var to = 0;
-        foreach (var patch in patches)
-        {
-            ct.ThrowIfCancellationRequested();
-            var copy = patch.StartOffset - from;
-            original.AsSpan(from, copy).CopyTo(output.AsSpan(to));
-            from += copy;
-            to += copy;
-            patch.Replacement.AsSpan().CopyTo(output.AsSpan(to));
-            to += patch.Replacement.Length;
-            from = checked(patch.StartOffset + patch.DeleteLength);
-        }
-        original.AsSpan(from).CopyTo(output.AsSpan(to));
-        return output;
-    }
-
-    private static bool Boundary(byte[] bytes, int offset) => offset == bytes.Length ||
-        offset >= 0 && offset < bytes.Length && (bytes[offset] & 0xC0) != 0x80;
-
-    private static bool IsStrictUtf8(ReadOnlySpan<byte> bytes)
-    {
-        try { _ = StrictUtf8.GetCharCount(bytes); return true; }
-        catch (DecoderFallbackException) { return false; }
-    }
-
     private static ResourceVersion VersionOf(ReadOnlySpan<byte> bytes) =>
         new("local-read-v1:sha256:" + Convert.ToHexString(SHA256.HashData(bytes)));
 
@@ -651,9 +575,7 @@ public sealed class LocalWorkspacePatcher
         if (code is 5 or 32 or 33) throw new UnauthorizedAccessException();
         throw new IOException("A native file operation failed.", Marshal.GetExceptionForHR(unchecked((int)(0x80070000 | (uint)code))));
     }
-
-    private sealed record PatchSnapshot(int StartOffset, int DeleteLength, byte[] Replacement);
-    private sealed record SnapshotData(FilePatchRequest Request, WorkspacePath Path, PatchSnapshot[] Patches);
+    private sealed record SnapshotData(FileWriteRequest Request, WorkspacePath Path, byte[] Content);
     private sealed record FileAttributeTag(uint Attributes, uint ReparseTag);
     private sealed record FileIdentityValue(ulong VolumeSerial, string FileId)
     { internal string Canonical => $"ntfs:{VolumeSerial:x16}:{FileId}"; }

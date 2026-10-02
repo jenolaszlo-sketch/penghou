@@ -1,5 +1,11 @@
 # Provider contract
 
+Direction update, 2026-10-02: the [resource-abstractions baseline](resource-abstractions-architecture.md)
+governs the pending RA correction and deferred VFS work. This document remains
+the current profile/design reference until a versioned replacement is qualified.
+In particular, preserve concrete checks and identity vectors during relocation;
+capture-only WhatIf and future overlay execution are distinct modes.
+
 These requirements define intended provider behavior. The [Windows read-only profile](local-reader-profile.md) implements the qualified read subset. The separate [Local patch profile](local-patch-profile.md) implements one existing file patch under a narrow standalone host/journal contract. Other mutation, web, Hufu, and multi-target plan guarantees remain pending.
 
 ## Preflight and access checks

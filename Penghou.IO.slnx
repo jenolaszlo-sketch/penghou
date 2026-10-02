@@ -2,6 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/Penghou.IO.Abstractions/Penghou.IO.Abstractions.csproj" />
     <Project Path="src/Penghou.IO.Local/Penghou.IO.Local.csproj" />
+    <Project Path="src/Penghou.IO.Protocols/Penghou.IO.Protocols.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Penghou.IO.Tests/Penghou.IO.Tests.csproj" />

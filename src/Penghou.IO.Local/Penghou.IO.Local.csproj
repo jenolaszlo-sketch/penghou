@@ -1,9 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
-    <IsPackable>false</IsPackable>
+    <PackageId>Penghou.IO.Local</PackageId>
+    <Title>Penghou I/O Local Provider</Title>
+    <Description>Bounded local filesystem provider for Penghou resource I/O contracts.</Description>
+    <PackageTags>Penghou;resource-io;provider;local-filesystem</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Penghou.IO.Abstractions\Penghou.IO.Abstractions.csproj" />
+    <ProjectReference Include="..\Penghou.IO.Protocols\Penghou.IO.Protocols.csproj" />
   </ItemGroup>
 </Project>

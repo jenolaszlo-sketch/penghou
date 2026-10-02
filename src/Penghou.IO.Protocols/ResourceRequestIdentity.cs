@@ -17,7 +17,6 @@ public static class ResourceRequestIdentity
     public const int SchemaVersion = 1;
     public const string IdentityPrefix = "penghou-io:request:v1:sha256:";
     public const int MaximumPayloadBytes = 16 * 1024 * 1024;
-    public const int MaximumPatchCount = 4096;
 
     private const string Domain = "Penghou.IO.ResourceRequestIdentity";
     private static readonly UTF8Encoding StrictUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
@@ -63,47 +62,6 @@ public static class ResourceRequestIdentity
         WriteLimits(writer, request.Limits);
         writer.WriteBytes(content);
         WritePrecondition(writer, request.Precondition);
-        return Finish(writer);
-    }
-
-    public static RequestIdentity Compute(FilePatchRequest request)
-    {
-        ArgumentNullException.ThrowIfNull(request);
-        ArgumentNullException.ThrowIfNull(request.Patches);
-        ArgumentNullException.ThrowIfNull(request.Limits);
-
-        // Copy the collection and every replacement before writing any bytes to
-        // the canonical encoding, so one hash does not enumerate caller storage
-        // multiple times.
-        var patchCount = request.Patches.Count;
-        if (request.Limits.MaxPatchCount is < 1 or > MaximumPatchCount || patchCount < 0 || patchCount > request.Limits.MaxPatchCount ||
-            request.Limits.MaxReplacementBytes is < 0 or > MaximumPayloadBytes || request.Limits.MaxOutputBytes is < 0 or > MaximumPayloadBytes)
-            throw new ArgumentException("Patch bounds exceed the finite encoding profile.", nameof(request));
-        var patches = new PatchSnapshot[patchCount];
-        var replacementBytes = 0;
-        for (var index = 0; index < patchCount; index++)
-        {
-            var patch = request.Patches[index] ?? throw new ArgumentException("Patch collection cannot contain null entries.", nameof(request));
-            if (patch.ReplacementUtf8.Length > request.Limits.MaxReplacementBytes - replacementBytes)
-                throw new ArgumentException("Replacement bytes exceed their declared bound.", nameof(request));
-            replacementBytes += patch.ReplacementUtf8.Length;
-            patches[index] = new PatchSnapshot(patch.StartOffset, patch.DeleteLength, patch.ReplacementUtf8.ToArray());
-        }
-
-        using var writer = Start(Operation.PatchFile);
-        WriteWorkspacePath(writer, request.Workspace, request.Path, allowRoot: false);
-        writer.WriteString(RequiredToken(request.ExpectedVersion.Value, nameof(request.ExpectedVersion)));
-        writer.WriteInt32(request.Limits.MaxPatchCount);
-        writer.WriteInt32(request.Limits.MaxReplacementBytes);
-        writer.WriteInt32(request.Limits.MaxOutputBytes);
-        writer.WriteInt32(patches.Length);
-        foreach (var patch in patches)
-        {
-            writer.WriteInt32(patch.StartOffset);
-            writer.WriteInt32(patch.DeleteLength);
-            writer.WriteBytes(patch.ReplacementUtf8);
-        }
-
         return Finish(writer);
     }
 
@@ -221,14 +179,13 @@ public static class ResourceRequestIdentity
         FileMetadata = 2,
         ListDirectory = 3,
         WriteFile = 4,
-        PatchFile = 5,
+        // Reserved: the former text-patch request belongs to Luban semantics.
+        ReservedPatchFile = 5,
         DeleteFile = 6,
         CreateDirectory = 7,
         MoveFile = 8,
         WebRead = 9
     }
-
-    private readonly record struct PatchSnapshot(int StartOffset, int DeleteLength, byte[] ReplacementUtf8);
 
     private sealed class CanonicalWriter : IDisposable
     {
