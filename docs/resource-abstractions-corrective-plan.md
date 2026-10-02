@@ -61,7 +61,7 @@ competing specifications into each project.
 | RA-2 | RA-1B | Corrected code qualified | Contract-only assembly, Protocols relocation, Local conditional byte writer and semantic materialization in Luban; both consumer regression suites pass |
 | RA-3 | RA-1B; coordinated RA-2 | Candidate packages qualified; published adoption pending | Provider-independent Luban composition; 309 tests pass on each framework, including non-Local providers and exact semantic/memory bounds |
 | RA-4 | RA-1B; corrected provider seams | Candidate packages qualified; published adoption pending | Hufu.IO, retained sessions/frozen writes, real Local allow/deny/revocation and lifecycle qualification |
-| RA-5A | RA-2; candidate consumer validation | Local package checks pass; remote CI pending | CI and release workflows, three package candidates, artifact checks and isolated local-feed consumption |
+| RA-5A | RA-2; candidate consumer validation | Complete; local and remote CI qualified | CI and release workflows, three package candidates, artifact checks and isolated local-feed consumption |
 | RA-5B | RA-5A | Pending | Working release workflow and corrected package release published on NuGet |
 | RA-5C | RA-5B; RA-3/4 | Pending | Luban and Hufu consume published versions with passing integration evidence |
 
@@ -76,6 +76,15 @@ meet a required guarantee, return Unsupported or propose a separately versioned
 profile; do not weaken existing consumer guarantees.
 
 ## Current evidence and external release gate
+
+- Remote [CI run 37030577295](https://github.com/jenolaszlo-sketch/penghou/actions/runs/37030577295)
+  passes for commit `89858631e4f9220bf40506cff34bb9b6ee8912dd`: both Windows
+  regression jobs, both Linux neutral builds, and package closure verification,
+  isolated consumption and artifact upload. RA-5A is complete. This CI version is
+  `0.1.0-preview.1-ci.37030577295.1`, not the published release candidate version.
+- The migration is installed in the original IO, Luban and Hufu repositories;
+  the original checkouts reproduce the counts below. The AI tool host sample
+  builds without warnings on both frameworks against candidate packages.
 
 - IO: 73/73 tests pass with no skips on Windows, both net8.0 and net10.0.
 - Three candidate packages pack and pass metadata/dependency/content checks;

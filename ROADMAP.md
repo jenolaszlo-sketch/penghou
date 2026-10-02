@@ -3,7 +3,7 @@
 Active delivery queue: [corrective plan](docs/resource-abstractions-corrective-plan.md).
 Resume with [Sol's handoff](docs/resource-abstractions-sol-handoff.md):
 the current ledger and [ADR 0003](docs/decisions/0003-replaceable-resource-providers.md).
-RA-0/RA-1 are complete. Corrective code and package candidates are being qualified;
+RA-0/RA-1 are complete. Corrective code, candidate packages and remote CI are qualified;
 NuGet publication and actual published-package adoption remain open.
 The plan supplies owners, dependencies, exit criteria and qualification evidence.
 
@@ -16,12 +16,12 @@ qualified implementation history; their package layout is not the target design.
 The [public-type inventory](docs/resource-abstractions-inventory.md) completes RA-0.
 
 - [x] **RA-1:** resolve the linked G1-G5/G8 contract, enforcement, patch and compatibility gates in ADR 0003.
-- [ ] **RA-2:** keep contract DTOs/interfaces in Abstractions; relocate Windows path
+- [x] **RA-2:** keep contract DTOs/interfaces in Abstractions; relocate Windows path
   behavior and the canonical codec implementation with preserved identity vectors.
   Record separate future ownership for HTTP; do not redesign it in this correction.
-- [ ] **RA-3:** coordinate Luban's injected capabilities and isolate physical composition.
-- [ ] **RA-4:** qualify a Hufu.IO boundary with discovered-resource and commit checks.
-- [ ] **RA-5A:** architecture/conformance tests, build/test/pack CI and local-feed qualification.
+- [ ] **RA-3 (candidate qualified; published adoption pending):** coordinate Luban's injected capabilities and isolate physical composition.
+- [ ] **RA-4 (candidate qualified; published adoption pending):** qualify a Hufu.IO boundary with discovered-resource and commit checks.
+- [x] **RA-5A:** architecture/conformance tests, build/test/pack CI and local-feed qualification.
 - [ ] **RA-5B:** controlled NuGet release workflow and published corrected IO.Abstractions/Local versions.
 - [ ] **RA-5C:** Luban and Hufu use those published versions with passing consumer integration checks.
 
