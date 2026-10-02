@@ -47,6 +47,18 @@ convenience overload. Candidate-package evidence is 19 IO, 95 existing Hufu and
 recalibration record for the preserved pre-migration checkpoint. Hufu remains
 untracked with no committed HEAD; do not commit its whole tree as an IO release.
 
+## Current Luban leaf checkpoint — 2026-10-03
+
+Luban D1–D6 and focused AI read usability are implemented and CI-qualified, with
+337 tests passing on each supported framework. Read its
+[completion ledger](../../Penghou.Luban/docs/leaf-completion.md) and
+[consumer impact guide](../../Penghou.Luban/docs/consumer-impact.md) before any
+producer edits. Hufu and workflow durability are outside this Luban feature gate.
+The next consumer step is Hufu qualification and eventual exact Luban package
+adoption. Existing Hufu test counts above belong to the earlier migration
+checkpoint; do not report them as validation of the newest Luban revision.
+Publication/adoption RA-5B/RA-5C remain open in the corrective ledger.
+
 ## Original review baseline (superseded where ADR 0003 records a correction)
 
 - Diff/merge/transport already live in Luban. Do not move them again.
