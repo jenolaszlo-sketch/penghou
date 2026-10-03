@@ -1,0 +1,81 @@
+#nullable enable
+const Penghou.Workflow.Abstractions.ExecutionAuthorizationContext.MaximumRequirements = 64 -> int
+override Penghou.Workflow.Abstractions.ExecutionAuthorizationContext.Equals(object? obj) -> bool
+override Penghou.Workflow.Abstractions.ExecutionAuthorizationContext.GetHashCode() -> int
+override Penghou.Workflow.Abstractions.ExecutionAuthorizationContext.ToString() -> string!
+override Penghou.Workflow.Abstractions.ExecutionAuthorizationResult.Equals(object? obj) -> bool
+override Penghou.Workflow.Abstractions.ExecutionAuthorizationResult.GetHashCode() -> int
+override Penghou.Workflow.Abstractions.ExecutionAuthorizationResult.ToString() -> string!
+override Penghou.Workflow.Abstractions.ExecutionIdentity.Equals(object? obj) -> bool
+override Penghou.Workflow.Abstractions.ExecutionIdentity.GetHashCode() -> int
+override Penghou.Workflow.Abstractions.ExecutionIdentity.ToString() -> string!
+override Penghou.Workflow.Abstractions.ExecutionRequirement.Equals(object? obj) -> bool
+override Penghou.Workflow.Abstractions.ExecutionRequirement.GetHashCode() -> int
+override Penghou.Workflow.Abstractions.ExecutionRequirement.ToString() -> string!
+Penghou.Workflow.Abstractions.ExecutionAuthorizationContext
+Penghou.Workflow.Abstractions.ExecutionAuthorizationContext.<Clone>$() -> Penghou.Workflow.Abstractions.ExecutionAuthorizationContext!
+Penghou.Workflow.Abstractions.ExecutionAuthorizationContext.Attempt.get -> int
+Penghou.Workflow.Abstractions.ExecutionAuthorizationContext.AuthorizationRequestId.get -> string!
+Penghou.Workflow.Abstractions.ExecutionAuthorizationContext.Equals(Penghou.Workflow.Abstractions.ExecutionAuthorizationContext? other) -> bool
+Penghou.Workflow.Abstractions.ExecutionAuthorizationContext.ExecutionAuthorizationContext(Penghou.Workflow.Abstractions.ExecutionIdentity! identity, string! authorizationRequestId, System.Collections.Generic.IReadOnlyCollection<Penghou.Workflow.Abstractions.ExecutionRequirement!>! requirements, int schemaVersion = 1) -> void
+Penghou.Workflow.Abstractions.ExecutionAuthorizationContext.ExecutionId.get -> string!
+Penghou.Workflow.Abstractions.ExecutionAuthorizationContext.ExecutionRevision.get -> string!
+Penghou.Workflow.Abstractions.ExecutionAuthorizationContext.Identity.get -> Penghou.Workflow.Abstractions.ExecutionIdentity!
+Penghou.Workflow.Abstractions.ExecutionAuthorizationContext.OperationId.get -> string!
+Penghou.Workflow.Abstractions.ExecutionAuthorizationContext.OperationPath.get -> string?
+Penghou.Workflow.Abstractions.ExecutionAuthorizationContext.ParentExecutionId.get -> string?
+Penghou.Workflow.Abstractions.ExecutionAuthorizationContext.PlanId.get -> string?
+Penghou.Workflow.Abstractions.ExecutionAuthorizationContext.PlanRevision.get -> string?
+Penghou.Workflow.Abstractions.ExecutionAuthorizationContext.Requirements.get -> System.Collections.Generic.IReadOnlyCollection<Penghou.Workflow.Abstractions.ExecutionRequirement!>!
+Penghou.Workflow.Abstractions.ExecutionAuthorizationContext.SchemaVersion.get -> int
+Penghou.Workflow.Abstractions.ExecutionAuthorizationDecision
+Penghou.Workflow.Abstractions.ExecutionAuthorizationDecision.Allowed = 1 -> Penghou.Workflow.Abstractions.ExecutionAuthorizationDecision
+Penghou.Workflow.Abstractions.ExecutionAuthorizationDecision.ApprovalRequired = 3 -> Penghou.Workflow.Abstractions.ExecutionAuthorizationDecision
+Penghou.Workflow.Abstractions.ExecutionAuthorizationDecision.Denied = 2 -> Penghou.Workflow.Abstractions.ExecutionAuthorizationDecision
+Penghou.Workflow.Abstractions.ExecutionAuthorizationDecision.Error = 4 -> Penghou.Workflow.Abstractions.ExecutionAuthorizationDecision
+Penghou.Workflow.Abstractions.ExecutionAuthorizationDecision.Unavailable = 0 -> Penghou.Workflow.Abstractions.ExecutionAuthorizationDecision
+Penghou.Workflow.Abstractions.ExecutionAuthorizationResult
+Penghou.Workflow.Abstractions.ExecutionAuthorizationResult.<Clone>$() -> Penghou.Workflow.Abstractions.ExecutionAuthorizationResult!
+Penghou.Workflow.Abstractions.ExecutionAuthorizationResult.ApprovalRequestId.get -> string?
+Penghou.Workflow.Abstractions.ExecutionAuthorizationResult.AuthorizationRequestId.get -> string!
+Penghou.Workflow.Abstractions.ExecutionAuthorizationResult.Decision.get -> Penghou.Workflow.Abstractions.ExecutionAuthorizationDecision
+Penghou.Workflow.Abstractions.ExecutionAuthorizationResult.DecisionId.get -> string!
+Penghou.Workflow.Abstractions.ExecutionAuthorizationResult.Equals(Penghou.Workflow.Abstractions.ExecutionAuthorizationResult? other) -> bool
+Penghou.Workflow.Abstractions.ExecutionAuthorizationResult.EvaluatedAt.get -> System.DateTimeOffset
+Penghou.Workflow.Abstractions.ExecutionAuthorizationResult.EvidenceId.get -> string?
+Penghou.Workflow.Abstractions.ExecutionAuthorizationResult.ExecutionAuthorizationResult(Penghou.Workflow.Abstractions.ExecutionAuthorizationDecision decision, string! authorizationRequestId, string! providerId, string! decisionId, System.DateTimeOffset evaluatedAt, System.DateTimeOffset? expiresAt = null, string? approvalRequestId = null, string? reasonCode = null, string? evidenceId = null, int schemaVersion = 1) -> void
+Penghou.Workflow.Abstractions.ExecutionAuthorizationResult.ExpiresAt.get -> System.DateTimeOffset?
+Penghou.Workflow.Abstractions.ExecutionAuthorizationResult.ProviderId.get -> string!
+Penghou.Workflow.Abstractions.ExecutionAuthorizationResult.ReasonCode.get -> string?
+Penghou.Workflow.Abstractions.ExecutionAuthorizationResult.SchemaVersion.get -> int
+Penghou.Workflow.Abstractions.ExecutionIdentity
+Penghou.Workflow.Abstractions.ExecutionIdentity.<Clone>$() -> Penghou.Workflow.Abstractions.ExecutionIdentity!
+Penghou.Workflow.Abstractions.ExecutionIdentity.Attempt.get -> int
+Penghou.Workflow.Abstractions.ExecutionIdentity.Equals(Penghou.Workflow.Abstractions.ExecutionIdentity? other) -> bool
+Penghou.Workflow.Abstractions.ExecutionIdentity.ExecutionId.get -> string!
+Penghou.Workflow.Abstractions.ExecutionIdentity.ExecutionIdentity(string! executionId, string! operationId, int attempt, string! executionRevision, string? parentExecutionId = null, string? operationPath = null, string? planId = null, string? planRevision = null) -> void
+Penghou.Workflow.Abstractions.ExecutionIdentity.ExecutionRevision.get -> string!
+Penghou.Workflow.Abstractions.ExecutionIdentity.OperationId.get -> string!
+Penghou.Workflow.Abstractions.ExecutionIdentity.OperationPath.get -> string?
+Penghou.Workflow.Abstractions.ExecutionIdentity.ParentExecutionId.get -> string?
+Penghou.Workflow.Abstractions.ExecutionIdentity.PlanId.get -> string?
+Penghou.Workflow.Abstractions.ExecutionIdentity.PlanRevision.get -> string?
+Penghou.Workflow.Abstractions.ExecutionRequirement
+Penghou.Workflow.Abstractions.ExecutionRequirement.<Clone>$() -> Penghou.Workflow.Abstractions.ExecutionRequirement!
+Penghou.Workflow.Abstractions.ExecutionRequirement.Capability.get -> string!
+Penghou.Workflow.Abstractions.ExecutionRequirement.Equals(Penghou.Workflow.Abstractions.ExecutionRequirement? other) -> bool
+Penghou.Workflow.Abstractions.ExecutionRequirement.ExecutionRequirement(string! schemaId, int schemaVersion, string! capability, string! resource, string? scopeReference = null) -> void
+Penghou.Workflow.Abstractions.ExecutionRequirement.Resource.get -> string!
+Penghou.Workflow.Abstractions.ExecutionRequirement.SchemaId.get -> string!
+Penghou.Workflow.Abstractions.ExecutionRequirement.SchemaVersion.get -> int
+Penghou.Workflow.Abstractions.ExecutionRequirement.ScopeReference.get -> string?
+Penghou.Workflow.Abstractions.IExecutionAuthorizer
+Penghou.Workflow.Abstractions.IExecutionAuthorizer.AuthorizeAsync(Penghou.Workflow.Abstractions.ExecutionAuthorizationContext! context, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Penghou.Workflow.Abstractions.ExecutionAuthorizationResult!>
+static Penghou.Workflow.Abstractions.ExecutionAuthorizationContext.operator !=(Penghou.Workflow.Abstractions.ExecutionAuthorizationContext? left, Penghou.Workflow.Abstractions.ExecutionAuthorizationContext? right) -> bool
+static Penghou.Workflow.Abstractions.ExecutionAuthorizationContext.operator ==(Penghou.Workflow.Abstractions.ExecutionAuthorizationContext? left, Penghou.Workflow.Abstractions.ExecutionAuthorizationContext? right) -> bool
+static Penghou.Workflow.Abstractions.ExecutionAuthorizationResult.operator !=(Penghou.Workflow.Abstractions.ExecutionAuthorizationResult? left, Penghou.Workflow.Abstractions.ExecutionAuthorizationResult? right) -> bool
+static Penghou.Workflow.Abstractions.ExecutionAuthorizationResult.operator ==(Penghou.Workflow.Abstractions.ExecutionAuthorizationResult? left, Penghou.Workflow.Abstractions.ExecutionAuthorizationResult? right) -> bool
+static Penghou.Workflow.Abstractions.ExecutionIdentity.operator !=(Penghou.Workflow.Abstractions.ExecutionIdentity? left, Penghou.Workflow.Abstractions.ExecutionIdentity? right) -> bool
+static Penghou.Workflow.Abstractions.ExecutionIdentity.operator ==(Penghou.Workflow.Abstractions.ExecutionIdentity? left, Penghou.Workflow.Abstractions.ExecutionIdentity? right) -> bool
+static Penghou.Workflow.Abstractions.ExecutionRequirement.operator !=(Penghou.Workflow.Abstractions.ExecutionRequirement? left, Penghou.Workflow.Abstractions.ExecutionRequirement? right) -> bool
+static Penghou.Workflow.Abstractions.ExecutionRequirement.operator ==(Penghou.Workflow.Abstractions.ExecutionRequirement? left, Penghou.Workflow.Abstractions.ExecutionRequirement? right) -> bool

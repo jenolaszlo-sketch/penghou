@@ -1,4 +1,15 @@
-# Penghou.IO contributor guidance
+# Penghou shared contracts and providers: contributor guidance
+
+Workflow contracts: read [the workflow abstractions plan](docs/workflow-abstractions-plan.md).
+Penghou.Workflow.Abstractions belongs here, uses product-neutral names and has
+no dependency on Zhinu, Hufu or their implementations. Zhinu is one runtime;
+Hufu.Workflow is one authorization adapter. Review WA-1 with ZA-1 input, then
+implement/qualify/publish WA-2/3 before Zhinu runtime work and subsequent Hufu
+integration. Existing IO package boundaries remain independent.
+Current checkpoint: [workflow package release handoff](docs/workflow-package-release-handoff.md).
+WA-1 is selected; WA-2 is implemented and locally qualified, with remote CI
+and WA-3 publication pending. Do not restart completed design or start Zhinu/Hufu
+implementation before the published-contract adoption gate.
 
 Implementation handoff: read [the corrective plan](docs/resource-abstractions-corrective-plan.md)
 and [Sol's resume point](docs/resource-abstractions-sol-handoff.md). Resume from
@@ -22,7 +33,7 @@ Current no-mutation WhatIf rules apply to capture-only preview. Future virtual
 execution requires a separate profile and cannot weaken real enforcement.
 Every handoff cites the canonical document, RA/VFS ID, open gates and evidence.
 
-Keep this repository an independent, neutral I/O contract library. Do not add
+Keep the shared contract packages in this repository independent and product-neutral. Keep Penghou.IO.Abstractions an independent, neutral I/O contract library. Do not add
 dependencies on Luban, Hufu, Fuwen, Zhinu, a host UI, MCP, or an agent runtime.
 Luban owns semantic typed effects and finite dataflow; Fuwen and Zhinu own
 workflow control and durability. This library defines contracts for a

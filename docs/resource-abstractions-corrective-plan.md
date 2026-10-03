@@ -1,5 +1,18 @@
 # Resource abstraction corrective delivery plan
 
+## Cross-project authority update - 2026-10-03
+
+The [Zhinu authority-extension plan](../../Penghou.Zhinu/docs/authority-extension-plan.md)
+governs runtime/Hufu integration alongside the [workflow contract plan](workflow-abstractions-plan.md).
+Penghou owns Penghou.Workflow.Abstractions here; Zhinu is one execution
+implementation. Publish the neutral contracts first, then complete Zhinu,
+then Hufu workflow translation, which depends on the neutral contracts,
+not the runtime. This is separate from RA-4 actual-resource enforcement and the
+final concrete mutation boundary. IO remains independent of Zhinu/Hufu and
+Luban's published language boundary remains closed. No IO API/package changes
+are required by this planning update. Existing RA/VFS safety gates and deferred
+WhatIf work still apply; a workflow Allow does not authorize provider access.
+
 Status: corrective implementation underway, 2026-10-02. RA-1 decisions are
 selected in [ADR 0003](decisions/0003-replaceable-resource-providers.md);
 the delivery ledger separates candidate qualification from publication.

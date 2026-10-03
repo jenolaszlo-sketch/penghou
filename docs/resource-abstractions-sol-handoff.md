@@ -1,5 +1,20 @@
 # Sol handoff: Penghou resource abstractions
 
+## Current cross-project direction - 2026-10-03
+
+Read the [neutral Zhinu authority plan](../../Penghou.Zhinu/docs/authority-extension-plan.md)
+and [Hufu handoff](../../Penghou.Hufu/docs/zhinu-authority-handoff.md) before any
+workflow integration. The [activity queue](../../Penghou.Zhinu/docs/authority-extension-activities.md)
+supersedes old immediate work ordering; IO/Luban remain independent leaf work.
+Read [the workflow contract plan](workflow-abstractions-plan.md) for ownership:
+Penghou.Workflow.Abstractions lives in this Penghou repository. Publish WA-3
+first, complete Zhinu's execution implementation, then Hufu's neutral workflow
+adapter. RA-4 per-resource/final mutation enforcement
+remains independent and mandatory for its qualified profile. Do not reopen
+Luban/IO leaf package ownership or apply the old Hufu completion snapshot as a
+workflow integration. This update changes plans only; older publication/test
+figures below remain historical and must be checked against current evidence.
+
 Updated 2026-10-02 during corrective implementation. This is a resumable handoff;
 publication and published-package adoption remain open until the ledger has
 real release/consumer evidence.

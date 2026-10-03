@@ -35,8 +35,8 @@ jobs:
       - name: Test Windows provider profile
         run: dotnet test Penghou.IO.slnx --configuration Release --framework ${{ matrix.framework }} --no-build
 
-  neutral-build:
-    name: Neutral contract and protocol build (${{ matrix.framework }})
+  workflow-contract-tests:
+    name: Workflow contract build and tests (${{ matrix.framework }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -55,16 +55,43 @@ jobs:
             8.0.x
             10.0.x
 
-      - name: Build provider-neutral contracts
-        run: dotnet build src/Penghou.IO.Abstractions/Penghou.IO.Abstractions.csproj --configuration Release --framework ${{ matrix.framework }}
+      - name: Build workflow abstractions
+        run: dotnet build src/Penghou.Workflow.Abstractions/Penghou.Workflow.Abstractions.csproj --configuration Release --framework ${{ matrix.framework }}
 
-      - name: Build shared identity and path protocols
-        run: dotnet build src/Penghou.IO.Protocols/Penghou.IO.Protocols.csproj --configuration Release --framework ${{ matrix.framework }}
+      - name: Test workflow contracts
+        run: dotnet test tests/Penghou.Workflow.Tests/Penghou.Workflow.Tests.csproj --configuration Release --framework ${{ matrix.framework }}
+
+  neutral-build:
+    name: Neutral IO contract and protocol build (${{ matrix.framework }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        framework: [net8.0, net10.0]
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Build provider-neutral IO contracts and protocols
+        shell: bash
+        run: |
+          set -euo pipefail
+          dotnet build src/Penghou.IO.Abstractions/Penghou.IO.Abstractions.csproj --configuration Release --framework ${{ matrix.framework }}
+          dotnet build src/Penghou.IO.Protocols/Penghou.IO.Protocols.csproj --configuration Release --framework ${{ matrix.framework }}
 
   package-consumer:
     name: Pack and consume package closure
     runs-on: windows-latest
-    needs: [windows-tests, neutral-build]
+    needs: [windows-tests, neutral-build, workflow-contract-tests]
     permissions:
       contents: read
     env:
@@ -97,11 +124,27 @@ jobs:
         shell: pwsh
         run: ./eng/smoke-package-consumer.ps1 -PackageDirectory ./artifacts -PackageVersion $env:PACKAGE_VERSION
 
-      - name: Upload validated packages
+      - name: Pack workflow package to its own artifact directory
+        shell: pwsh
+        run: |
+          dotnet pack src/Penghou.Workflow.Abstractions/Penghou.Workflow.Abstractions.csproj --configuration Release --output workflow-artifacts --property:PackageVersion=$env:PACKAGE_VERSION
+          if ($LASTEXITCODE -ne 0) { throw 'Packing Penghou.Workflow.Abstractions failed.' }
+
+      - name: Verify workflow package profile
+        shell: pwsh
+        run: ./eng/verify-package-set.ps1 -Profile Workflow -PackageDirectory ./workflow-artifacts -PackageVersion $env:PACKAGE_VERSION
+
+      - name: Prove isolated workflow package-only consumption
+        shell: pwsh
+        run: ./eng/smoke-package-consumer.ps1 -Profile Workflow -PackageDirectory ./workflow-artifacts -PackageVersion $env:PACKAGE_VERSION
+
+      - name: Upload validated IO and workflow packages
         uses: actions/upload-artifact@v6
         with:
           name: nuget-packages-${{ github.sha }}
           path: |
             artifacts/*.nupkg
             artifacts/*.snupkg
+            workflow-artifacts/*.nupkg
+            workflow-artifacts/*.snupkg
           if-no-files-found: error

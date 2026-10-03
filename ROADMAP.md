@@ -1,4 +1,31 @@
-# Penghou I/O roadmap
+# Penghou contracts and providers roadmap
+
+## Current workflow contract delivery - 2026-10-03
+
+Read [the workflow abstractions plan](docs/workflow-abstractions-plan.md) and
+the [cross-project activities](../Penghou.Zhinu/docs/authority-extension-activities.md).
+Penghou owns `Penghou.Workflow.Abstractions`; product names do not belong in
+the shared contract package. Neither Zhinu nor Hufu is required by the contracts.
+
+- [x] **WA-1:** neutral contracts and ZA-1 design input selected in the
+  [contract profile](docs/workflow-authorization-contract.md) and
+  [source review](docs/workflow-contract-review.md); additive seam, no engine type moves.
+- [ ] **WA-2 (implemented and locally qualified; remote CI pending):**
+  isolated dependency-free package, API/conformance checks, .NET 8/10 tests,
+  strict TFM package checks and fresh-cache consumer proof pass. Main-only manual
+  input-free publication uses the existing workflow; Linux qualification runs
+  after push. See the [release checkpoint](docs/workflow-package-release-handoff.md).
+- [ ] **WA-3:** qualify package consumers and the user publishes through Penghou
+  CI; record the actual version and public-feed evidence.
+
+After WA-3, finish Zhinu runtime implementation/release; only then implement
+and qualify Hufu workflow integration. The next integration scope also includes
+**LW-1**, additive Luban operation/requirement mapping against the published
+neutral contract through an optional host/adapter or reviewed neutral hook;
+keep the language independent of Zhinu/Hufu. These are separate deliveries. IO/Luban
+boundaries are unaffected; the IO queue below remains a separate ledger.
+
+## Penghou I/O roadmap
 
 Active delivery queue: [corrective plan](docs/resource-abstractions-corrective-plan.md).
 Resume with [Sol's handoff](docs/resource-abstractions-sol-handoff.md):

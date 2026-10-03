@@ -3,8 +3,10 @@
     <Project Path="src/Penghou.IO.Abstractions/Penghou.IO.Abstractions.csproj" />
     <Project Path="src/Penghou.IO.Local/Penghou.IO.Local.csproj" />
     <Project Path="src/Penghou.IO.Protocols/Penghou.IO.Protocols.csproj" />
+    <Project Path="src/Penghou.Workflow.Abstractions/Penghou.Workflow.Abstractions.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Penghou.IO.Tests/Penghou.IO.Tests.csproj" />
+    <Project Path="tests/Penghou.Workflow.Tests/Penghou.Workflow.Tests.csproj" />
   </Folder>
 </Solution>

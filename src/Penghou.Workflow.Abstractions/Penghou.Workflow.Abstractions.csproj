@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <PackageId>Penghou.Workflow.Abstractions</PackageId>
+    <PackageVersion>0.1.0-preview.2</PackageVersion>
+    <Title>Penghou Workflow Abstractions</Title>
+    <Authors>Penghou contributors</Authors>
+    <Description>Product-neutral, bounded execution authorization contracts for replaceable workflow runtimes and authority adapters.</Description>
+    <PackageTags>Penghou;workflow;abstractions;contracts;authorization</PackageTags>
+    <IsPackable>true</IsPackable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <EnableStrictModeForCompatibleTfms>true</EnableStrictModeForCompatibleTfms>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/../../README.md'))" />
+    <None Remove="README.md" />
+    <None Include="$(MSBuildProjectDirectory)/README.md" Pack="true" PackagePath="/" />
+    <AdditionalFiles Include="PublicAPI.Shipped.txt" />
+    <AdditionalFiles Include="PublicAPI.Unshipped.txt" />
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="5.6.0" PrivateAssets="all" />
+  </ItemGroup>
+</Project>

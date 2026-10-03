@@ -1,4 +1,7 @@
 param(
+    [ValidateSet('IO', 'Workflow')]
+    [string] $Profile = 'IO',
+
     [Parameter(Mandatory = $true)]
     [string] $PackageVersion,
 
@@ -16,7 +19,12 @@ param(
 
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.IO.Compression.FileSystem
-$packageIds = @('Penghou.IO.Protocols', 'Penghou.IO.Abstractions', 'Penghou.IO.Local')
+[string[]] $packageIds = if ($Profile -eq 'Workflow') {
+    @('Penghou.Workflow.Abstractions')
+}
+else {
+    @('Penghou.IO.Protocols', 'Penghou.IO.Abstractions', 'Penghou.IO.Local')
+}
 $packageDirectory = [System.IO.Path]::GetFullPath($PackageDirectory)
 $httpClient = [System.Net.Http.HttpClient]::new()
 $verifiedCount = 0

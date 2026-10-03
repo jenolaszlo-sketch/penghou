@@ -1,71 +1,82 @@
 # NuGet release process
 
-The release is the coordinated package set `Penghou.IO.Protocols`,
-`Penghou.IO.Abstractions`, and `Penghou.IO.Local`. All three use the checked-in
-`PackageVersion` from `Directory.Build.props`; the initial candidate is
-`0.1.0-preview.1`. No version or tag input is needed for manual publication.
-A new release still requires bumping the coordinated version in source.
-Existing NuGet.org versions are checked against the packed artifact before
-publishing, so an immutable version cannot be silently reused.
+The current **Publish to NuGet** workflow publishes only
+`Penghou.Workflow.Abstractions`. Its initial package version is
+`0.1.0-preview.2`, read from that project's checked-in `PackageVersion`.
+Manual publication has no version or package-set inputs.
 
-## Before the first publication
+The existing `Penghou.IO.Protocols`, `Penghou.IO.Abstractions`, and
+`Penghou.IO.Local` packages at `0.1.0-preview.1` are already published and
+immutable. The workflow does not pack, compare, or push those IO packages.
+Windows solution builds/tests and their ordinary CI package smoke checks remain
+regressions only. The IO package-set validator and consumer scripts keep their
+IO profile by default; the publishing workflow selects the explicit `Workflow`
+profile, which accepts exactly the workflow package and requires no dependencies.
 
-Complete the remaining publication setup:
+## Before publication
+
+Complete the existing publication setup:
 
 - The GitHub Actions environment named `nuget` exists. Add `NUGET_USER` as a
   repository or environment secret containing the NuGet account name accepted
   by `NuGet/login@v1`.
 - Configure NuGet.org Trusted Publishing for this repository, the
   `.github/workflows/publish.yml` workflow, and the `nuget` GitHub environment.
-- Protect the `nuget` environment with the repository's release approval rule if
-  one is used for package publication.
+- Protect the `nuget` environment with the repository's release approval rule
+  if one is used for package publication.
 
-The publication workflow receives no NuGet credentials in pull request or CI
-jobs. Only its validated publish job requests an OIDC token, after the selected
-commit has passed Windows tests, Linux builds for the neutral projects,
-package-content checks, and a package-only restore and runtime proof.
+Pull request, CI, validation, and verification jobs receive no NuGet
+credentials. Only the publish job requests an OIDC token, after Windows
+regression tests, Linux workflow build/tests, package-content checks, and a
+package-only consumer proof have passed.
 
 ## Publish
 
-1. Confirm all three projects have the intended checked-in `PackageVersion`
-   and the source and workflow changes have passed CI.
-2. In GitHub Actions, select **Publish to NuGet**, choose **Run workflow** with
-   branch `main` (or the intended release ref), and run it. There are no inputs.
-   The workflow reads the version from that run's exact commit. Later branch
-   changes cannot change the source used by its validation or publish jobs.
-3. The workflow builds and tests on Windows for .NET 8 and .NET 10, builds
-   Abstractions and Protocols on Linux for both frameworks, packs and audits the
-   package set, then publishes Abstractions, Protocols, and Local in dependency
-   order with NuGet OIDC.
-4. Confirm the workflow run succeeded and the three package/version pages are
-   visible on NuGet.org before updating package consumers.
+1. Confirm `Penghou.Workflow.Abstractions` has the intended checked-in version
+   and its source and workflow changes have passed CI.
+2. In GitHub Actions, select **Publish to NuGet**, choose **Run workflow** on
+   `main`, and run it. There are no inputs. The workflow reads the version from
+   that exact commit. A manual run from another branch is rejected.
+3. The workflow tests the Windows solution on .NET 8 and .NET 10, builds and
+   tests the workflow contracts on Linux for both frameworks, then packs,
+   audits, and consumes only `Penghou.Workflow.Abstractions` before publishing
+   it with NuGet OIDC.
+4. Confirm the run succeeded and the package page is visible on NuGet.org
+   before updating consumers.
 
-Pushing a matching version tag, such as `v0.1.0-preview.1`, remains another
-way to start the workflow. Runs selected from a tag must match the checked-in
-version; manual branch runs do not create or move tags.
+Publication is manual from `main` only. It requires no version/tag inputs and
+does not create or move tags. Existing IO release tags remain historical refs;
+pushing a tag does not start this workflow-only release.
 
 If publication stops partway, rerun the failed publish job in that same
 workflow run so it reuses the validated artifact. Before pushing, the workflow
 compares every uncompressed package entry with the artifact and allows
-NuGet.org's `.signature.p7s` repository-signature entry. A content mismatch stops
-the retry. A fresh run repacks its selected commit, so it is rejected if its
-package contents differ from an already-published version. NuGet package
-versions are immutable; an artifact correction needs a new coordinated version.
-After successful package and symbol uploads, a separate verification job
-downloads the same validated artifacts and compares the publicly downloadable
-package contents. It shares a one-hour indexing deadline across the entire
-package set. Upload success and public availability are separate evidence.
-If indexing or verification times out, rerun only that failed verification job;
-it has no NuGet login, credentials or upload steps. Content mismatches and other
-HTTP errors remain hard failures. Do not start a fresh publish run or repack an
-already published version to resolve an indexing delay.
+NuGet.org's `.signature.p7s` repository-signature entry. A content mismatch
+stops the retry. A fresh run repacks its selected commit and is rejected if
+that package version already has different content. NuGet package versions are
+immutable; a correction needs a new package version. After package and symbol
+uploads, a separate verification job downloads the same validated artifact and
+compares the publicly downloadable package contents. It allows one shared
+indexing deadline for the package. Upload success and public availability are
+separate evidence. If indexing or verification times out, rerun only that
+verification job; it has no NuGet login, credentials, or upload steps.
 
 ## Package validation
 
-`eng/verify-package-set.ps1` checks package IDs, versions, metadata, target
-framework assets, README inclusion, and symbol package presence.
-`eng/smoke-package-consumer.ps1` creates a temporary consumer project with only
-`PackageReference` entries and a NuGet configuration whose sole package source is
-the local artifact feed. It compiles and loads the identity, path, contract, and
-Local provider APIs on .NET 8 and .NET 10. It does not reference repository
-projects or assemblies.
+`eng/verify-package-set.ps1` and `eng/smoke-package-consumer.ps1` default to the
+existing IO profile. CI and publication pass `-Profile Workflow` with a
+separate artifact directory. The profile validates exactly
+`Penghou.Workflow.Abstractions`, verifies its .NET 8 and .NET 10 assets and
+dependency-free metadata, then restores a temporary consumer from a local
+artifact-only feed. That consumer implements `IExecutionAuthorizer`, checks
+that the denied response matches its request, and proves the denied-only
+consumer does not invoke protected work. Its package graph contains only the
+exact workflow package; it has no repository project, Zhinu, or Hufu reference.
+The denied-only probe checks package consumption and response binding; runtime
+fencing, evidence requirements, approval durability, and actual resource
+authorization remain host/runtime responsibilities.
+
+`eng/check-nuget-version.ps1` also defaults to the existing IO package set;
+publication passes `-Profile Workflow` so immutability checks inspect only the
+new workflow package. No existing IO preview package is republished as part of
+this release.
