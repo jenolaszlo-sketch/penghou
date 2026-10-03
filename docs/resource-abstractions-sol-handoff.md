@@ -119,3 +119,14 @@ with available release access, and preserve unrelated work in any release commit
 > existing work. Keep VFS and Baize/SQLite reorganization deferred. Continue until
 > the end-to-end goal succeeds or a concrete external blocker requires user action.
 > Report published versions, CI/release evidence and both consumer results.
+
+## Publication resume point — 2026-10-03
+
+The [release checkpoint](resource-package-release-handoff.md) is the concrete
+resume queue. Exact tagged IO validation passed in run 37084905564; only missing
+NuGet publishing identity stops its publish job. Hufu's complete isolated
+candidate-package suites pass 93/101/19 on each framework without IO/Luban
+source. Default exact Luban references and the public-feed qualification tool
+are ready. Configure each producer's NUGET_USER/trusted publisher, retry IO's
+failed job, qualify/publish Luban from public IO, then run Hufu's default isolated
+public qualification. Candidate proof does not close RA-5B/RA-5C.

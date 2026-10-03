@@ -32,9 +32,7 @@ locally rebuilt archive.
 
 The finalized Luban working tree passes 338 tests on each framework with these
 exact IO artifacts, packs with its final API namespace/baseline, and passes
-isolated package smoke on both frameworks. Its new release workflow and checker
-are committed/pushed; final API changes are being preserved in the parallel
-Luban review. [Luban release handoff](../../Penghou.Luban/docs/release-handoff.md)
+isolated package smoke on both frameworks. Its final API is committed at 26f4ad943a0f4370627574c43d2a78bd2c14b54d with green CI 37085937530. The release workflow, checker and public-dependency smoke mode are committed/pushed. [Luban release handoff](../../Penghou.Luban/docs/release-handoff.md)
 tracks public dependency qualification and subsequent Luban publication.
 
 Hufu now selects exact Penghou.Luban [0.1.0-preview.1] by default; its normal

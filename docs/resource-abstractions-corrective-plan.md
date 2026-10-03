@@ -62,8 +62,8 @@ competing specifications into each project.
 | RA-3 | RA-1B; coordinated RA-2 | Candidate packages qualified; published adoption pending | Provider-independent Luban composition; 338 tests pass on each framework, including non-Local providers and exact semantic/memory bounds |
 | RA-4 | RA-1B; corrected provider seams | Candidate packages qualified; published adoption pending | Hufu.IO, retained sessions/frozen writes, real Local allow/deny/revocation and lifecycle qualification |
 | RA-5A | RA-2; candidate consumer validation | Complete; local and remote CI qualified | CI and release workflows, three package candidates, artifact checks and isolated local-feed consumption |
-| RA-5B | RA-5A | Pending | Working release workflow and corrected package release published on NuGet |
-| RA-5C | RA-5B; RA-3/4 | Pending | Luban and Hufu consume published versions with passing integration evidence |
+| RA-5B | RA-5A | Exact tag qualified; publishing identity missing | Working release workflow and corrected package release published on NuGet |
+| RA-5C | RA-5B; RA-3/4 | Isolated candidate packages pass; public-feed proof pending | Luban and Hufu consume published versions with passing integration evidence |
 
 Delivery order: resolve decisions -> correct repository/ownership -> qualify CI
 and package candidates -> publish corrected packages -> finish published-package
@@ -130,6 +130,31 @@ qualification](../../Penghou.Hufu/docs/luban-api-consumer-qualification.md). RA-
 still require actual published IO package versions. A green
 Luban package candidate does not satisfy public-feed adoption.
 
+## Exact release and package-consumer checkpoint — 2026-10-03
+
+The [release checkpoint](resource-package-release-handoff.md) records immutable
+IO tag v0.1.0-preview.1 at 468dde33f0cda8f8f26a734abd0e512cea70d138,
+[release run 37084905564](https://github.com/jenolaszlo-sketch/penghou/actions/runs/37084905564)
+and independently inspected artifact hashes. Windows tests, Linux builds,
+package inspection and isolated consumption pass. Publication stops before
+login/push because NUGET_USER is absent; RA-5B remains open.
+
+Luban's finalized API is committed/CI-qualified at
+26f4ad943a0f4370627574c43d2a78bd2c14b54d. Its release workflow and public
+dependency mode are prepared. Hufu now requests exact Luban preview.1 by default,
+with no normal solution reference to Luban source. The complete isolated
+candidate-package matrix passes 93 Biscuit, 101 core and 19 IO cases on each
+framework, using a fresh cache and no IO/Luban source checkout: 426 executed
+cases, zero failures/skips. Actual local sources and archive identities are
+recorded in [Hufu's JSON evidence](../../Penghou.Hufu/docs/qualification/candidate-resource-packages.json).
+This supersedes earlier candidate test counts, not the public-feed gate.
+
+Complete publishing configuration for penghou and penghou-luban, retry the
+failed IO publish job with the validated artifact, qualify/publish Luban using
+public IO dependencies, switch Luban ordinary CI to public IO, and run
+Hufu's eng/Test-PublishedResourcePackages.ps1 without CandidateFeedPath.
+Only successful public package-source evidence closes RA-5C. Concrete Hufu host
+and governed mutation start/outcome recovery remain separate work.
 ## RA-1A — Map consumers and work through the protocol
 
 Owner: Sol, starting in the Penghou repository. Read-only source investigation
