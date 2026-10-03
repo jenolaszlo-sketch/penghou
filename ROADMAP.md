@@ -3,7 +3,7 @@
 ## Current workflow contract delivery - 2026-10-03
 
 Read [the workflow abstractions plan](docs/workflow-abstractions-plan.md) and
-the [cross-project activities](../Penghou.Zhinu/docs/authority-extension-activities.md).
+the [cross-project activities](https://github.com/jenolaszlo-sketch/penghou-zhinu/blob/main/docs/authority-extension-activities.md).
 Penghou owns `Penghou.Workflow.Abstractions`; product names do not belong in
 the shared contract package. Neither Zhinu nor Hufu is required by the contracts.
 
@@ -23,9 +23,9 @@ the shared contract package. Neither Zhinu nor Hufu is required by the contracts
 
 Zhinu ZA-2 source adoption is complete, including the fresh seven-package
 consumer graph. The exact core package pin and no-Hufu dependency graph passed
-on .NET 8/10; see the [adoption checkpoint](../Penghou.Zhinu/docs/workflow-package-adoption.md).
+on .NET 8/10; see the [adoption checkpoint](https://github.com/jenolaszlo-sketch/penghou-zhinu/blob/main/docs/workflow-package-adoption.md).
 Zhinu ZA-3A/3B/4 are locally qualified in candidate `0.2.0-preview.1`, and the
-unchanged preview.15 compatibility suite passed on .NET 8/10. Commit/push and
+unchanged preview.15 compatibility suite passed on .NET 8/10. Verify remote CI and complete
 user-run ZA-6 publication with remote CI are next. Hufu HA-1/2/3 follows that publication; HA-0A/B cleanup
 remains independent, and the old staged Hufu snapshot stays on hold. Luban
 LW-1 is optional neutral-host integration work; keep the

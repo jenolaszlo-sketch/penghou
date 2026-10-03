@@ -46,7 +46,7 @@ The contract source, tests, manuals and workflow/scripts were pushed in
 `5a76b7c` and published by the user through the validated release workflow.
 No public engine API moved, so type forwarding is not part of this additive
 package release. Subsequent Zhinu adoption is recorded in its
-[adoption checkpoint](../../Penghou.Zhinu/docs/workflow-package-adoption.md).
+[adoption checkpoint](https://github.com/jenolaszlo-sketch/penghou-zhinu/blob/main/docs/workflow-package-adoption.md).
 
 The package has its own checked-in PackageVersion; future shared IO version
 changes cannot silently change it. Existing IO preview packages remain immutable.
@@ -61,11 +61,10 @@ Zhinu **ZA-2 source adoption is complete**, including the fresh seven-package
 consumer closure on .NET 8/10. The exact core package pin passed and the
 resolved graph contains no Hufu package. ZA-3A/3B/4 are also locally qualified:
 1,017 runtime tests passed (506 on .NET 8, 511 on .NET 10), and the isolated
-seven-package consumer passed on both TFMs. See the [adoption checkpoint](../../Penghou.Zhinu/docs/workflow-package-adoption.md)
-and [authorization qualification](../../Penghou.Zhinu/docs/qualification/workflow-authorization.json).
+seven-package consumer passed on both TFMs. See the [adoption checkpoint](https://github.com/jenolaszlo-sketch/penghou-zhinu/blob/main/docs/workflow-package-adoption.md)
+and [authorization qualification](https://github.com/jenolaszlo-sketch/penghou-zhinu/blob/main/docs/qualification/workflow-authorization.json).
 The unchanged preview.15 compatibility suite also passed on .NET 8/10. Next is
-committing/pushing and user-run **ZA-6 publication** of Zhinu `0.2.0-preview.1`
-with remote CI. No publication is claimed. Hufu HA-1/2/3 follows ZA-6. HA-0A/B cleanup can proceed independently; keep the older staged
+passing remote CI and user-run **ZA-6 publication** of Zhinu `0.2.0-preview.1`. No publication is claimed. Hufu HA-1/2/3 follows ZA-6. HA-0A/B cleanup can proceed independently; keep the older staged
 Hufu snapshot on hold and preserve the frozen legacy-profile decision.
 Luban LW-1 is optional neutral-host operation/requirement mapping; the language
 core stays independent of workflow authorization, Zhinu and Hufu. Durable
@@ -79,8 +78,8 @@ legacy ZA-5B disposition remain separate gates.
 > extract engine types. Zhinu ZA-2 exact published-package source adoption and
 > fresh seven-package consumer closure are complete on .NET 8/10; see the
 > adoption checkpoint. ZA-3A/3B/4 and the unchanged preview.15 compatibility
-> suite are locally qualified; commit/push and user-publish Zhinu 0.2.0-preview.1
-> through ZA-6 with remote CI. Hufu HA-1/2/3 follows the publication.
+> suite are locally qualified; verify remote CI, then user-publish Zhinu 0.2.0-preview.1
+> through ZA-6. Hufu HA-1/2/3 follows the publication.
 > HA-0A/B cleanup is independent; keep the older Hufu staging snapshot on hold
 > and preserve the legacy-profile decision. Luban LW-1 is optional neutral-host
 > integration, with the language core independent. Do not treat contract-package

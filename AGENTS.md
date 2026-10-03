@@ -5,16 +5,16 @@ Penghou.Workflow.Abstractions belongs here, uses product-neutral names and has
 no dependency on Zhinu, Hufu or their implementations. Zhinu is one runtime;
 Hufu.Workflow is one authorization adapter. WA-1/2/3 and Zhinu ZA-2 source
 adoption are complete; ZA-3A/3B/4 and the unchanged preview.15 compatibility
-suite are locally qualified. The current next step is committing/pushing and
-user-publishing Zhinu 0.2.0-preview.1 through ZA-6 with remote CI. Hufu HA-1/2/3 follows that
+suite are locally qualified and pushed. The next step is passing remote CI,
+then user-run Zhinu 0.2.0-preview.1 publication through ZA-6. Hufu HA-1/2/3 follows that
 publication. Luban LW-1 remains optional and independent. Existing IO package
 boundaries remain independent.
 Current checkpoint: [workflow package release handoff](docs/workflow-package-release-handoff.md).
 WA-1/2/3 and Zhinu ZA-2 source adoption are complete. Version `0.1.0-preview.2`
 is published and qualified; see the release handoff and package-adoption
 evidence. Zhinu ZA-3A/3B/4 and the unchanged preview.15 compatibility suite are
-locally qualified; next commit/push and user-publish `0.2.0-preview.1` through
-ZA-6 with remote CI. Hufu HA-1/2/3 follows publication. Do not treat contract package
+locally qualified and pushed; next verify remote CI, then user-publish
+`0.2.0-preview.1` through ZA-6. Hufu HA-1/2/3 follows publication. Do not treat contract package
 qualification as runtime acceptance; use the current Zhinu authorization
 qualification for runtime evidence.
 

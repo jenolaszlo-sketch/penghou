@@ -15,11 +15,11 @@ See the [contract manual](docs/workflow-authorization-contract.md),
 [public-package qualification](docs/workflow-public-package-qualification.json).
 Zhinu's exact published-package source adoption and ZA-3A/3B/4 runtime
 qualification are complete locally; the unchanged preview.15 compatibility
-suite also passed on .NET 8/10. The next step is commit/push and user-run ZA-6
+suite also passed on .NET 8/10. The next step is passing remote CI and user-run ZA-6
 publication of Zhinu 0.2.0-preview.1 with remote CI.
 Hufu HA-1/2/3 remains held until that publication; Luban LW-1 is optional and
 independent. See the
-[adoption checkpoint](../Penghou.Zhinu/docs/workflow-package-adoption.md).
+[adoption checkpoint](https://github.com/jenolaszlo-sketch/penghou-zhinu/blob/main/docs/workflow-package-adoption.md).
 
 It supplies `IExecutionAuthorizer` and immutable execution identity, context,
 requirement and result values. It has no dependency on IO, Zhinu or Hufu, and
