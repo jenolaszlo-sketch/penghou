@@ -25,8 +25,8 @@ Three .NET 8 and .NET 10 NuGet package candidates share version
   mutation-journal checks at the concrete resource boundary.
 
 Build and test both target frameworks, with the native Windows provider qualified
-on Windows. See the [release guide](docs/releasing.md) for the validated tag and
-NuGet publication workflow.
+on Windows. See the [release guide](docs/releasing.md) for manual publication
+from the checked-in version or a matching release tag.
 
 Every operation carries a host-authenticated `HostInvocation` with subject,
 effect, attempt, scope references, and request identity. These records are data

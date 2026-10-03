@@ -5,28 +5,23 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
-    inputs:
-      release_tag:
-        description: Existing version tag to validate and publish
-        required: true
-        type: string
 
 permissions:
   contents: read
 
 jobs:
   validate:
-    name: Validate exact tagged release
+    name: Validate exact release commit
     runs-on: windows-latest
     outputs:
       package_version: ${{ steps.release-version.outputs.package_version }}
     permissions:
       contents: read
-    env:
-      MANUAL_RELEASE_TAG: ${{ inputs.release_tag }}
     steps:
       - name: Checkout exact release ref
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
@@ -35,21 +30,19 @@ jobs:
             8.0.x
             10.0.x
 
-      - name: Verify tag matches the checked-in package version
+      - name: Resolve checked-in package version
         id: release-version
         shell: pwsh
         run: |
-          if ($env:GITHUB_REF_TYPE -ne 'tag') {
-            throw "Release publication must run from an existing version tag; selected ref is '$env:GITHUB_REF'."
+          if ($env:GITHUB_EVENT_NAME -ne 'workflow_dispatch' -and $env:GITHUB_REF_TYPE -ne 'tag') {
+            throw "Release publication requires a manual run or a version tag; selected ref is '$env:GITHUB_REF'."
           }
           $version = (dotnet msbuild src/Penghou.IO.Abstractions/Penghou.IO.Abstractions.csproj -getProperty:PackageVersion -nologo).Trim()
           if ($LASTEXITCODE -ne 0) { throw 'Could not read the checked-in package version.' }
+          if ([string]::IsNullOrWhiteSpace($version)) { throw 'The checked-in package version is empty.' }
           $expectedTag = "v$version"
-          if ($env:GITHUB_REF_NAME -ne $expectedTag) {
+          if ($env:GITHUB_REF_TYPE -eq 'tag' -and $env:GITHUB_REF_NAME -ne $expectedTag) {
             throw "Tag '$env:GITHUB_REF_NAME' does not equal checked-in release tag '$expectedTag'."
-          }
-          if ($env:GITHUB_EVENT_NAME -eq 'workflow_dispatch' -and $env:MANUAL_RELEASE_TAG -ne $env:GITHUB_REF_NAME) {
-            throw "Manual release tag '$env:MANUAL_RELEASE_TAG' does not equal selected ref '$env:GITHUB_REF_NAME'."
           }
           "PACKAGE_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
           "package_version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
@@ -103,6 +96,8 @@ jobs:
     steps:
       - name: Checkout exact release ref
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
@@ -131,6 +126,8 @@ jobs:
     steps:
       - name: Checkout exact release ref
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
@@ -168,7 +165,7 @@ jobs:
           NUGET_USER: ${{ secrets.NUGET_USER }}
         run: |
           if [ -z "$NUGET_USER" ]; then
-            echo "The nuget GitHub environment must define secret NUGET_USER, and the NuGet account must trust this repository/workflow/environment as an OIDC publisher." >&2
+            echo "Define secret NUGET_USER in the repository or nuget GitHub environment, and the NuGet account must trust this repository/workflow/environment as an OIDC publisher." >&2
             exit 1
           fi
 

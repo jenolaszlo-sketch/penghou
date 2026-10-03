@@ -81,8 +81,9 @@ test-only providers qualify neutral composition. No production VFS is introduced
 First coordinated package version: 0.1.0-preview.1, subject to registry collision
 check before release. Default consumer builds use pinned PackageReferences;
 UsePenghouSource=true is the explicit local integration path. CI tests/packs on
-Windows .NET 8/10. A validated release tag publishes qualified artifacts through
-the NuGet OIDC environment. Package-only smoke is intermediate; completion requires
+Windows .NET 8/10. A validated manual release commit or matching version tag
+publishes qualified artifacts through the NuGet OIDC environment. Package-only
+smoke is intermediate; completion requires
 published package restores and actual Luban/Hufu integration evidence.
 
 ## Protocol traces

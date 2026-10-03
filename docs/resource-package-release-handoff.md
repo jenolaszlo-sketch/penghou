@@ -28,6 +28,26 @@ gh run rerun 37084905564 --failed --repo jenolaszlo-sketch/penghou.
 This reuses the validated artifacts. Do not move the release tag or substitute a
 locally rebuilt archive.
 
+## Manual release selection — 2026-10-03
+
+Under RA-5B in the [canonical delivery plan](resource-abstractions-corrective-plan.md),
+manual Publish to NuGet runs now accept the selected branch (normally main)
+without a version/tag input. PackageVersion comes from the selected run's exact
+commit; all three jobs explicitly check out github.sha. Tag runs still reject
+a tag/version mismatch. Existing package-content collision checks, Windows
+provider qualification, Linux neutral builds, isolated consumer proof and
+same-run validated-artifact publication remain required.
+
+The historical tag and artifact hashes above remain unchanged. A new manual
+run validates and records its own commit and artifacts; the old hashes do not
+attest that new run. This workflow change does not claim NuGet publication or
+close RA-5B/RA-5C. See [releasing](releasing.md) for the input-free procedure.
+
+Local workflow lint passes. Executing the actual version-resolution step with
+the real MSBuild package version passes six cases: manual main, matching pushed
+and manual tags, mismatched pushed and manual tags, and rejection of an ordinary
+branch push. The latter three fail before emitting a release version.
+
 ## Consumer qualification
 
 The finalized Luban working tree passes 338 tests on each framework with these
