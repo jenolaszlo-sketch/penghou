@@ -5,6 +5,8 @@ Resume with [Sol's handoff](docs/resource-abstractions-sol-handoff.md):
 the current ledger and [ADR 0003](docs/decisions/0003-replaceable-resource-providers.md).
 RA-0/RA-1 are complete. Corrective code, candidate packages and remote CI are qualified;
 NuGet publication and actual published-package adoption remain open.
+The [release checkpoint](docs/resource-package-release-handoff.md) records the validated
+version tag, missing publishing identity and isolated real-consumer package evidence.
 The plan supplies owners, dependencies, exit criteria and qualification evidence.
 
 ## Architecture correction takes precedence for new work — 2026-10-02
