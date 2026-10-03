@@ -197,8 +197,34 @@ jobs:
             dotnet nuget push "$package" --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" --skip-duplicate
           done
 
-      - name: Verify published package bytes
+  verify-publication:
+    name: Verify public package contents after indexing
+    needs: [validate, publish]
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout exact release ref
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Download the same validated release artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: release-packages-${{ github.sha }}
+          path: artifacts
+
+      - name: Verify published package bytes with a shared indexing deadline
         shell: pwsh
         env:
           PACKAGE_VERSION: ${{ needs.validate.outputs.package_version }}
-        run: ./eng/check-nuget-version.ps1 -PackageVersion $env:PACKAGE_VERSION -PackageDirectory ./artifacts -RequirePublished
+        run: |
+          ./eng/check-nuget-version.ps1 -PackageVersion $env:PACKAGE_VERSION -PackageDirectory ./artifacts -RequirePublished -IndexingTimeoutSeconds 3600 -RetryIntervalSeconds 30
+          "All three public packages match the validated release artifacts for $env:GITHUB_SHA (NuGet repository signature excluded)." | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8

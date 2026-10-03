@@ -51,8 +51,14 @@ NuGet.org's `.signature.p7s` repository-signature entry. A content mismatch stop
 the retry. A fresh run repacks its selected commit, so it is rejected if its
 package contents differ from an already-published version. NuGet package
 versions are immutable; an artifact correction needs a new coordinated version.
-The post-publish check allows a bounded indexing window before it asks for a
-same-run retry.
+After successful package and symbol uploads, a separate verification job
+downloads the same validated artifacts and compares the publicly downloadable
+package contents. It shares a one-hour indexing deadline across the entire
+package set. Upload success and public availability are separate evidence.
+If indexing or verification times out, rerun only that failed verification job;
+it has no NuGet login, credentials or upload steps. Content mismatches and other
+HTTP errors remain hard failures. Do not start a fresh publish run or repack an
+already published version to resolve an indexing delay.
 
 ## Package validation
 

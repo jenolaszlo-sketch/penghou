@@ -1,8 +1,42 @@
 # Resource package release checkpoint
 
-Updated 2026-10-03. RA-5B publication and RA-5C public-feed adoption remain open.
+Updated 2026-10-03. IO RA-5B publication is verified; RA-5C public-feed adoption remains open.
 
-## Exact IO release
+## Verified public IO release
+
+All three IO packages at 0.1.0-preview.1 are published and downloadable from
+NuGet.org. [Release run 37093330455](https://github.com/jenolaszlo-sketch/penghou/actions/runs/37093330455)
+validated commit 69db191f3a36e2122a9301b2dcb017828e918ca6: Windows tests,
+Linux builds, package checks and isolated consumption passed. All three package
+uploads and all three symbol uploads succeeded. Only the final indexing check
+failed after its approximately three-minute window.
+
+The run's exact validated artifacts were subsequently downloaded and inspected.
+All three public nupkg contents match those artifacts, excluding only NuGet's
+repository-signature entry. This independently verifies publication despite
+the historical run's red conclusion. Local artifact SHA-256:
+
+| Package | Version | SHA-256 |
+| --- | --- | --- |
+| Penghou.IO.Abstractions | 0.1.0-preview.1 | b30a7d3ec9077ebe9a63d64111f1cff558b0fbd9e04c631a1e37c79d1a1efb0e |
+| Penghou.IO.Protocols | 0.1.0-preview.1 | 71543f52065e2e3576ed23ea8f840c24f13a2007bcad2989352ad2aca8370724 |
+| Penghou.IO.Local | 0.1.0-preview.1 | 97cd8180a14f83af276d2233df2ddd095c9519ed1b38df57916888c468a6148f |
+
+Do not retry the older tag release or rebuild this immutable version.
+The published artifacts came from the manual main run above, not the historical
+tag below. Future runs keep upload and public verification in separate jobs.
+Verification shares a one-hour indexing deadline and can be retried without
+NuGet credentials or uploads. Workflow lint, real public-content comparison and
+five checker probes pass: delayed indexing, missing index, missing download,
+HTTP 500 and mismatched content. Missing availability never becomes successful
+verification; content mismatches remain hard failures.
+
+RA-5B's IO publication gate is complete in the
+[canonical delivery plan](resource-abstractions-corrective-plan.md). RA-5C remains
+open until Luban and Hufu record actual public-feed qualification. Provider
+profiles and supported semantics are unchanged.
+
+## Historical exact-tag candidate
 
 The immutable v0.1.0-preview.1 tag points to
 468dde33f0cda8f8f26a734abd0e512cea70d138. [Release run 37084905564](https://github.com/jenolaszlo-sketch/penghou/actions/runs/37084905564)
@@ -21,12 +55,9 @@ eng/verify-package-set.ps1. Candidate nupkg SHA-256:
 | Penghou.IO.Protocols | 0.1.0-preview.1 | b5ea0004e89dd69069953122c1eed054b6e74dddc846925b1e3ce8f22cbe25ff |
 | Penghou.IO.Local | 0.1.0-preview.1 | da2a3b0c94b381f964c52d4a034dbd76e51a90b012b0f18594ac426b4a37ac63 |
 
-Configure NUGET_USER in this repository's nuget environment and a NuGet trusted
-publisher for owner jenolaszlo-sketch, repository penghou, workflow publish.yml,
-environment nuget. Retry only the failed job:
-gh run rerun 37084905564 --failed --repo jenolaszlo-sketch/penghou.
-This reuses the validated artifacts. Do not move the release tag or substitute a
-locally rebuilt archive.
+The publishing identity is now configured and exercised by the verified manual
+release above. This older tag candidate remains historical; its artifacts are
+not the published content and must not be retried under the same package version.
 
 ## Manual release selection — 2026-10-03
 
@@ -77,8 +108,8 @@ start/outcome recovery remain separate gates. VFS remains deferred.
 
 ## Finish order
 
-1. Complete both repositories' NuGet publisher configurations.
-2. Retry IO publication and verify all three downloadable package contents.
+1. IO publication and public content verification are complete.
+2. Complete or confirm Luban's separate NuGet publisher configuration.
 3. Qualify Luban against fresh public IO dependencies, commit/CI-qualify its final
    reviewed API, and publish its exact version tag.
 4. Switch Luban's ordinary CI from the explicit candidate feed to public IO.

@@ -122,11 +122,15 @@ with available release access, and preserve unrelated work in any release commit
 
 ## Publication resume point — 2026-10-03
 
-The [release checkpoint](resource-package-release-handoff.md) is the concrete
-resume queue. Exact tagged IO validation passed in run 37084905564; only missing
-NuGet publishing identity stops its publish job. Hufu's complete isolated
-candidate-package suites pass 93/101/19 on each framework without IO/Luban
-source. Default exact Luban references and the public-feed qualification tool
-are ready. Configure each producer's NUGET_USER/trusted publisher, retry IO's
-failed job, qualify/publish Luban from public IO, then run Hufu's default isolated
-public qualification. Candidate proof does not close RA-5B/RA-5C.
+IO preview.1 publication is complete. The
+[release checkpoint](resource-package-release-handoff.md) records manual release
+run 37093330455, its exact source/artifacts and subsequent successful comparison
+of all three public packages. The run's historical indexing timeout did not
+indicate failed uploads. Future publication separates upload from retryable
+public-content verification with a shared one-hour indexing deadline.
+
+Resume at RA-5C: qualify Luban against fresh public IO dependencies, switch its
+ordinary CI off the candidate feed, configure/confirm its separate publisher,
+publish Luban and run Hufu's default isolated public qualification. Hufu's earlier
+93/101/19 suites per framework remain candidate evidence. Public-feed success is
+required to close adoption; stable IO API graduation is a separate reviewed gate.

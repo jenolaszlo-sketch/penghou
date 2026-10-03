@@ -62,7 +62,7 @@ competing specifications into each project.
 | RA-3 | RA-1B; coordinated RA-2 | Candidate packages qualified; published adoption pending | Provider-independent Luban composition; 338 tests pass on each framework, including non-Local providers and exact semantic/memory bounds |
 | RA-4 | RA-1B; corrected provider seams | Candidate packages qualified; published adoption pending | Hufu.IO, retained sessions/frozen writes, real Local allow/deny/revocation and lifecycle qualification |
 | RA-5A | RA-2; candidate consumer validation | Complete; local and remote CI qualified | CI and release workflows, three package candidates, artifact checks and isolated local-feed consumption |
-| RA-5B | RA-5A | Exact tag qualified; publishing identity missing | Working release workflow and corrected package release published on NuGet |
+| RA-5B | RA-5A | Complete; IO preview.1 publicly downloadable and contents verified | Working release workflow and corrected package release published on NuGet |
 | RA-5C | RA-5B; RA-3/4 | Isolated candidate packages pass; public-feed proof pending | Luban and Hufu consume published versions with passing integration evidence |
 
 Delivery order: resolve decisions -> correct repository/ownership -> qualify CI
@@ -75,7 +75,24 @@ Do not mark an item complete because its interfaces compile. If a provider canno
 meet a required guarantee, return Unsupported or propose a separately versioned
 profile; do not weaken existing consumer guarantees.
 
-## Current evidence and external release gate
+## Current verified publication — 2026-10-03
+
+IO.Abstractions, IO.Protocols and IO.Local 0.1.0-preview.1 are published and
+downloadable. [Release run 37093330455](https://github.com/jenolaszlo-sketch/penghou/actions/runs/37093330455)
+validated commit 69db191f3a36e2122a9301b2dcb017828e918ca6 and successfully
+uploaded all packages and symbols. Its final indexing check timed out, but
+subsequent comparison against that run's exact validated artifacts confirms all
+three publicly downloadable package contents match, excluding NuGet's repository
+signature. The [release checkpoint](resource-package-release-handoff.md) records
+the actual artifact hashes. This supersedes older publication-blocker statements
+below; the immutable historical tag is not the published release source.
+
+RA-5B is complete. RA-5C remains open: qualify Luban from a fresh NuGet.org-only
+IO restore, change ordinary Luban CI from its candidate feed to public packages,
+publish Luban, then run Hufu's isolated public-resource-package qualification.
+This completes IO publication, not stable-version graduation or consumer adoption.
+
+## Historical candidate evidence and external release gate
 
 - Remote [CI run 37030577295](https://github.com/jenolaszlo-sketch/penghou/actions/runs/37030577295)
   passes for commit `89858631e4f9220bf40506cff34bb9b6ee8912dd`: both Windows
