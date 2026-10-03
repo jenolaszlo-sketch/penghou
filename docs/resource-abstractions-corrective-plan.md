@@ -59,7 +59,7 @@ competing specifications into each project.
 | RA-1A | RA-0 | Complete | Dependency/API inventory and ADR 0003 protocol traces |
 | RA-1B | RA-1A | Complete | G1-G5/G8 selected in ADR 0003; opaque versions and existing enforcement retained |
 | RA-2 | RA-1B | Corrected code qualified | Contract-only assembly, Protocols relocation, Local conditional byte writer and semantic materialization in Luban; both consumer regression suites pass |
-| RA-3 | RA-1B; coordinated RA-2 | Candidate packages qualified; published adoption pending | Provider-independent Luban composition; 337 tests pass on each framework, including non-Local providers and exact semantic/memory bounds |
+| RA-3 | RA-1B; coordinated RA-2 | Candidate packages qualified; published adoption pending | Provider-independent Luban composition; 338 tests pass on each framework, including non-Local providers and exact semantic/memory bounds |
 | RA-4 | RA-1B; corrected provider seams | Candidate packages qualified; published adoption pending | Hufu.IO, retained sessions/frozen writes, real Local allow/deny/revocation and lifecycle qualification |
 | RA-5A | RA-2; candidate consumer validation | Complete; local and remote CI qualified | CI and release workflows, three package candidates, artifact checks and isolated local-feed consumption |
 | RA-5B | RA-5A | Pending | Working release workflow and corrected package release published on NuGet |
@@ -89,7 +89,7 @@ profile; do not weaken existing consumer guarantees.
 - IO: 73/73 tests pass with no skips on Windows, both net8.0 and net10.0.
 - Three candidate packages pack and pass metadata/dependency/content checks;
   an isolated package-only consumer restores and runs on both frameworks.
-- Luban: 337/337 tests pass on each framework against candidate packages;
+- Luban: 338/338 tests pass on each framework against candidate packages;
   neutral source imports no Local/OS API and an injected test provider exercises
   read, preview and single/batch execution with opaque version tokens.
 - Hufu: 19/19 IO integration, 95/95 existing Cedar/SQLite/Zhinu/Luban and
@@ -114,17 +114,20 @@ profile; do not weaken existing consumer guarantees.
 
 Luban's initial D1–D6 feature baseline is implemented and qualified independently
 of Hufu and workflow engines. Its [completion ledger](../../Penghou.Luban/docs/leaf-completion.md)
-records 337 tests per framework, opt-in language v2, exact file-change/application
-profiles and green [CI run 37039062513](https://github.com/jenolaszlo-sketch/penghou-luban/actions/runs/37039062513)
-for revision `4bbbd84bbaaf7a3376f85fc1e59da3fd13901693`. CI also verifies Linux
+records 338 tests per framework, opt-in language v2, exact file-change/application
+profiles and green [CI run 37085937530](https://github.com/jenolaszlo-sketch/penghou-luban/actions/runs/37085937530)
+for revision `26f4ad943a0f4370627574c43d2a78bd2c14b54d`. CI also verifies Linux
 neutral compilation and an isolated Luban package-only consumer. The core's only
 package dependencies are the corrected IO.Abstractions and IO.Protocols candidates.
 
 The [consumer impact guide](../../Penghou.Luban/docs/consumer-impact.md) records
 the package graph and migration owners. Hufu's counts above are the earlier IO
-migration checkpoint, not new qualification against this Luban revision. Hufu
-consumer qualification is next; no Hufu implementation was changed in this leaf
-completion. RA-5B/RA-5C still require actual published IO package versions. A green
+migration checkpoint. Final API ownership and compatibility checks are complete:
+TextPatch/PatchLimits belong to Penghou.Luban.Changes. Hufu passes 101 tests per
+framework against the exact Luban candidate package, including v2 read/diff rejection
+before authority access; see its [consumer
+qualification](../../Penghou.Hufu/docs/luban-api-consumer-qualification.md). RA-5B/RA-5C
+still require actual published IO package versions. A green
 Luban package candidate does not satisfy public-feed adoption.
 
 ## RA-1A — Map consumers and work through the protocol

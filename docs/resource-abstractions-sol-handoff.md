@@ -50,13 +50,15 @@ untracked with no committed HEAD; do not commit its whole tree as an IO release.
 ## Current Luban leaf checkpoint — 2026-10-03
 
 Luban D1–D6 and focused AI read usability are implemented and CI-qualified, with
-337 tests passing on each supported framework. Read its
+338 tests passing on each supported framework. Read its
 [completion ledger](../../Penghou.Luban/docs/leaf-completion.md) and
 [consumer impact guide](../../Penghou.Luban/docs/consumer-impact.md) before any
 producer edits. Hufu and workflow durability are outside this Luban feature gate.
-The next consumer step is Hufu qualification and eventual exact Luban package
-adoption. Existing Hufu test counts above belong to the earlier migration
-checkpoint; do not report them as validation of the newest Luban revision.
+Luban final public API ownership and compatibility checks are complete. Hufu passes 101
+tests per framework against the exact Luban candidate package; see its [consumer
+qualification](../../Penghou.Hufu/docs/luban-api-consumer-qualification.md). The earlier
+Hufu counts above remain historical. Public-feed adoption remains a release gate;
+unsupported Luban v2 deliberately fails closed in Hufu.
 Publication/adoption RA-5B/RA-5C remain open in the corrective ledger.
 
 ## Original review baseline (superseded where ADR 0003 records a correction)

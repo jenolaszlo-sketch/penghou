@@ -6,7 +6,8 @@ below is retained as the migration baseline. The implemented changes are:
 
 - `WindowsWorkspacePath` and `ResourceRequestIdentity` moved into IO.Protocols;
   their existing public namespace is retained for this unpublished preview.
-- `TextPatch`, `PatchLimits` and `FilePatchRequest` moved into Luban. Their
+- `TextPatch` and `PatchLimits` belong to `Penghou.Luban.Changes`; the unused
+  `FilePatchRequest` was removed during the final API review. Their
   pure materialization is a language operation; Local accepts conditional bytes.
 - Added `WorkspaceProviderCapabilities`, `WorkspaceReaderOptions`,
   `WorkspaceWriterOptions`, `IWorkspaceProvider`, `IWorkspaceReaderSession`
