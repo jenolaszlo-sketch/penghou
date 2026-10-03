@@ -1,0 +1,27 @@
+{
+  "packageId": "Penghou.Workflow.Abstractions",
+  "version": "0.1.0-preview.2",
+  "sourceCommit": "5a76b7c",
+  "ci": {
+    "runId": "37115430526",
+    "url": "https://github.com/jenolaszlo-sketch/penghou/actions/runs/37115430526",
+    "jobsPassed": 7
+  },
+  "publication": {
+    "runId": "37116694209",
+    "url": "https://github.com/jenolaszlo-sketch/penghou/actions/runs/37116694209",
+    "jobsPassed": 4,
+    "status": "published"
+  },
+  "package": {
+    "publishedContentsMatchCiArtifact": true,
+    "comparisonException": "Repository signature",
+    "dependencies": []
+  },
+  "publicFeedConsumers": {
+    "source": "NuGet.org only; fresh package cache",
+    "net8.0": "passed",
+    "net10.0": "passed"
+  },
+  "scope": "Package version, contents, dependency boundary, publication, and consumer restore/build/runtime qualification only. This record does not claim Zhinu or Hufu runtime acceptance."
+}

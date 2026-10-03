@@ -1,9 +1,11 @@
 # Product-neutral workflow abstractions
 
-Status: 2026-10-03; WA-1 design is selected and WA-2 implementation is locally
-qualified for the preview.2 source release; remote CI remains pending. WA-3 publication remains pending. See the
+Status: 2026-10-03; WA-1/2/3 are complete. Exact package version
+`0.1.0-preview.2` is published; CI, publication and fresh-cache public-feed
+consumer qualification passed. See the
 [contract manual](workflow-authorization-contract.md), [review](workflow-contract-review.md)
-and [release checkpoint](workflow-package-release-handoff.md).
+and [release checkpoint](workflow-package-release-handoff.md), plus the
+[public-package qualification record](workflow-public-package-qualification.json).
 This records the user's clarification after the authority-extension
 proposal: shared abstractions live in the **Penghou repository** and use a
 capability/domain name, not a product name.
@@ -108,17 +110,24 @@ Select them only after separate consumer and compatibility reviews.
 | Gate | Owner | Dependency | Acceptance |
 | --- | --- | --- | --- |
 | WA-1 | Penghou contracts; Zhinu/Hufu review input | None | Review neutral types, bounds, exact identity/requirements, closed outcomes, error/cancellation semantics, compatibility and alternative-runtime implementability. Use ZA-1 dispatch/state review as evidence; do not ship runtime mechanics as contracts |
-| WA-2 | Penghou | WA-1 and reviewed ZA-1 | Implement the isolated project/package, API inventory, compatibility/conformance probes, .NET 8/10 builds and negative dependency checks. A consumer implementing the seam without Zhinu or Hufu must compile. Integrate build/test/pack and input-free main publication into Penghou CI |
-| WA-3 | Penghou release owner | WA-2 | Qualify package contents and fresh-cache consumers, then the user publishes the contract package through Penghou CI. Record the actual immutable version; do not assume a version or treat local candidates as published |
-| ZA-2/3/4/6 | Zhinu | WA-3 | Consume the exact published contract package, implement and qualify default/provider registration, dispatch checks, durable approval/retry/resume, evidence/fencing, then release Zhinu runtime/provider packages separately |
+| WA-2 | Penghou | WA-1 and reviewed ZA-1 | Complete. Source commit `5a76b7c`; all seven CI jobs passed in [run 37115430526](https://github.com/jenolaszlo-sketch/penghou/actions/runs/37115430526). |
+| WA-3 | Penghou release owner | WA-2 | Complete. Published `0.1.0-preview.2`; all four publication jobs passed in [run 37116694209](https://github.com/jenolaszlo-sketch/penghou/actions/runs/37116694209). Exact public package contents match CI apart from the repository signature; fresh-cache NuGet-only consumers pass on .NET 8/10. See the [qualification record](workflow-public-package-qualification.json). |
+| ZA-2 | Zhinu | WA-3 | Complete. Zhinu source adoption pins exact published `Penghou.Workflow.Abstractions` `0.1.0-preview.2`; core package pin and source builds pass on .NET 8/10. The fresh-GUID empty-cache graph passed using seven exact CI packages at `0.1.0-preview.15-ci.wa3.20261003`; the workflow package and external dependencies restore from public NuGet only. Both builds and runs pass, and no Hufu package resolves. See the [adoption checkpoint](../../Penghou.Zhinu/docs/workflow-package-adoption.md). |
+| ZA-3A/3B/4 | Zhinu | ZA-2 | Implemented and locally qualified in candidate `0.2.0-preview.1`; see the current [Zhinu authorization qualification](../../Penghou.Zhinu/docs/qualification/workflow-authorization.json). The 927-case ZA-2 record remains historical evidence for package adoption. |
+| ZA-6 | Zhinu | ZA-3A/3B/4 and preview.15 compatibility qualified | Commit/push and user-publish qualified Zhinu `0.2.0-preview.1` through its NuGet CI workflow with remote CI. Publication remains pending. |
 | HA-1/2/3 | Hufu | WA-3 and completed Zhinu runtime phase ZA-6 | Implement the optional adapter against only Hufu and the published neutral contracts, run separate runtime integration tests, qualify and release Hufu separately |
 | LW-1 | Luban integration owner | WA-3; relevant runtime/adapter candidates for composed tests | Review additive Luban operation/requirement mapping against the neutral contract through an optional host/adapter or neutral hook. Preserve language/IO boundaries, exact plan identity, semantic admission and live per-resource checks; no mandatory Zhinu/Hufu dependency in Luban |
 
-This is the selected work order: **contracts and their publication, then Zhinu,
-then Hufu integration**. Contract design uses source review and minimal isolated
-consumer probes before publication; that review is not concurrent runtime or
-adapter implementation. Existing independent Hufu cleanup may remain ready,
-but does not advance the workflow integration ahead of these phases.
+This is the selected work order: **published contracts, completed Zhinu ZA-2,
+then locally qualified Zhinu ZA-3A/3B/4, ZA-6 publication, then Hufu
+HA-1/2/3**. ZA-2's exact
+published-package source adoption and fresh seven-package consumer closure
+passed. The runtime qualification is recorded in the Zhinu candidate; publication
+remains pending.
+Independent Hufu HA-0A/B cleanup may proceed, while
+the older staged Hufu snapshot remains on hold. Luban LW-1 is optional
+neutral-host integration; its language core remains independent of this contract
+and of Zhinu/Hufu. Package qualification does not establish runtime acceptance.
 
 The [cross-project plan](../../Penghou.Zhinu/docs/authority-extension-plan.md)
 and [activity queue](../../Penghou.Zhinu/docs/authority-extension-activities.md)
@@ -140,9 +149,9 @@ remains unchanged as historical input. Its `Penghou.Zhinu.Abstractions` name
 and Zhinu repository ownership are superseded by this clarification.
 IO/Luban package boundaries and deferred VFS/WhatIf work are unaffected.
 
-Read this plan first for ownership, naming and publication order, then the
-cross-project plan for behavioral requirements. Update all three roadmaps and
-handoffs with actual WA/ZA/HA evidence. The current implementation request ends
-with the preview.2 version bump, commit and push; the user publishes NuGet before
-integration implementation resumes. The next scope includes Zhinu, Hufu.Workflow
-and the additive Luban LW-1 integration, keeping product implementations separate.
+Read this plan first for ownership and naming, then the cross-project plan for
+behavioral requirements. WA-1/2/3 and Zhinu ZA-2 source adoption are complete;
+commit/push and user-publish Zhinu through ZA-6, then Hufu HA-1/2/3. Keep package
+qualification distinct from implementation/runtime acceptance. Luban LW-1 is
+optional neutral-host integration and does not make workflow authorization a
+language-core dependency.

@@ -1,25 +1,35 @@
 # Penghou shared contracts and providers
 
 This repository owns domain-named, replaceable contracts such as
-`Penghou.IO.Abstractions` and the planned `Penghou.Workflow.Abstractions`.
+`Penghou.IO.Abstractions` and `Penghou.Workflow.Abstractions`.
 Product implementations consume these contracts. Zhinu implements workflow
 execution; Hufu.Workflow implements optional workflow authorization; another
 engine or authority implementation can use the same neutral boundary.
 
-The [workflow contract plan](docs/workflow-abstractions-plan.md) defines the new
-package's ownership, bounds and delivery order: publish the contract package
-first, then update Zhinu, then Hufu integration. The package is implemented and
-locally qualified at `0.1.0-preview.2`, with CI qualification and publication next;
-it is not yet published. See the [contract manual](docs/workflow-authorization-contract.md),
-[source/design review](docs/workflow-contract-review.md) and
-[release checkpoint](docs/workflow-package-release-handoff.md).
+The [workflow contract plan](docs/workflow-abstractions-plan.md) defines the
+package's ownership, bounds and delivery order. WA-1/2/3 are complete:
+`Penghou.Workflow.Abstractions` `0.1.0-preview.2` is published and qualified.
+See the [contract manual](docs/workflow-authorization-contract.md),
+[source/design review](docs/workflow-contract-review.md),
+[release checkpoint](docs/workflow-package-release-handoff.md) and
+[public-package qualification](docs/workflow-public-package-qualification.json).
+Zhinu's exact published-package source adoption and ZA-3A/3B/4 runtime
+qualification are complete locally; the unchanged preview.15 compatibility
+suite also passed on .NET 8/10. The next step is commit/push and user-run ZA-6
+publication of Zhinu 0.2.0-preview.1 with remote CI.
+Hufu HA-1/2/3 remains held until that publication; Luban LW-1 is optional and
+independent. See the
+[adoption checkpoint](../Penghou.Zhinu/docs/workflow-package-adoption.md).
 
 It supplies `IExecutionAuthorizer` and immutable execution identity, context,
 requirement and result values. It has no dependency on IO, Zhinu or Hufu, and
 ships no engine, policy evaluator or default authorizer. CI tests the contracts
 on .NET 8/10 and Linux/Windows, inspects the package and proves package-only
-consumption. **Publish to NuGet** is input-free from `main` and currently
-publishes only this new package; existing IO versions are not republished.
+consumption. The input-free **Publish to NuGet** workflow published this package
+from `main`; existing IO versions were not republished. Exact public package
+contents match CI apart from the repository signature, and fresh-cache NuGet-only
+consumers pass on .NET 8 and .NET 10. This qualifies the package boundary, not
+Zhinu or Hufu runtime behavior.
 
 ## Penghou I/O
 
