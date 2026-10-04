@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('IO', 'Workflow')]
+    [ValidateSet('IO', 'Workflow', 'Transport')]
     [string] $Profile = 'IO',
 
     [Parameter(Mandatory = $true)]
@@ -15,11 +15,10 @@ $tempRoot = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath())
 $workDirectory = Join-Path $tempRoot "penghou-package-consumer-$([guid]::NewGuid().ToString('N'))"
 $feedDirectory = Join-Path $workDirectory 'feed'
 $consumerDirectory = Join-Path $workDirectory 'consumer'
-[string[]] $packageIds = if ($Profile -eq 'Workflow') {
-    @('Penghou.Workflow.Abstractions')
-}
-else {
-    @('Penghou.IO.Protocols', 'Penghou.IO.Abstractions', 'Penghou.IO.Local')
+[string[]] $packageIds = switch ($Profile) {
+    'Workflow' { @('Penghou.Workflow.Abstractions') }
+    'Transport' { @('Penghou.Model.Abstractions', 'Penghou.Http.Abstractions') }
+    default { @('Penghou.IO.Protocols', 'Penghou.IO.Abstractions', 'Penghou.IO.Local') }
 }
 $previousNugetPackages = $env:NUGET_PACKAGES
 
@@ -59,7 +58,14 @@ $references
 </configuration>
 "@ | Set-Content -LiteralPath (Join-Path $consumerDirectory 'NuGet.Config') -Encoding utf8
 
-    $consumerProgram = if ($Profile -eq 'Workflow') {
+    $consumerProgram = if ($Profile -eq 'Transport') {
+        $transportProgramPath = Join-Path $PSScriptRoot 'transport-package-consumer.cs'
+        if (-not (Test-Path -LiteralPath $transportProgramPath -PathType Leaf)) {
+            throw "Transport package smoke cannot run until the real API consumer proof is supplied at '$transportProgramPath'."
+        }
+        Get-Content -LiteralPath $transportProgramPath -Raw
+    }
+    elseif ($Profile -eq 'Workflow') {
 @'
 using Penghou.Workflow.Abstractions;
 
@@ -123,21 +129,26 @@ Console.WriteLine($"Loaded package APIs for {workspace.Value}; schema {ResourceR
     $projectPath = Join-Path $consumerDirectory 'PackageOnlyConsumer.csproj'
     dotnet restore $projectPath --configfile (Join-Path $consumerDirectory 'NuGet.Config')
     if ($LASTEXITCODE -ne 0) { throw 'Package-only restore failed.' }
-    if ($Profile -eq 'Workflow') {
+    if ($Profile -in @('Workflow', 'Transport')) {
         $assetsPath = Join-Path $consumerDirectory 'obj/project.assets.json'
         $assets = Get-Content -LiteralPath $assetsPath -Raw | ConvertFrom-Json
         foreach ($framework in @('net8.0', 'net10.0')) {
             $target = $assets.targets.$framework
             $targetPackageIds = @($target.PSObject.Properties.Name | ForEach-Object { ($_ -split '/', 2)[0] })
-            if ($targetPackageIds.Count -ne 1 -or $targetPackageIds[0] -ne $packageIds[0]) {
-                throw "The fresh $framework package-only target must contain exactly $($packageIds[0]); found $($targetPackageIds -join ', ')."
+            if ($targetPackageIds.Count -ne $packageIds.Count -or
+                [string]::Join("`n", @($targetPackageIds | Sort-Object)) -cne [string]::Join("`n", @($packageIds | Sort-Object))) {
+                throw "The fresh $framework package-only target must contain exactly $($packageIds -join ', '); found $($targetPackageIds -join ', ')."
             }
             $frameworkDependencies = @($assets.project.frameworks.$framework.dependencies.PSObject.Properties)
-            if ($frameworkDependencies.Count -ne 1 -or $frameworkDependencies[0].Name -ne $packageIds[0]) {
-                throw "The fresh $framework consumer project must directly reference exactly $($packageIds[0])."
+            $directIds = @($frameworkDependencies | ForEach-Object Name | Sort-Object)
+            if ($frameworkDependencies.Count -ne $packageIds.Count -or
+                [string]::Join("`n", $directIds) -cne [string]::Join("`n", @($packageIds | Sort-Object))) {
+                throw "The fresh $framework consumer project must directly reference exactly $($packageIds -join ', ')."
             }
-            if ($frameworkDependencies[0].Value.version -ne "[$PackageVersion, $PackageVersion]") {
-                throw "The $framework consumer reference is not pinned to exact version $PackageVersion."
+            foreach ($dependency in $frameworkDependencies) {
+                if ($dependency.Value.version -ne "[$PackageVersion, $PackageVersion]") {
+                    throw "The $framework consumer reference '$($dependency.Name)' is not pinned to exact version $PackageVersion."
+                }
             }
         }
     }

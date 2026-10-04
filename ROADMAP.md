@@ -125,3 +125,36 @@ Use Luna for bounded implementation/tests where possible, review identity and
 native consistency gates, and release packages only after qualification and
 the configured release controls. Publication and both consumer migrations are
 part of the clarified delivery goal. No enforcement claim follows from interfaces.
+
+## Governable model and HTTP contracts — 2026-10-04
+
+Separate from RA/WA and their published compatibility profiles. Canonical
+delivery queue: [Baize governable transport plan](../Penghou.Baize/docs/governable-model-http-plan.md)
+and [handoff](../Penghou.Baize/docs/governable-model-http-handoff.md).
+
+- [x] **GM-0:** close neutral payload/stream/job/context/usage/failure and HTTP
+  ownership/bounds decisions; inventory existing credential-free web contracts
+  and document reuse/non-equivalence without changing the published IO baseline.
+- [ ] **GM-1 (source/local qualification complete; remote CI pending):** add approved product-neutral capability contract packages here
+  (proposed `Penghou.Model.Abstractions` and `Penghou.Http.Abstractions`), with
+  API/dependency checks, contract conformance, supported-framework CI, packing
+  and isolated consumer qualification. No Baize/Hufu/provider/workflow dependency.
+- [ ] **GM-1P:** qualify and publish exact contracts through normal release
+  controls; verify indexed public packages before final Baize package adoption.
+
+Baize owns GM-2 through GM-6. Hufu adapters follow separately after seam
+qualification. Model invocation and arbitrary HTTP stay distinct capabilities;
+context IDs are data, not authenticated identity. Do not add a universal umbrella
+library, duplicate equivalent HTTP types, substantive provider implementations,
+budget accounting or credential custody to contract packages. The completed
+sandbox-parent experiment is not a dependency of this work.
+
+### GM implementation checkpoint — 2026-10-04
+
+GM-0's operation inventory, contract decisions and protocol traces are recorded
+in [ADR 0004](docs/decisions/0004-model-http-transport-contracts.md) and the
+[consumer matrix](docs/model-http-consumer-matrix.md). GM-1 code and qualification
+are recorded in the [release checkpoint](docs/model-http-release-handoff.md).
+New projects are `Penghou.Model.Abstractions` and `Penghou.Http.Abstractions`,
+both `0.1.0-preview.1`. GM-1P remote publication/indexing and Baize GM-2 onward
+remain open; no consumer or Hufu enforcement is inferred from contract tests.

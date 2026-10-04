@@ -1,0 +1,99 @@
+#nullable enable
+Penghou.Http.Abstractions.HttpAccessDeniedException
+Penghou.Http.Abstractions.HttpAccessDeniedException.HttpAccessDeniedException(string! requestId, string! reasonCode = "access-denied") -> void
+Penghou.Http.Abstractions.HttpBinaryBody
+Penghou.Http.Abstractions.HttpBinaryBody.ContentType.get -> string!
+Penghou.Http.Abstractions.HttpBinaryBody.GetBytes() -> byte[]!
+Penghou.Http.Abstractions.HttpBinaryBody.HttpBinaryBody(System.ReadOnlyMemory<byte> bytes, string! contentType = "application/octet-stream") -> void
+Penghou.Http.Abstractions.HttpHeaders
+Penghou.Http.Abstractions.HttpHeaders.ByteCount.get -> int
+Penghou.Http.Abstractions.HttpHeaders.Fields.get -> System.Collections.Generic.IReadOnlyDictionary<string!, System.Collections.Generic.IReadOnlyList<string!>!>!
+Penghou.Http.Abstractions.HttpHeaders.HttpHeaders(System.Collections.Generic.IReadOnlyDictionary<string!, System.Collections.Generic.IReadOnlyList<string!>!>? fields = null) -> void
+Penghou.Http.Abstractions.HttpMultipartBody
+Penghou.Http.Abstractions.HttpMultipartBody.HttpMultipartBody(System.Collections.Generic.IReadOnlyList<Penghou.Http.Abstractions.HttpMultipartPart!>! parts) -> void
+Penghou.Http.Abstractions.HttpMultipartBody.Parts.get -> System.Collections.Generic.IReadOnlyList<Penghou.Http.Abstractions.HttpMultipartPart!>!
+Penghou.Http.Abstractions.HttpMultipartPart
+Penghou.Http.Abstractions.HttpMultipartPart.<Clone>$() -> Penghou.Http.Abstractions.HttpMultipartPart!
+Penghou.Http.Abstractions.HttpMultipartPart.Body.get -> Penghou.Http.Abstractions.HttpBinaryBody!
+Penghou.Http.Abstractions.HttpMultipartPart.Equals(Penghou.Http.Abstractions.HttpMultipartPart? other) -> bool
+Penghou.Http.Abstractions.HttpMultipartPart.FileName.get -> string?
+Penghou.Http.Abstractions.HttpMultipartPart.HttpMultipartPart(string! name, Penghou.Http.Abstractions.HttpBinaryBody! body, string? fileName = null) -> void
+Penghou.Http.Abstractions.HttpMultipartPart.Name.get -> string!
+Penghou.Http.Abstractions.HttpRequestContext
+Penghou.Http.Abstractions.HttpRequestContext.<Clone>$() -> Penghou.Http.Abstractions.HttpRequestContext!
+Penghou.Http.Abstractions.HttpRequestContext.CorrelationId.get -> string?
+Penghou.Http.Abstractions.HttpRequestContext.Equals(Penghou.Http.Abstractions.HttpRequestContext? other) -> bool
+Penghou.Http.Abstractions.HttpRequestContext.HttpRequestContext(string? correlationId = null, System.Collections.Generic.IReadOnlyDictionary<string!, string!>? metadata = null) -> void
+Penghou.Http.Abstractions.HttpRequestContext.Metadata.get -> System.Collections.Generic.IReadOnlyDictionary<string!, string!>!
+Penghou.Http.Abstractions.HttpResponseChunk
+Penghou.Http.Abstractions.HttpResponseChunk.GetBytes() -> byte[]!
+Penghou.Http.Abstractions.HttpResponseChunk.HttpResponseChunk(System.ReadOnlyMemory<byte> bytes, bool isCompleted = false) -> void
+Penghou.Http.Abstractions.HttpResponseChunk.IsCompleted.get -> bool
+Penghou.Http.Abstractions.HttpResponseChunk.Length.get -> int
+Penghou.Http.Abstractions.HttpTransportBody
+Penghou.Http.Abstractions.HttpTransportException
+Penghou.Http.Abstractions.HttpTransportException.HttpTransportException(string! requestId, string! reasonCode) -> void
+Penghou.Http.Abstractions.HttpTransportException.ReasonCode.get -> string!
+Penghou.Http.Abstractions.HttpTransportException.RequestId.get -> string!
+Penghou.Http.Abstractions.HttpTransportLimits
+Penghou.Http.Abstractions.HttpTransportLimits.<Clone>$() -> Penghou.Http.Abstractions.HttpTransportLimits!
+Penghou.Http.Abstractions.HttpTransportLimits.Equals(Penghou.Http.Abstractions.HttpTransportLimits? other) -> bool
+Penghou.Http.Abstractions.HttpTransportLimits.HttpTransportLimits(long maximumRequestBodyBytes = 67108864, long maximumResponseBodyBytes = 67108864, int maximumResponseHeaderBytes = 65536, int maximumChunkBytes = 16384, System.TimeSpan? timeout = null, int maximumRedirects = 0) -> void
+Penghou.Http.Abstractions.HttpTransportLimits.MaximumReadBytes.get -> int
+Penghou.Http.Abstractions.HttpTransportLimits.MaximumRedirects.get -> int
+Penghou.Http.Abstractions.HttpTransportLimits.MaximumRequestBodyBytes.get -> long
+Penghou.Http.Abstractions.HttpTransportLimits.MaximumResponseBodyBytes.get -> long
+Penghou.Http.Abstractions.HttpTransportLimits.MaximumResponseHeaderBytes.get -> int
+Penghou.Http.Abstractions.HttpTransportLimits.Timeout.get -> System.TimeSpan
+Penghou.Http.Abstractions.HttpTransportRequest
+Penghou.Http.Abstractions.HttpTransportRequest.<Clone>$() -> Penghou.Http.Abstractions.HttpTransportRequest!
+Penghou.Http.Abstractions.HttpTransportRequest.Body.get -> Penghou.Http.Abstractions.HttpTransportBody?
+Penghou.Http.Abstractions.HttpTransportRequest.Context.get -> Penghou.Http.Abstractions.HttpRequestContext?
+Penghou.Http.Abstractions.HttpTransportRequest.Equals(Penghou.Http.Abstractions.HttpTransportRequest? other) -> bool
+Penghou.Http.Abstractions.HttpTransportRequest.Headers.get -> Penghou.Http.Abstractions.HttpHeaders!
+Penghou.Http.Abstractions.HttpTransportRequest.HttpTransportRequest(string! requestId, string! method, System.Uri! uri, Penghou.Http.Abstractions.HttpTransportBody? body = null, Penghou.Http.Abstractions.HttpHeaders? headers = null, Penghou.Http.Abstractions.HttpRequestContext? context = null, Penghou.Http.Abstractions.HttpTransportLimits? limits = null) -> void
+Penghou.Http.Abstractions.HttpTransportRequest.Limits.get -> Penghou.Http.Abstractions.HttpTransportLimits!
+Penghou.Http.Abstractions.HttpTransportRequest.Method.get -> string!
+Penghou.Http.Abstractions.HttpTransportRequest.RequestId.get -> string!
+Penghou.Http.Abstractions.HttpTransportRequest.Uri.get -> System.Uri!
+Penghou.Http.Abstractions.HttpTransportResponse
+Penghou.Http.Abstractions.HttpTransportResponse.Body.get -> Penghou.Http.Abstractions.IHttpResponseBody!
+Penghou.Http.Abstractions.HttpTransportResponse.DisposeAsync() -> System.Threading.Tasks.ValueTask
+Penghou.Http.Abstractions.HttpTransportResponse.Headers.get -> Penghou.Http.Abstractions.HttpHeaders!
+Penghou.Http.Abstractions.HttpTransportResponse.HttpTransportResponse(string! requestId, int statusCode, Penghou.Http.Abstractions.HttpHeaders! headers, Penghou.Http.Abstractions.IHttpResponseBody! body) -> void
+Penghou.Http.Abstractions.HttpTransportResponse.RequestId.get -> string!
+Penghou.Http.Abstractions.HttpTransportResponse.StatusCode.get -> int
+Penghou.Http.Abstractions.IHttpResponseBody
+Penghou.Http.Abstractions.IHttpResponseBody.ReadAsync(int maximumBytes, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Penghou.Http.Abstractions.HttpResponseChunk!>
+Penghou.Http.Abstractions.IHttpTransport
+Penghou.Http.Abstractions.IHttpTransport.SendAsync(Penghou.Http.Abstractions.HttpTransportRequest! request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Penghou.Http.Abstractions.HttpTransportResponse!>
+abstract Penghou.Http.Abstractions.HttpTransportBody.Length.get -> long
+const Penghou.Http.Abstractions.HttpHeaders.MaximumBytes = 65536 -> int
+const Penghou.Http.Abstractions.HttpHeaders.MaximumFields = 64 -> int
+const Penghou.Http.Abstractions.HttpHeaders.MaximumValuesPerField = 16 -> int
+const Penghou.Http.Abstractions.HttpMultipartBody.MaximumParts = 64 -> int
+const Penghou.Http.Abstractions.HttpTransportBody.MaximumBodyBytes = 1073741824 -> long
+const Penghou.Http.Abstractions.HttpTransportLimits.MaximumChunkBytes = 65536 -> int
+override Penghou.Http.Abstractions.HttpBinaryBody.Length.get -> long
+override Penghou.Http.Abstractions.HttpMultipartBody.Length.get -> long
+override Penghou.Http.Abstractions.HttpMultipartPart.Equals(object? obj) -> bool
+override Penghou.Http.Abstractions.HttpMultipartPart.GetHashCode() -> int
+override Penghou.Http.Abstractions.HttpMultipartPart.ToString() -> string!
+override Penghou.Http.Abstractions.HttpRequestContext.Equals(object? obj) -> bool
+override Penghou.Http.Abstractions.HttpRequestContext.GetHashCode() -> int
+override Penghou.Http.Abstractions.HttpRequestContext.ToString() -> string!
+override Penghou.Http.Abstractions.HttpTransportLimits.Equals(object? obj) -> bool
+override Penghou.Http.Abstractions.HttpTransportLimits.GetHashCode() -> int
+override Penghou.Http.Abstractions.HttpTransportLimits.ToString() -> string!
+override Penghou.Http.Abstractions.HttpTransportRequest.Equals(object? obj) -> bool
+override Penghou.Http.Abstractions.HttpTransportRequest.GetHashCode() -> int
+override Penghou.Http.Abstractions.HttpTransportRequest.ToString() -> string!
+static Penghou.Http.Abstractions.HttpHeaders.Empty.get -> Penghou.Http.Abstractions.HttpHeaders!
+static Penghou.Http.Abstractions.HttpMultipartPart.operator !=(Penghou.Http.Abstractions.HttpMultipartPart? left, Penghou.Http.Abstractions.HttpMultipartPart? right) -> bool
+static Penghou.Http.Abstractions.HttpMultipartPart.operator ==(Penghou.Http.Abstractions.HttpMultipartPart? left, Penghou.Http.Abstractions.HttpMultipartPart? right) -> bool
+static Penghou.Http.Abstractions.HttpRequestContext.operator !=(Penghou.Http.Abstractions.HttpRequestContext? left, Penghou.Http.Abstractions.HttpRequestContext? right) -> bool
+static Penghou.Http.Abstractions.HttpRequestContext.operator ==(Penghou.Http.Abstractions.HttpRequestContext? left, Penghou.Http.Abstractions.HttpRequestContext? right) -> bool
+static Penghou.Http.Abstractions.HttpTransportLimits.operator !=(Penghou.Http.Abstractions.HttpTransportLimits? left, Penghou.Http.Abstractions.HttpTransportLimits? right) -> bool
+static Penghou.Http.Abstractions.HttpTransportLimits.operator ==(Penghou.Http.Abstractions.HttpTransportLimits? left, Penghou.Http.Abstractions.HttpTransportLimits? right) -> bool
+static Penghou.Http.Abstractions.HttpTransportRequest.operator !=(Penghou.Http.Abstractions.HttpTransportRequest? left, Penghou.Http.Abstractions.HttpTransportRequest? right) -> bool
+static Penghou.Http.Abstractions.HttpTransportRequest.operator ==(Penghou.Http.Abstractions.HttpTransportRequest? left, Penghou.Http.Abstractions.HttpTransportRequest? right) -> bool

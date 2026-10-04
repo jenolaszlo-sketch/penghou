@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('IO', 'Workflow')]
+    [ValidateSet('IO', 'Workflow', 'Transport')]
     [string] $Profile = 'IO',
 
     [Parameter(Mandatory = $true)]
@@ -13,11 +13,10 @@ $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 $packageDirectory = [System.IO.Path]::GetFullPath($PackageDirectory)
-[string[]] $expectedIds = if ($Profile -eq 'Workflow') {
-    @('Penghou.Workflow.Abstractions')
-}
-else {
-    @('Penghou.IO.Protocols', 'Penghou.IO.Abstractions', 'Penghou.IO.Local')
+[string[]] $expectedIds = switch ($Profile) {
+    'Workflow' { @('Penghou.Workflow.Abstractions') }
+    'Transport' { @('Penghou.Model.Abstractions', 'Penghou.Http.Abstractions') }
+    default { @('Penghou.IO.Protocols', 'Penghou.IO.Abstractions', 'Penghou.IO.Local') }
 }
 $packages = @(Get-ChildItem -LiteralPath $packageDirectory -File -Filter '*.nupkg' |
     Where-Object { $_.Name -notlike '*.snupkg' })
@@ -57,6 +56,9 @@ foreach ($package in $packages) {
         if ($version -ne $PackageVersion) {
             throw "Package '$id' has version '$version'; expected '$PackageVersion'."
         }
+        if ($Profile -eq 'Transport' -and $package.Name -cne "$id.$PackageVersion.nupkg") {
+            throw "Package '$id' must be named '$id.$PackageVersion.nupkg'; found '$($package.Name)'."
+        }
         if (-not $archive.GetEntry('README.md')) {
             throw "Package '$id' is missing the declared README.md."
         }
@@ -68,12 +70,20 @@ foreach ($package in $packages) {
             -not ($archive.Entries | Where-Object { $_.FullName -match '^lib/net10\.0/[^/]+\.dll$' })) {
             throw "Package '$id' does not contain a .NET 10 asset."
         }
-        if ($Profile -eq 'Workflow') {
+        if ($Profile -in @('Workflow', 'Transport')) {
+            $libraryNames = if ($Profile -eq 'Workflow') {
+                @('Penghou.Workflow.Abstractions.dll')
+            }
+            else {
+                @($id + '.dll')
+            }
             $expectedLibraryEntries = @(
-                'lib/net10.0/Penghou.Workflow.Abstractions.dll',
-                'lib/net10.0/Penghou.Workflow.Abstractions.xml',
-                'lib/net8.0/Penghou.Workflow.Abstractions.dll',
-                'lib/net8.0/Penghou.Workflow.Abstractions.xml'
+                foreach ($framework in @('net8.0', 'net10.0')) {
+                    foreach ($libraryName in $libraryNames) {
+                        "lib/$framework/$libraryName"
+                        "lib/$framework/$([System.IO.Path]::ChangeExtension($libraryName, '.xml'))"
+                    }
+                }
             )
             $actualLibraryEntries = @($archive.Entries |
                 Where-Object { $_.FullName.StartsWith('lib/', [StringComparison]::Ordinal) } |
@@ -82,7 +92,7 @@ foreach ($package in $packages) {
             $sortedExpectedLibraryEntries = @($expectedLibraryEntries | Sort-Object -CaseSensitive)
             if ($actualLibraryEntries.Count -ne $sortedExpectedLibraryEntries.Count -or
                 [string]::Join("`n", $actualLibraryEntries) -cne [string]::Join("`n", $sortedExpectedLibraryEntries)) {
-                throw "Workflow package '$id' must contain only its .NET 8/.NET 10 DLL and XML documentation assets; found: $($actualLibraryEntries -join ', ')."
+                throw "$Profile package '$id' must contain only its .NET 8/.NET 10 DLL and XML documentation assets; found: $($actualLibraryEntries -join ', ')."
             }
         }
         if ($metadata.Element([System.Xml.Linq.XName]::Get('repository', $metadata.Name.NamespaceName)).Attribute('url').Value -ne 'https://github.com/jenolaszlo-sketch/penghou') {
@@ -91,12 +101,12 @@ foreach ($package in $packages) {
         $dependencies = @($metadata.Descendants() |
             Where-Object { $_.Name.LocalName -eq 'dependency' } |
             ForEach-Object { [pscustomobject]@{ Id = $_.Attribute('id').Value; Version = $_.Attribute('version').Value } })
-        if ($Profile -eq 'Workflow' -and $dependencies.Count -ne 0) {
-            throw "Workflow package '$id' must have no dependencies; found $($dependencies.Id -join ', ')."
+        if ($Profile -in @('Workflow', 'Transport') -and $dependencies.Count -ne 0) {
+            throw "$Profile package '$id' must have no dependencies; found $($dependencies.Id -join ', ')."
         }
         $internalDependencies = @($dependencies | Where-Object { $_.Id -in $expectedIds })
         $internalDependencyIds = @($internalDependencies | ForEach-Object Id | Select-Object -Unique)
-        $requiredInternalDependencies = if ($Profile -eq 'Workflow') { @() } else { switch ($id) {
+        $requiredInternalDependencies = if ($Profile -in @('Workflow', 'Transport')) { @() } else { switch ($id) {
             'Penghou.IO.Abstractions' { @() }
             'Penghou.IO.Protocols' { @('Penghou.IO.Abstractions') }
             'Penghou.IO.Local' { @('Penghou.IO.Abstractions', 'Penghou.IO.Protocols') }

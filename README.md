@@ -25,11 +25,33 @@ It supplies `IExecutionAuthorizer` and immutable execution identity, context,
 requirement and result values. It has no dependency on IO, Zhinu or Hufu, and
 ships no engine, policy evaluator or default authorizer. CI tests the contracts
 on .NET 8/10 and Linux/Windows, inspects the package and proves package-only
-consumption. The input-free **Publish to NuGet** workflow published this package
+consumption. The earlier input-free **Publish to NuGet** workflow published this package
 from `main`; existing IO versions were not republished. Exact public package
 contents match CI apart from the repository signature, and fresh-cache NuGet-only
 consumers pass on .NET 8 and .NET 10. This qualifies the package boundary, not
 Zhinu or Hufu runtime behavior.
+
+## Governable model and HTTP transports
+
+New candidates `Penghou.Model.Abstractions` and `Penghou.Http.Abstractions`
+at `0.1.0-preview.1` define independent, product-neutral execution seams.
+They contain no Baize, Hufu, provider SDK, workflow, policy or credential implementation.
+Model transports carry typed data plus provider/model/endpoint, context and usage;
+HTTP supports bounded binary/multipart requests and owned response chunks.
+
+See the [contract manual](docs/model-http-contracts.md),
+[ADR 0004](docs/decisions/0004-model-http-transport-contracts.md),
+[consumer closure matrix](docs/model-http-consumer-matrix.md) and
+[release checkpoint](docs/model-http-release-handoff.md). Model invocation and
+arbitrary HTTP remain distinct capabilities. Contract qualification does not
+prove consumer authority, credential containment or network isolation.
+
+The input-free **Publish transport abstractions to NuGet** workflow on `main`
+now targets only these two packages. Existing IO/workflow versions remain
+immutable; their build/test/package profiles stay regression checks. Publish
+the new contracts and verify indexing before Baize adoption, then implement
+Hufu's optional enforcement adapters. Remote CI/publication status is in the
+checkpoint; a local candidate is not a published package.
 
 ## Penghou I/O
 

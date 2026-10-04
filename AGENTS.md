@@ -91,3 +91,16 @@ must not invoke requested mutations or opaque/lazy tools. Planned governed
 mutations bind to the exact host-admitted plan/segment and released commit
 barrier; every concrete access still needs a live check. Incomplete coverage or
 denial cannot become lazy fallback. No global transaction or sandbox is implied.
+
+## New model/HTTP transport work — 2026-10-04
+
+For GM-0/GM-1/GM-1P, read [ADR 0004](docs/decisions/0004-model-http-transport-contracts.md),
+[contract manual](docs/model-http-contracts.md), [consumer matrix](docs/model-http-consumer-matrix.md)
+and [current release checkpoint](docs/model-http-release-handoff.md).
+These supersede deferred HTTP ownership notes only for this separate delivery.
+Preserve published IO/workflow baselines. Model and HTTP packages remain
+independent and product-neutral; generic payload profiles belong to consumers.
+Do not ship policy/default providers, callbacks/raw streams, credential vaults
+or a billing ledger in contract packages. Complete package-only qualification
+before publication, published-package adoption before Baize graduation, then
+Hufu integration. No contract record, handle or context authenticates identity.

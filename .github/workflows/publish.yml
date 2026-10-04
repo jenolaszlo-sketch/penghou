@@ -1,4 +1,4 @@
-name: Publish to NuGet
+name: Publish transport abstractions to NuGet
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   validate:
-    name: Validate exact release commit
+    name: Validate exact transport release commit
     runs-on: windows-latest
     outputs:
       package_version: ${{ steps.release-version.outputs.package_version }}
@@ -20,6 +20,17 @@ jobs:
         with:
           ref: ${{ github.sha }}
 
+      - name: Require the selected main commit
+        shell: pwsh
+        run: |
+          if ($env:GITHUB_EVENT_NAME -ne 'workflow_dispatch' -or $env:GITHUB_REF -ne 'refs/heads/main') {
+            throw "Manual publication is allowed only from main; selected ref is '$env:GITHUB_REF'."
+          }
+          $checkedOutCommit = (git rev-parse HEAD).Trim()
+          if ($LASTEXITCODE -ne 0 -or $checkedOutCommit -ne $env:GITHUB_SHA) {
+            throw "Checked out '$checkedOutCommit', expected the dispatch commit '$env:GITHUB_SHA'."
+          }
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
@@ -27,59 +38,67 @@ jobs:
             8.0.x
             10.0.x
 
-      - name: Resolve checked-in package version
+      - name: Resolve and require coordinated package versions
         id: release-version
         shell: pwsh
         run: |
-          if ($env:GITHUB_EVENT_NAME -ne 'workflow_dispatch' -or $env:GITHUB_REF -ne 'refs/heads/main') {
-            throw "Manual publication is allowed only from main; selected ref is '$env:GITHUB_REF'."
+          $modelVersion = (dotnet msbuild src/Penghou.Model.Abstractions/Penghou.Model.Abstractions.csproj -getProperty:PackageVersion -nologo).Trim()
+          if ($LASTEXITCODE -ne 0) { throw 'Could not read Penghou.Model.Abstractions package version.' }
+          $httpVersion = (dotnet msbuild src/Penghou.Http.Abstractions/Penghou.Http.Abstractions.csproj -getProperty:PackageVersion -nologo).Trim()
+          if ($LASTEXITCODE -ne 0) { throw 'Could not read Penghou.Http.Abstractions package version.' }
+          if ([string]::IsNullOrWhiteSpace($modelVersion) -or $modelVersion -ne $httpVersion) {
+            throw "Transport package versions must both be set and equal; model='$modelVersion', HTTP='$httpVersion'."
           }
-          $version = (dotnet msbuild src/Penghou.Workflow.Abstractions/Penghou.Workflow.Abstractions.csproj -getProperty:PackageVersion -nologo).Trim()
-          if ($LASTEXITCODE -ne 0) { throw 'Could not read the checked-in package version.' }
-          if ([string]::IsNullOrWhiteSpace($version)) { throw 'The checked-in package version is empty.' }
-          "PACKAGE_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-          "package_version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "PACKAGE_VERSION=$modelVersion" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "package_version=$modelVersion" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
 
-      - name: Build
+      - name: Build qualified solution
         run: dotnet build Penghou.IO.slnx --configuration Release
 
-      - name: Test Windows provider profile on .NET 8
+      - name: Test qualified solution on .NET 8
         run: dotnet test Penghou.IO.slnx --configuration Release --framework net8.0
 
-      - name: Test Windows provider profile on .NET 10
+      - name: Test qualified solution on .NET 10
         run: dotnet test Penghou.IO.slnx --configuration Release --framework net10.0
 
-      - name: Pack only the workflow abstractions release
+      - name: Pack only the two transport abstractions packages
         shell: pwsh
         run: |
-          dotnet pack src/Penghou.Workflow.Abstractions/Penghou.Workflow.Abstractions.csproj --configuration Release --output artifacts --property:PackageVersion=$env:PACKAGE_VERSION
-          if ($LASTEXITCODE -ne 0) { throw 'Packing Penghou.Workflow.Abstractions failed.' }
+          dotnet pack src/Penghou.Model.Abstractions/Penghou.Model.Abstractions.csproj --configuration Release --output transport-release-artifacts --property:PackageVersion=$env:PACKAGE_VERSION
+          if ($LASTEXITCODE -ne 0) { throw 'Packing Penghou.Model.Abstractions failed.' }
+          dotnet pack src/Penghou.Http.Abstractions/Penghou.Http.Abstractions.csproj --configuration Release --output transport-release-artifacts --property:PackageVersion=$env:PACKAGE_VERSION
+          if ($LASTEXITCODE -ne 0) { throw 'Packing Penghou.Http.Abstractions failed.' }
 
-      - name: Verify workflow package identity and contents
+      - name: Verify exact transport package set and contents
         shell: pwsh
-        run: ./eng/verify-package-set.ps1 -Profile Workflow -PackageDirectory ./artifacts -PackageVersion $env:PACKAGE_VERSION
+        run: ./eng/verify-package-set.ps1 -Profile Transport -PackageDirectory ./transport-release-artifacts -PackageVersion $env:PACKAGE_VERSION
 
-      - name: Check existing NuGet versions against the validated package bytes
+      - name: Check existing NuGet versions against validated package bytes
         shell: pwsh
-        run: ./eng/check-nuget-version.ps1 -Profile Workflow -PackageVersion $env:PACKAGE_VERSION -PackageDirectory ./artifacts
+        run: ./eng/check-nuget-version.ps1 -Profile Transport -PackageVersion $env:PACKAGE_VERSION -PackageDirectory ./transport-release-artifacts
 
       - name: Prove isolated package-only consumption
         shell: pwsh
-        run: ./eng/smoke-package-consumer.ps1 -Profile Workflow -PackageDirectory ./artifacts -PackageVersion $env:PACKAGE_VERSION
+        run: ./eng/smoke-package-consumer.ps1 -Profile Transport -PackageDirectory ./transport-release-artifacts -PackageVersion $env:PACKAGE_VERSION
 
       - name: Upload validated release packages
         uses: actions/upload-artifact@v6
         with:
-          name: workflow-release-packages-${{ github.sha }}
+          name: transport-release-packages-${{ github.sha }}
           path: |
-            artifacts/*.nupkg
-            artifacts/*.snupkg
+            transport-release-artifacts/*.nupkg
+            transport-release-artifacts/*.snupkg
           if-no-files-found: error
           retention-days: 7
 
-  neutral-release-check:
-    name: Verify neutral projects on Linux
-    runs-on: ubuntu-latest
+  transport-release-check:
+    name: Transport tests (${{ matrix.os }}, ${{ matrix.framework }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-15]
+        framework: [net8.0, net10.0]
     permissions:
       contents: read
     steps:
@@ -95,56 +114,75 @@ jobs:
             8.0.x
             10.0.x
 
-      - name: Build and test workflow abstractions on .NET 8 and .NET 10
+      - name: Build model and HTTP contract projects
         shell: bash
         run: |
           set -euo pipefail
-          dotnet build src/Penghou.Workflow.Abstractions/Penghou.Workflow.Abstractions.csproj --configuration Release --framework net8.0
-          dotnet test tests/Penghou.Workflow.Tests/Penghou.Workflow.Tests.csproj --configuration Release --framework net8.0
-          dotnet build src/Penghou.Workflow.Abstractions/Penghou.Workflow.Abstractions.csproj --configuration Release --framework net10.0
-          dotnet test tests/Penghou.Workflow.Tests/Penghou.Workflow.Tests.csproj --configuration Release --framework net10.0
+          dotnet build src/Penghou.Model.Abstractions/Penghou.Model.Abstractions.csproj --configuration Release --framework ${{ matrix.framework }}
+          dotnet build src/Penghou.Http.Abstractions/Penghou.Http.Abstractions.csproj --configuration Release --framework ${{ matrix.framework }}
+
+      - name: Test model and HTTP contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          dotnet test tests/Penghou.Model.Tests/Penghou.Model.Tests.csproj --configuration Release --framework ${{ matrix.framework }}
+          dotnet test tests/Penghou.Http.Tests/Penghou.Http.Tests.csproj --configuration Release --framework ${{ matrix.framework }}
 
   publish:
-    name: Publish validated packages
-    needs: [validate, neutral-release-check]
+    name: Publish validated transport packages
+    needs: [validate, transport-release-check]
     runs-on: ubuntu-latest
     environment: nuget
     permissions:
       id-token: write
       contents: read
     steps:
-      - name: Checkout exact release ref
+      - name: Checkout exact validated commit
         uses: actions/checkout@v6
         with:
           ref: ${{ github.sha }}
+
+      - name: Require the validated commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 10.0.x
 
-      - name: Download validated packages
+      - name: Download validated packages for this commit
         uses: actions/download-artifact@v7
         with:
-          name: workflow-release-packages-${{ github.sha }}
-          path: artifacts
+          name: transport-release-packages-${{ github.sha }}
+          path: transport-release-artifacts
 
-      - name: Require the exact workflow package artifact
+      - name: Require exactly the two validated package artifacts
         shell: bash
         env:
           PACKAGE_VERSION: ${{ needs.validate.outputs.package_version }}
         run: |
           set -euo pipefail
-          test "$(find artifacts -maxdepth 1 -name '*.nupkg' ! -name '*.snupkg' | wc -l)" -eq 1
-          test "$(find artifacts -maxdepth 1 -name '*.snupkg' | wc -l)" -eq 1
-          test -f "artifacts/Penghou.Workflow.Abstractions.${PACKAGE_VERSION}.nupkg"
-          test -f "artifacts/Penghou.Workflow.Abstractions.${PACKAGE_VERSION}.snupkg"
+          test "$(find transport-release-artifacts -maxdepth 1 -type f -name '*.nupkg' ! -name '*.snupkg' | wc -l)" -eq 2
+          test "$(find transport-release-artifacts -maxdepth 1 -type f -name '*.snupkg' | wc -l)" -eq 2
+          test -f "transport-release-artifacts/Penghou.Model.Abstractions.${PACKAGE_VERSION}.nupkg"
+          test -f "transport-release-artifacts/Penghou.Model.Abstractions.${PACKAGE_VERSION}.snupkg"
+          test -f "transport-release-artifacts/Penghou.Http.Abstractions.${PACKAGE_VERSION}.nupkg"
+          test -f "transport-release-artifacts/Penghou.Http.Abstractions.${PACKAGE_VERSION}.snupkg"
 
-      - name: Check any existing NuGet versions against these exact validated package bytes
+      - name: Revalidate downloaded transport package contents
         shell: pwsh
         env:
           PACKAGE_VERSION: ${{ needs.validate.outputs.package_version }}
-        run: ./eng/check-nuget-version.ps1 -Profile Workflow -PackageVersion $env:PACKAGE_VERSION -PackageDirectory ./artifacts
+        run: ./eng/verify-package-set.ps1 -Profile Transport -PackageVersion $env:PACKAGE_VERSION -PackageDirectory ./transport-release-artifacts
+
+      - name: Recheck existing NuGet versions against these exact artifact bytes
+        shell: pwsh
+        env:
+          PACKAGE_VERSION: ${{ needs.validate.outputs.package_version }}
+        run: ./eng/check-nuget-version.ps1 -Profile Transport -PackageVersion $env:PACKAGE_VERSION -PackageDirectory ./transport-release-artifacts
 
       - name: Require NuGet OIDC identity configuration
         shell: bash
@@ -162,7 +200,7 @@ jobs:
         with:
           user: ${{ secrets.NUGET_USER }}
 
-      - name: Push the workflow package
+      - name: Push the validated packages without symbols
         shell: bash
         env:
           NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
@@ -170,27 +208,29 @@ jobs:
         run: |
           set -euo pipefail
           source=https://api.nuget.org/v3/index.json
-          dotnet nuget push "./artifacts/Penghou.Workflow.Abstractions.${PACKAGE_VERSION}.nupkg" --source "$source" --api-key "$NUGET_API_KEY" --no-symbols --skip-duplicate
+          dotnet nuget push "./transport-release-artifacts/Penghou.Model.Abstractions.${PACKAGE_VERSION}.nupkg" --source "$source" --api-key "$NUGET_API_KEY" --no-symbols --skip-duplicate
+          dotnet nuget push "./transport-release-artifacts/Penghou.Http.Abstractions.${PACKAGE_VERSION}.nupkg" --source "$source" --api-key "$NUGET_API_KEY" --no-symbols --skip-duplicate
 
-      - name: Push symbols
+      - name: Push each symbol package once
         shell: bash
         env:
           NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+          PACKAGE_VERSION: ${{ needs.validate.outputs.package_version }}
         run: |
           set -euo pipefail
-          for package in ./artifacts/*.snupkg; do
-            dotnet nuget push "$package" --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" --skip-duplicate
-          done
+          source=https://api.nuget.org/v3/index.json
+          dotnet nuget push "./transport-release-artifacts/Penghou.Model.Abstractions.${PACKAGE_VERSION}.snupkg" --source "$source" --api-key "$NUGET_API_KEY" --skip-duplicate
+          dotnet nuget push "./transport-release-artifacts/Penghou.Http.Abstractions.${PACKAGE_VERSION}.snupkg" --source "$source" --api-key "$NUGET_API_KEY" --skip-duplicate
 
   verify-publication:
-    name: Verify public package contents after indexing
+    name: Verify public transport packages after indexing
     needs: [validate, publish]
     runs-on: ubuntu-latest
     timeout-minutes: 70
     permissions:
       contents: read
     steps:
-      - name: Checkout exact release ref
+      - name: Checkout exact release commit
         uses: actions/checkout@v6
         with:
           ref: ${{ github.sha }}
@@ -203,13 +243,13 @@ jobs:
       - name: Download the same validated release artifacts
         uses: actions/download-artifact@v7
         with:
-          name: workflow-release-packages-${{ github.sha }}
-          path: artifacts
+          name: transport-release-packages-${{ github.sha }}
+          path: transport-release-artifacts
 
-      - name: Verify published package bytes with a shared indexing deadline
+      - name: Verify both published package contents with one indexing deadline
         shell: pwsh
         env:
           PACKAGE_VERSION: ${{ needs.validate.outputs.package_version }}
         run: |
-          ./eng/check-nuget-version.ps1 -Profile Workflow -PackageVersion $env:PACKAGE_VERSION -PackageDirectory ./artifacts -RequirePublished -IndexingTimeoutSeconds 3600 -RetryIntervalSeconds 30
-          "The public workflow package matches the validated release artifact for $env:GITHUB_SHA (NuGet repository signature excluded)." | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+          ./eng/check-nuget-version.ps1 -Profile Transport -PackageVersion $env:PACKAGE_VERSION -PackageDirectory ./transport-release-artifacts -RequirePublished -IndexingTimeoutSeconds 3600 -RetryIntervalSeconds 30
+          "Both public transport packages match the validated release artifacts for $env:GITHUB_SHA (NuGet repository signature excluded)." | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8

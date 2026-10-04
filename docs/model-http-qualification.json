@@ -1,0 +1,211 @@
+{
+  "date": "2026-10-04",
+  "status": "local-candidate-qualified-remote-release-pending",
+  "penghouBaseRevision": "e451b71c4927d6106834b8a49f145411bdd05648",
+  "uncommittedSource": true,
+  "baizeBaselineRevision": "442397ecf25f335309e7f3ab121e9c4359fda100",
+  "baizeNet8Baseline": {
+    "failed": 0,
+    "passed": 827,
+    "skipped": 14,
+    "total": 841,
+    "suites": [
+      {
+        "name": "Penghou.Baize.Diagnostics.Tests.dll (net8.0)",
+        "failed": 0,
+        "passed": 23,
+        "skipped": 0,
+        "total": 23
+      },
+      {
+        "name": "Penghou.Baize.Tests.dll (net8.0)",
+        "failed": 0,
+        "passed": 221,
+        "skipped": 0,
+        "total": 221
+      },
+      {
+        "name": "Penghou.Baize.Extensions.AI.Tests.dll (net8.0)",
+        "failed": 0,
+        "passed": 20,
+        "skipped": 0,
+        "total": 20
+      },
+      {
+        "name": "Penghou.Baize.Tools.Tests.dll (net8.0)",
+        "failed": 0,
+        "passed": 71,
+        "skipped": 0,
+        "total": 71
+      },
+      {
+        "name": "Penghou.Baize.Client.Ollama.Tests.dll (net8.0)",
+        "failed": 0,
+        "passed": 13,
+        "skipped": 0,
+        "total": 13
+      },
+      {
+        "name": "Penghou.Baize.Client.Fal.Tests.dll (net8.0)",
+        "failed": 0,
+        "passed": 58,
+        "skipped": 0,
+        "total": 58
+      },
+      {
+        "name": "Penghou.Baize.Client.OpenAi.Tests.dll (net8.0)",
+        "failed": 0,
+        "passed": 83,
+        "skipped": 7,
+        "total": 90
+      },
+      {
+        "name": "Penghou.Baize.Batch.Tests.dll (net8.0)",
+        "failed": 0,
+        "passed": 56,
+        "skipped": 0,
+        "total": 56
+      },
+      {
+        "name": "Penghou.Baize.Client.Claude.Tests.dll (net8.0)",
+        "failed": 0,
+        "passed": 52,
+        "skipped": 0,
+        "total": 52
+      },
+      {
+        "name": "Penghou.Baize.Router.Tests.dll (net8.0)",
+        "failed": 0,
+        "passed": 89,
+        "skipped": 0,
+        "total": 89
+      },
+      {
+        "name": "Penghou.Baize.Client.Gemini.Tests.dll (net8.0)",
+        "failed": 0,
+        "passed": 91,
+        "skipped": 7,
+        "total": 98
+      },
+      {
+        "name": "Penghou.Baize.Client.Runway.Tests.dll (net8.0)",
+        "failed": 0,
+        "passed": 50,
+        "skipped": 0,
+        "total": 50
+      }
+    ]
+  },
+  "penghouRegressions": {
+    "net8": {
+      "failed": 0,
+      "passed": 123,
+      "skipped": 0,
+      "total": 123,
+      "suites": [
+        {
+          "name": "Penghou.Model.Tests.dll (net8.0)",
+          "failed": 0,
+          "passed": 14,
+          "skipped": 0,
+          "total": 14
+        },
+        {
+          "name": "Penghou.Workflow.Tests.dll (net8.0)",
+          "failed": 0,
+          "passed": 10,
+          "skipped": 0,
+          "total": 10
+        },
+        {
+          "name": "Penghou.Http.Tests.dll (net8.0)",
+          "failed": 0,
+          "passed": 26,
+          "skipped": 0,
+          "total": 26
+        },
+        {
+          "name": "Penghou.IO.Tests.dll (net8.0)",
+          "failed": 0,
+          "passed": 73,
+          "skipped": 0,
+          "total": 73
+        }
+      ]
+    },
+    "net10": {
+      "failed": 0,
+      "passed": 123,
+      "skipped": 0,
+      "total": 123,
+      "suites": [
+        {
+          "name": "Penghou.Model.Tests.dll (net10.0)",
+          "failed": 0,
+          "passed": 14,
+          "skipped": 0,
+          "total": 14
+        },
+        {
+          "name": "Penghou.Http.Tests.dll (net10.0)",
+          "failed": 0,
+          "passed": 26,
+          "skipped": 0,
+          "total": 26
+        },
+        {
+          "name": "Penghou.Workflow.Tests.dll (net10.0)",
+          "failed": 0,
+          "passed": 10,
+          "skipped": 0,
+          "total": 10
+        },
+        {
+          "name": "Penghou.IO.Tests.dll (net10.0)",
+          "failed": 0,
+          "passed": 73,
+          "skipped": 0,
+          "total": 73
+        }
+      ]
+    }
+  },
+  "newContractCasesPerFramework": {
+    "model": 14,
+    "http": 26
+  },
+  "packageVersion": "0.1.0-preview.1",
+  "packages": [
+    {
+      "file": "Penghou.Http.Abstractions.0.1.0-preview.1.nupkg",
+      "sha256": "50e07c7954ee2e70e4d84acad7701df5d8dd5458e3686525ee0bd712dbd2d855"
+    },
+    {
+      "file": "Penghou.Model.Abstractions.0.1.0-preview.1.nupkg",
+      "sha256": "c1bead6729e0dbde7539201dee230277bdb40b6111c69621b61ec19e5ac02f0d"
+    }
+  ],
+  "localEvidence": {
+    "packageSetInspection": "passed",
+    "isolatedPackageOnlyConsumersNet8Net10": "passed",
+    "runtimeDependenciesPerPackage": 0,
+    "workflowProfileRegression": "passed",
+    "ioProfileRegression": "passed",
+    "proposedNugetVersions": "Both 0.1.0-preview.1 versions absent on NuGet.org at the 2026-10-04 prepublication check"
+  },
+  "ciConfigured": {
+    "operatingSystems": [
+      "windows-latest",
+      "ubuntu-latest",
+      "macos-15"
+    ],
+    "frameworks": [
+      "net8.0",
+      "net10.0"
+    ]
+  },
+  "remoteCi": "not-run",
+  "nugetPublication": "not-run",
+  "baizeAdoption": "not-started",
+  "hufuAdoption": "not-started"
+}

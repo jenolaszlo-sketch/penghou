@@ -91,7 +91,7 @@ jobs:
   package-consumer:
     name: Pack and consume package closure
     runs-on: windows-latest
-    needs: [windows-tests, neutral-build, workflow-contract-tests]
+    needs: [windows-tests, neutral-build, workflow-contract-tests, transport-tests]
     permissions:
       contents: read
     env:
@@ -147,4 +147,75 @@ jobs:
             artifacts/*.snupkg
             workflow-artifacts/*.nupkg
             workflow-artifacts/*.snupkg
+          if-no-files-found: error
+
+  transport-tests:
+    name: Transport abstraction tests (${{ matrix.os }}, ${{ matrix.framework }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-15]
+        framework: [net8.0, net10.0]
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Test model contracts
+        run: dotnet test tests/Penghou.Model.Tests/Penghou.Model.Tests.csproj --configuration Release --framework ${{ matrix.framework }}
+
+      - name: Test HTTP contracts
+        run: dotnet test tests/Penghou.Http.Tests/Penghou.Http.Tests.csproj --configuration Release --framework ${{ matrix.framework }}
+
+  transport-package-consumer:
+    name: Pack and consume the transport package profile
+    runs-on: windows-latest
+    needs: [transport-tests]
+    permissions:
+      contents: read
+    env:
+      PACKAGE_VERSION: 0.1.0-preview.1-ci.${{ github.run_id }}.${{ github.run_attempt }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Pack the model and HTTP packages
+        shell: pwsh
+        run: |
+          dotnet pack src/Penghou.Model.Abstractions/Penghou.Model.Abstractions.csproj --configuration Release --output transport-artifacts --property:PackageVersion=$env:PACKAGE_VERSION
+          if ($LASTEXITCODE -ne 0) { throw 'Packing Penghou.Model.Abstractions failed.' }
+          dotnet pack src/Penghou.Http.Abstractions/Penghou.Http.Abstractions.csproj --configuration Release --output transport-artifacts --property:PackageVersion=$env:PACKAGE_VERSION
+          if ($LASTEXITCODE -ne 0) { throw 'Packing Penghou.Http.Abstractions failed.' }
+
+      - name: Verify transport package identity and contents
+        shell: pwsh
+        run: ./eng/verify-package-set.ps1 -Profile Transport -PackageDirectory ./transport-artifacts -PackageVersion $env:PACKAGE_VERSION
+
+      - name: Prove isolated transport package-only consumption
+        shell: pwsh
+        run: ./eng/smoke-package-consumer.ps1 -Profile Transport -PackageDirectory ./transport-artifacts -PackageVersion $env:PACKAGE_VERSION
+
+      - name: Upload validated transport packages
+        uses: actions/upload-artifact@v6
+        with:
+          name: transport-packages-${{ github.sha }}
+          path: |
+            transport-artifacts/*.nupkg
+            transport-artifacts/*.snupkg
           if-no-files-found: error

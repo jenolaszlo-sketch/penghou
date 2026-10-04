@@ -1,0 +1,152 @@
+#nullable enable
+Penghou.Model.Abstractions.IModelTransport<TRequest, TResponse>
+Penghou.Model.Abstractions.IModelTransport<TRequest, TResponse>.InvokeAsync(Penghou.Model.Abstractions.ModelTransportRequest<TRequest>! request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Penghou.Model.Abstractions.ModelTransportResponse<TResponse>!>
+Penghou.Model.Abstractions.IStreamingModelTransport<TRequest, TEvent>
+Penghou.Model.Abstractions.IStreamingModelTransport<TRequest, TEvent>.StreamAsync(Penghou.Model.Abstractions.ModelTransportRequest<TRequest>! request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Collections.Generic.IAsyncEnumerable<Penghou.Model.Abstractions.ModelTransportResponse<TEvent>!>!
+Penghou.Model.Abstractions.ModelAccessDeniedException
+Penghou.Model.Abstractions.ModelAccessDeniedException.ModelAccessDeniedException(string! requestId, string! reasonCode = "access-denied") -> void
+Penghou.Model.Abstractions.ModelBudgetExceededException
+Penghou.Model.Abstractions.ModelBudgetExceededException.ModelBudgetExceededException(string! requestId, string! reasonCode = "budget-exceeded") -> void
+Penghou.Model.Abstractions.ModelExecutionContext
+Penghou.Model.Abstractions.ModelExecutionContext.<Clone>$() -> Penghou.Model.Abstractions.ModelExecutionContext!
+Penghou.Model.Abstractions.ModelExecutionContext.ActivityId.get -> string?
+Penghou.Model.Abstractions.ModelExecutionContext.AgentId.get -> string?
+Penghou.Model.Abstractions.ModelExecutionContext.CorrelationId.get -> string?
+Penghou.Model.Abstractions.ModelExecutionContext.Equals(Penghou.Model.Abstractions.ModelExecutionContext? other) -> bool
+Penghou.Model.Abstractions.ModelExecutionContext.Metadata.get -> System.Collections.Generic.IReadOnlyDictionary<string!, string!>!
+Penghou.Model.Abstractions.ModelExecutionContext.ModelExecutionContext(string? workflowId = null, string? activityId = null, string? agentId = null, string? correlationId = null, System.Collections.Generic.IReadOnlyDictionary<string!, string!>? metadata = null) -> void
+Penghou.Model.Abstractions.ModelExecutionContext.WorkflowId.get -> string?
+Penghou.Model.Abstractions.ModelInvocation
+Penghou.Model.Abstractions.ModelInvocation.<Clone>$() -> Penghou.Model.Abstractions.ModelInvocation!
+Penghou.Model.Abstractions.ModelInvocation.Attempt.get -> int
+Penghou.Model.Abstractions.ModelInvocation.Context.get -> Penghou.Model.Abstractions.ModelExecutionContext?
+Penghou.Model.Abstractions.ModelInvocation.CredentialProfile.get -> string?
+Penghou.Model.Abstractions.ModelInvocation.Equals(Penghou.Model.Abstractions.ModelInvocation? other) -> bool
+Penghou.Model.Abstractions.ModelInvocation.ModelInvocation(string! requestId, Penghou.Model.Abstractions.ModelTarget! target, Penghou.Model.Abstractions.ModelOperation! operation, Penghou.Model.Abstractions.ModelExecutionContext? context = null, Penghou.Model.Abstractions.ModelUsageIntent? usageIntent = null, string? credentialProfile = null, int attempt = 1, Penghou.Model.Abstractions.ModelOperationHandle? operationHandle = null) -> void
+Penghou.Model.Abstractions.ModelInvocation.Operation.get -> Penghou.Model.Abstractions.ModelOperation!
+Penghou.Model.Abstractions.ModelInvocation.OperationHandle.get -> Penghou.Model.Abstractions.ModelOperationHandle?
+Penghou.Model.Abstractions.ModelInvocation.RequestId.get -> string!
+Penghou.Model.Abstractions.ModelInvocation.Target.get -> Penghou.Model.Abstractions.ModelTarget!
+Penghou.Model.Abstractions.ModelInvocation.UsageIntent.get -> Penghou.Model.Abstractions.ModelUsageIntent?
+Penghou.Model.Abstractions.ModelOperation
+Penghou.Model.Abstractions.ModelOperation.<Clone>$() -> Penghou.Model.Abstractions.ModelOperation!
+Penghou.Model.Abstractions.ModelOperation.Equals(Penghou.Model.Abstractions.ModelOperation? other) -> bool
+Penghou.Model.Abstractions.ModelOperation.ModelOperation(string! value) -> void
+Penghou.Model.Abstractions.ModelOperation.Value.get -> string!
+Penghou.Model.Abstractions.ModelOperationHandle
+Penghou.Model.Abstractions.ModelOperationHandle.<Clone>$() -> Penghou.Model.Abstractions.ModelOperationHandle!
+Penghou.Model.Abstractions.ModelOperationHandle.Context.get -> Penghou.Model.Abstractions.ModelExecutionContext?
+Penghou.Model.Abstractions.ModelOperationHandle.Equals(Penghou.Model.Abstractions.ModelOperationHandle? other) -> bool
+Penghou.Model.Abstractions.ModelOperationHandle.Id.get -> string!
+Penghou.Model.Abstractions.ModelOperationHandle.ModelOperationHandle(string! id, Penghou.Model.Abstractions.ModelTarget! target, Penghou.Model.Abstractions.ModelExecutionContext? context = null) -> void
+Penghou.Model.Abstractions.ModelOperationHandle.Target.get -> Penghou.Model.Abstractions.ModelTarget!
+Penghou.Model.Abstractions.ModelTarget
+Penghou.Model.Abstractions.ModelTarget.<Clone>$() -> Penghou.Model.Abstractions.ModelTarget!
+Penghou.Model.Abstractions.ModelTarget.EndpointId.get -> string!
+Penghou.Model.Abstractions.ModelTarget.Equals(Penghou.Model.Abstractions.ModelTarget? other) -> bool
+Penghou.Model.Abstractions.ModelTarget.Model.get -> string!
+Penghou.Model.Abstractions.ModelTarget.ModelTarget(string! provider, string! model, string! endpointId) -> void
+Penghou.Model.Abstractions.ModelTarget.Provider.get -> string!
+Penghou.Model.Abstractions.ModelTransportException
+Penghou.Model.Abstractions.ModelTransportException.ModelTransportException(string! requestId, string! reasonCode) -> void
+Penghou.Model.Abstractions.ModelTransportException.ReasonCode.get -> string!
+Penghou.Model.Abstractions.ModelTransportException.RequestId.get -> string!
+Penghou.Model.Abstractions.ModelTransportRequest<TPayload>
+Penghou.Model.Abstractions.ModelTransportRequest<TPayload>.<Clone>$() -> Penghou.Model.Abstractions.ModelTransportRequest<TPayload>!
+Penghou.Model.Abstractions.ModelTransportRequest<TPayload>.Equals(Penghou.Model.Abstractions.ModelTransportRequest<TPayload>? other) -> bool
+Penghou.Model.Abstractions.ModelTransportRequest<TPayload>.Invocation.get -> Penghou.Model.Abstractions.ModelInvocation!
+Penghou.Model.Abstractions.ModelTransportRequest<TPayload>.Items.get -> System.Collections.Generic.IReadOnlyList<Penghou.Model.Abstractions.ModelInvocation!>!
+Penghou.Model.Abstractions.ModelTransportRequest<TPayload>.ModelTransportRequest(Penghou.Model.Abstractions.ModelInvocation! invocation, TPayload payload, System.Collections.Generic.IEnumerable<Penghou.Model.Abstractions.ModelInvocation!>? items = null) -> void
+Penghou.Model.Abstractions.ModelTransportRequest<TPayload>.Payload.get -> TPayload
+Penghou.Model.Abstractions.ModelTransportResponse<TPayload>
+Penghou.Model.Abstractions.ModelTransportResponse<TPayload>.<Clone>$() -> Penghou.Model.Abstractions.ModelTransportResponse<TPayload>!
+Penghou.Model.Abstractions.ModelTransportResponse<TPayload>.Equals(Penghou.Model.Abstractions.ModelTransportResponse<TPayload>? other) -> bool
+Penghou.Model.Abstractions.ModelTransportResponse<TPayload>.ModelTransportResponse(string! requestId, TPayload payload, Penghou.Model.Abstractions.ModelUsage? usage = null, string? providerRequestId = null, Penghou.Model.Abstractions.ModelOperationHandle? operationHandle = null) -> void
+Penghou.Model.Abstractions.ModelTransportResponse<TPayload>.OperationHandle.get -> Penghou.Model.Abstractions.ModelOperationHandle?
+Penghou.Model.Abstractions.ModelTransportResponse<TPayload>.Payload.get -> TPayload
+Penghou.Model.Abstractions.ModelTransportResponse<TPayload>.ProviderRequestId.get -> string?
+Penghou.Model.Abstractions.ModelTransportResponse<TPayload>.RequestId.get -> string!
+Penghou.Model.Abstractions.ModelTransportResponse<TPayload>.Usage.get -> Penghou.Model.Abstractions.ModelUsage?
+Penghou.Model.Abstractions.ModelUnavailableException
+Penghou.Model.Abstractions.ModelUnavailableException.ModelUnavailableException(string! requestId, string! reasonCode = "unavailable") -> void
+Penghou.Model.Abstractions.ModelUsage
+Penghou.Model.Abstractions.ModelUsage.<Clone>$() -> Penghou.Model.Abstractions.ModelUsage!
+Penghou.Model.Abstractions.ModelUsage.CacheMissInputTokens.get -> long?
+Penghou.Model.Abstractions.ModelUsage.CachedInputTokens.get -> long?
+Penghou.Model.Abstractions.ModelUsage.Cost.get -> decimal?
+Penghou.Model.Abstractions.ModelUsage.Currency.get -> string?
+Penghou.Model.Abstractions.ModelUsage.Equals(Penghou.Model.Abstractions.ModelUsage? other) -> bool
+Penghou.Model.Abstractions.ModelUsage.InputTokens.get -> long?
+Penghou.Model.Abstractions.ModelUsage.ModelUsage(long? inputTokens = null, long? outputTokens = null, long? cachedInputTokens = null, long? thinkingTokens = null, long? totalTokens = null, decimal? cost = null, string? currency = null, long? cacheMissInputTokens = null) -> void
+Penghou.Model.Abstractions.ModelUsage.OutputTokens.get -> long?
+Penghou.Model.Abstractions.ModelUsage.ThinkingTokens.get -> long?
+Penghou.Model.Abstractions.ModelUsage.TotalTokens.get -> long?
+Penghou.Model.Abstractions.ModelUsageIntent
+Penghou.Model.Abstractions.ModelUsageIntent.<Clone>$() -> Penghou.Model.Abstractions.ModelUsageIntent!
+Penghou.Model.Abstractions.ModelUsageIntent.Currency.get -> string?
+Penghou.Model.Abstractions.ModelUsageIntent.Equals(Penghou.Model.Abstractions.ModelUsageIntent? other) -> bool
+Penghou.Model.Abstractions.ModelUsageIntent.EstimatedCost.get -> decimal?
+Penghou.Model.Abstractions.ModelUsageIntent.EstimatedInputTokens.get -> long?
+Penghou.Model.Abstractions.ModelUsageIntent.MaxOutputTokens.get -> long?
+Penghou.Model.Abstractions.ModelUsageIntent.ModelUsageIntent(long? estimatedInputTokens = null, long? maxOutputTokens = null, decimal? estimatedCost = null, string? currency = null) -> void
+override Penghou.Model.Abstractions.ModelExecutionContext.Equals(object? obj) -> bool
+override Penghou.Model.Abstractions.ModelExecutionContext.GetHashCode() -> int
+override Penghou.Model.Abstractions.ModelExecutionContext.ToString() -> string!
+override Penghou.Model.Abstractions.ModelInvocation.Equals(object? obj) -> bool
+override Penghou.Model.Abstractions.ModelInvocation.GetHashCode() -> int
+override Penghou.Model.Abstractions.ModelInvocation.ToString() -> string!
+override Penghou.Model.Abstractions.ModelOperation.Equals(object? obj) -> bool
+override Penghou.Model.Abstractions.ModelOperation.GetHashCode() -> int
+override Penghou.Model.Abstractions.ModelOperation.ToString() -> string!
+override Penghou.Model.Abstractions.ModelOperationHandle.Equals(object? obj) -> bool
+override Penghou.Model.Abstractions.ModelOperationHandle.GetHashCode() -> int
+override Penghou.Model.Abstractions.ModelOperationHandle.ToString() -> string!
+override Penghou.Model.Abstractions.ModelTarget.Equals(object? obj) -> bool
+override Penghou.Model.Abstractions.ModelTarget.GetHashCode() -> int
+override Penghou.Model.Abstractions.ModelTarget.ToString() -> string!
+override Penghou.Model.Abstractions.ModelTransportRequest<TPayload>.Equals(object? obj) -> bool
+override Penghou.Model.Abstractions.ModelTransportRequest<TPayload>.GetHashCode() -> int
+override Penghou.Model.Abstractions.ModelTransportRequest<TPayload>.ToString() -> string!
+override Penghou.Model.Abstractions.ModelTransportResponse<TPayload>.Equals(object? obj) -> bool
+override Penghou.Model.Abstractions.ModelTransportResponse<TPayload>.GetHashCode() -> int
+override Penghou.Model.Abstractions.ModelTransportResponse<TPayload>.ToString() -> string!
+override Penghou.Model.Abstractions.ModelUsage.Equals(object? obj) -> bool
+override Penghou.Model.Abstractions.ModelUsage.GetHashCode() -> int
+override Penghou.Model.Abstractions.ModelUsage.ToString() -> string!
+override Penghou.Model.Abstractions.ModelUsageIntent.Equals(object? obj) -> bool
+override Penghou.Model.Abstractions.ModelUsageIntent.GetHashCode() -> int
+override Penghou.Model.Abstractions.ModelUsageIntent.ToString() -> string!
+static Penghou.Model.Abstractions.ModelExecutionContext.operator !=(Penghou.Model.Abstractions.ModelExecutionContext? left, Penghou.Model.Abstractions.ModelExecutionContext? right) -> bool
+static Penghou.Model.Abstractions.ModelExecutionContext.operator ==(Penghou.Model.Abstractions.ModelExecutionContext? left, Penghou.Model.Abstractions.ModelExecutionContext? right) -> bool
+static Penghou.Model.Abstractions.ModelInvocation.operator !=(Penghou.Model.Abstractions.ModelInvocation? left, Penghou.Model.Abstractions.ModelInvocation? right) -> bool
+static Penghou.Model.Abstractions.ModelInvocation.operator ==(Penghou.Model.Abstractions.ModelInvocation? left, Penghou.Model.Abstractions.ModelInvocation? right) -> bool
+static Penghou.Model.Abstractions.ModelOperation.ArtifactRead.get -> Penghou.Model.Abstractions.ModelOperation!
+static Penghou.Model.Abstractions.ModelOperation.BatchCancel.get -> Penghou.Model.Abstractions.ModelOperation!
+static Penghou.Model.Abstractions.ModelOperation.BatchResults.get -> Penghou.Model.Abstractions.ModelOperation!
+static Penghou.Model.Abstractions.ModelOperation.BatchStatus.get -> Penghou.Model.Abstractions.ModelOperation!
+static Penghou.Model.Abstractions.ModelOperation.BatchSubmit.get -> Penghou.Model.Abstractions.ModelOperation!
+static Penghou.Model.Abstractions.ModelOperation.Complete.get -> Penghou.Model.Abstractions.ModelOperation!
+static Penghou.Model.Abstractions.ModelOperation.Embed.get -> Penghou.Model.Abstractions.ModelOperation!
+static Penghou.Model.Abstractions.ModelOperation.Generate.get -> Penghou.Model.Abstractions.ModelOperation!
+static Penghou.Model.Abstractions.ModelOperation.JobCancel.get -> Penghou.Model.Abstractions.ModelOperation!
+static Penghou.Model.Abstractions.ModelOperation.JobResults.get -> Penghou.Model.Abstractions.ModelOperation!
+static Penghou.Model.Abstractions.ModelOperation.JobStatus.get -> Penghou.Model.Abstractions.ModelOperation!
+static Penghou.Model.Abstractions.ModelOperation.JobSubmit.get -> Penghou.Model.Abstractions.ModelOperation!
+static Penghou.Model.Abstractions.ModelOperation.Moderate.get -> Penghou.Model.Abstractions.ModelOperation!
+static Penghou.Model.Abstractions.ModelOperation.Rerank.get -> Penghou.Model.Abstractions.ModelOperation!
+static Penghou.Model.Abstractions.ModelOperation.Stream.get -> Penghou.Model.Abstractions.ModelOperation!
+static Penghou.Model.Abstractions.ModelOperation.Upload.get -> Penghou.Model.Abstractions.ModelOperation!
+static Penghou.Model.Abstractions.ModelOperation.operator !=(Penghou.Model.Abstractions.ModelOperation? left, Penghou.Model.Abstractions.ModelOperation? right) -> bool
+static Penghou.Model.Abstractions.ModelOperation.operator ==(Penghou.Model.Abstractions.ModelOperation? left, Penghou.Model.Abstractions.ModelOperation? right) -> bool
+static Penghou.Model.Abstractions.ModelOperationHandle.operator !=(Penghou.Model.Abstractions.ModelOperationHandle? left, Penghou.Model.Abstractions.ModelOperationHandle? right) -> bool
+static Penghou.Model.Abstractions.ModelOperationHandle.operator ==(Penghou.Model.Abstractions.ModelOperationHandle? left, Penghou.Model.Abstractions.ModelOperationHandle? right) -> bool
+static Penghou.Model.Abstractions.ModelTarget.operator !=(Penghou.Model.Abstractions.ModelTarget? left, Penghou.Model.Abstractions.ModelTarget? right) -> bool
+static Penghou.Model.Abstractions.ModelTarget.operator ==(Penghou.Model.Abstractions.ModelTarget? left, Penghou.Model.Abstractions.ModelTarget? right) -> bool
+static Penghou.Model.Abstractions.ModelTransportRequest<TPayload>.operator !=(Penghou.Model.Abstractions.ModelTransportRequest<TPayload>? left, Penghou.Model.Abstractions.ModelTransportRequest<TPayload>? right) -> bool
+static Penghou.Model.Abstractions.ModelTransportRequest<TPayload>.operator ==(Penghou.Model.Abstractions.ModelTransportRequest<TPayload>? left, Penghou.Model.Abstractions.ModelTransportRequest<TPayload>? right) -> bool
+static Penghou.Model.Abstractions.ModelTransportResponse<TPayload>.operator !=(Penghou.Model.Abstractions.ModelTransportResponse<TPayload>? left, Penghou.Model.Abstractions.ModelTransportResponse<TPayload>? right) -> bool
+static Penghou.Model.Abstractions.ModelTransportResponse<TPayload>.operator ==(Penghou.Model.Abstractions.ModelTransportResponse<TPayload>? left, Penghou.Model.Abstractions.ModelTransportResponse<TPayload>? right) -> bool
+static Penghou.Model.Abstractions.ModelUsage.operator !=(Penghou.Model.Abstractions.ModelUsage? left, Penghou.Model.Abstractions.ModelUsage? right) -> bool
+static Penghou.Model.Abstractions.ModelUsage.operator ==(Penghou.Model.Abstractions.ModelUsage? left, Penghou.Model.Abstractions.ModelUsage? right) -> bool
+static Penghou.Model.Abstractions.ModelUsageIntent.operator !=(Penghou.Model.Abstractions.ModelUsageIntent? left, Penghou.Model.Abstractions.ModelUsageIntent? right) -> bool
+static Penghou.Model.Abstractions.ModelUsageIntent.operator ==(Penghou.Model.Abstractions.ModelUsageIntent? left, Penghou.Model.Abstractions.ModelUsageIntent? right) -> bool
