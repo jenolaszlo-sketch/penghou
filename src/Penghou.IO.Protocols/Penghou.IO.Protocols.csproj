@@ -16,7 +16,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Penghou.IO.Identity.Abstractions\Penghou.IO.Identity.Abstractions.csproj" />
-      <None Remove="$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/../../README.md'))" />
+    <None Remove="$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/../../README.md'))" />
     <None Include="README.md" Pack="true" PackagePath="/" />
     <AdditionalFiles Include="PublicAPI.Shipped.txt" />
     <AdditionalFiles Include="PublicAPI.Unshipped.txt" />

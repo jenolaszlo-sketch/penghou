@@ -10,6 +10,8 @@ $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $packageDirectory = [IO.Path]::GetFullPath($PackageDirectory)
 $outputDirectory = [IO.Path]::GetFullPath($OutputDirectory)
+$sourceCommit = (& git -C (Join-Path $PSScriptRoot '..') rev-parse HEAD).Trim()
+if ($LASTEXITCODE -ne 0) { throw 'Cannot resolve qualification source commit.' }
 if (Test-Path -LiteralPath $outputDirectory) { throw "Qualification output already exists; select a fresh evidence directory: $outputDirectory" }
 New-Item -ItemType Directory -Path $outputDirectory | Out-Null
 $feed = Join-Path $outputDirectory 'feed'
@@ -30,6 +32,7 @@ foreach ($id in $expected.Keys) {
     $version = $expected[$id]
     $archivePath = Join-Path $packageDirectory "$id.$version.nupkg"
     if (-not (Test-Path -LiteralPath $archivePath)) { throw "Missing exact candidate artifact: $archivePath" }
+    if (-not (Test-Path -LiteralPath (Join-Path $packageDirectory "$id.$version.snupkg"))) { throw "Missing exact candidate symbol artifact: $id.$version.snupkg" }
     Copy-Item -LiteralPath $archivePath -Destination $feed
     $archive = [IO.Compression.ZipFile]::OpenRead($archivePath)
     try {
@@ -41,6 +44,8 @@ foreach ($id in $expected.Keys) {
         $actualId = @($metadata.Elements() | Where-Object { $_.Name.LocalName -eq 'id' })[0].Value
         $actualVersion = @($metadata.Elements() | Where-Object { $_.Name.LocalName -eq 'version' })[0].Value
         if ($actualId -cne $id -or $actualVersion -cne $version) { throw "Wrong package identity in $archivePath" }
+        $repository = @($metadata.Elements() | Where-Object { $_.Name.LocalName -eq 'repository' })[0]
+        if ($repository.Attribute('url').Value -cne 'https://github.com/jenolaszlo-sketch/penghou' -or $repository.Attribute('commit').Value -cne $sourceCommit) { throw "Package $id is not bound to this exact qualification source commit $sourceCommit." }
         foreach ($tfm in @('net8.0', 'net10.0')) {
             if (-not $archive.GetEntry("lib/$tfm/$id.dll")) { throw "Missing $tfm assembly for $id" }
         }
@@ -54,7 +59,7 @@ foreach ($id in $expected.Keys) {
         }
     }
     finally { $archive.Dispose() }
-    $artifacts += [ordered]@{ package = $id; version = $version; sha256 = (Get-FileHash -LiteralPath $archivePath -Algorithm SHA256).Hash.ToLowerInvariant() }
+    $artifacts += [ordered]@{ package = $id; version = $version; sha256 = (Get-FileHash -LiteralPath $archivePath -Algorithm SHA256).Hash.ToLowerInvariant(); symbolsSha256 = (Get-FileHash -LiteralPath (Join-Path $packageDirectory "$id.$version.snupkg") -Algorithm SHA256).Hash.ToLowerInvariant() }
 }
 $previousCache = $env:NUGET_PACKAGES
 try {

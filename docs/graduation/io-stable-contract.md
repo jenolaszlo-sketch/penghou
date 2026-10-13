@@ -79,6 +79,12 @@ New assembly-qualified type names are not readable by the old preview release.
 No blanket promise covers arbitrary external serializers; JSON shape preservation
 and resolution of old assembly-qualified names are explicit probes.
 
+Published Luban preview.1 pins both original IO package versions exactly. Its
+unchanged DLL can use the forwarded deployment, as the binary probe demonstrates,
+but its ordinary NuGet graph needs a metadata-only consumer release before it
+can restore this boundary normally. That adoption is not claimed by the DLL
+probe and does not graduate or reactivate Luban's parked capability work.
+
 ## Non-goals and release gates
 
 No IO.Local/provider, writer/web/journal capability graduation, security-sensitive

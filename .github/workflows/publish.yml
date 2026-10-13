@@ -6,7 +6,7 @@ on:
       family:
         description: 'Explicit package family to publish'
         type: choice
-        options: [Transport, Workflow]
+        options: [Transport, Workflow, IOProtocols]
         default: Transport
         required: true
 
@@ -355,4 +355,105 @@ jobs:
           path: |
             workflow-public-evidence/**/qualification.json
             workflow-public-evidence/**/*.log
+          retention-days: 30
+
+  io-qualify:
+    if: inputs.family == 'IOProtocols'
+    uses: ./.github/workflows/io-graduation.yml
+    permissions:
+      contents: read
+
+  io-publish:
+    if: inputs.family == 'IOProtocols'
+    needs: io-qualify
+    runs-on: ubuntu-latest
+    environment: nuget
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+      - name: Require selected main release commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.io-qualify.outputs.artifact_name }}
+          path: io-identity-release-artifacts
+      - name: Reject immutable package collisions
+        shell: pwsh
+        env:
+          PACKAGE_VERSION: ${{ needs.io-qualify.outputs.package_version }}
+          FACADE_VERSION: ${{ needs.io-qualify.outputs.facade_version }}
+        run: |
+          ./eng/check-nuget-version.ps1 -Profile IOProtocols -PackageVersion $env:PACKAGE_VERSION -PackageDirectory io-identity-release-artifacts
+          ./eng/check-nuget-version.ps1 -Profile IOFacade -PackageVersion $env:FACADE_VERSION -PackageDirectory io-identity-release-artifacts
+      - uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+      - name: Publish only qualified identity packages and preview forwarder
+        shell: bash
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+          PACKAGE_VERSION: ${{ needs.io-qualify.outputs.package_version }}
+          FACADE_VERSION: ${{ needs.io-qualify.outputs.facade_version }}
+        run: |
+          set -euo pipefail
+          for id in Penghou.IO.Identity.Abstractions Penghou.IO.Protocols Penghou.IO.Abstractions; do
+            version="$PACKAGE_VERSION"
+            if test "$id" = Penghou.IO.Abstractions; then version="$FACADE_VERSION"; fi
+            dotnet nuget push "io-identity-release-artifacts/${id}.${version}.nupkg" --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" --no-symbols --skip-duplicate
+            dotnet nuget push "io-identity-release-artifacts/${id}.${version}.snupkg" --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" --skip-duplicate
+          done
+
+  io-public:
+    if: inputs.family == 'IOProtocols'
+    needs: [io-qualify, io-publish]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 130
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+      - uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.io-qualify.outputs.artifact_name }}
+          path: io-identity-release-artifacts
+      - name: Compare public contents and prove fresh public consumers
+        shell: pwsh
+        env:
+          PACKAGE_VERSION: ${{ needs.io-qualify.outputs.package_version }}
+          FACADE_VERSION: ${{ needs.io-qualify.outputs.facade_version }}
+        run: |
+          ./eng/check-nuget-version.ps1 -Profile IOProtocols -PackageVersion $env:PACKAGE_VERSION -PackageDirectory io-identity-release-artifacts -RequirePublished -IndexingTimeoutSeconds 3600
+          ./eng/check-nuget-version.ps1 -Profile IOFacade -PackageVersion $env:FACADE_VERSION -PackageDirectory io-identity-release-artifacts -RequirePublished -IndexingTimeoutSeconds 3600
+          ./eng/restore-io-preview-baseline.ps1 -OutputDirectory io-public-preview-baseline
+          ./eng/qualify-io-graduation.ps1 -PackageDirectory io-identity-release-artifacts -StableVersion $env:PACKAGE_VERSION -FacadeVersion $env:FACADE_VERSION -BaselinePackageDirectory io-public-preview-baseline/packages -OutputDirectory io-identity-public-evidence -PublicPackage
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: io-identity-public-evidence-${{ matrix.os }}-${{ github.sha }}
+          path: |
+            io-identity-public-evidence/qualification.json
+            io-identity-public-evidence/*-preview-data.json
           retention-days: 30

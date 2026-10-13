@@ -16,3 +16,9 @@ workflow-evidence/
 workflow-packed-evidence/
 workflow-release-artifacts/
 workflow-public-evidence/
+io-identity-release-artifacts/
+io-identity-evidence/
+io-identity-public-evidence/
+io-preview-baseline/
+io-public-preview-baseline/
+io-protocol-tests/
