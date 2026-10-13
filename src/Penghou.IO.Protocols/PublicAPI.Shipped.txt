@@ -1,0 +1,17 @@
+#nullable enable
+const Penghou.IO.Abstractions.ResourceRequestIdentity.IdentityPrefix = "penghou-io:request:v1:sha256:" -> string!
+const Penghou.IO.Abstractions.ResourceRequestIdentity.MaximumPayloadBytes = 16777216 -> int
+const Penghou.IO.Abstractions.ResourceRequestIdentity.SchemaVersion = 1 -> int
+const Penghou.IO.Abstractions.WindowsWorkspacePath.MaximumLength = 2048 -> int
+Penghou.IO.Abstractions.ResourceRequestIdentity
+Penghou.IO.Abstractions.WindowsWorkspacePath
+static Penghou.IO.Abstractions.ResourceRequestIdentity.Compute(Penghou.IO.Abstractions.DirectoryCreateRequest! request) -> Penghou.IO.Abstractions.RequestIdentity
+static Penghou.IO.Abstractions.ResourceRequestIdentity.Compute(Penghou.IO.Abstractions.DirectoryListRequest! request) -> Penghou.IO.Abstractions.RequestIdentity
+static Penghou.IO.Abstractions.ResourceRequestIdentity.Compute(Penghou.IO.Abstractions.FileDeleteRequest! request) -> Penghou.IO.Abstractions.RequestIdentity
+static Penghou.IO.Abstractions.ResourceRequestIdentity.Compute(Penghou.IO.Abstractions.FileMetadataRequest! request) -> Penghou.IO.Abstractions.RequestIdentity
+static Penghou.IO.Abstractions.ResourceRequestIdentity.Compute(Penghou.IO.Abstractions.FileMoveRequest! request) -> Penghou.IO.Abstractions.RequestIdentity
+static Penghou.IO.Abstractions.ResourceRequestIdentity.Compute(Penghou.IO.Abstractions.FileReadRequest! request) -> Penghou.IO.Abstractions.RequestIdentity
+static Penghou.IO.Abstractions.ResourceRequestIdentity.Compute(Penghou.IO.Abstractions.FileWriteRequest! request) -> Penghou.IO.Abstractions.RequestIdentity
+static Penghou.IO.Abstractions.ResourceRequestIdentity.Compute(Penghou.IO.Abstractions.WebReadRequest! request) -> Penghou.IO.Abstractions.RequestIdentity
+static Penghou.IO.Abstractions.WindowsWorkspacePath.Normalize(Penghou.IO.Abstractions.WorkspacePath path, bool allowRoot = true) -> Penghou.IO.Abstractions.WorkspacePath
+static Penghou.IO.Abstractions.WindowsWorkspacePath.ToIdentityPath(Penghou.IO.Abstractions.WorkspacePath path, bool allowRoot = true) -> string!

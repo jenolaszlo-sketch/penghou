@@ -99,7 +99,8 @@ public sealed class ConditionalWriterTests
     public void Contract_assembly_has_no_implementation_or_semantic_dependencies()
     {
         var assembly = typeof(IWorkspaceProvider).Assembly;
-        Assert.DoesNotContain(assembly.GetReferencedAssemblies(), a => a.Name!.StartsWith("Penghou.", StringComparison.Ordinal));
+        Assert.Equal(new[] { "Penghou.IO.Identity.Abstractions" },
+            assembly.GetReferencedAssemblies().Where(a => a.Name!.StartsWith("Penghou.", StringComparison.Ordinal)).Select(a => a.Name));
         Assert.DoesNotContain(assembly.GetExportedTypes(), t => t.Name is "WindowsWorkspacePath" or "ResourceRequestIdentity" or "TextPatch" or "FilePatchRequest");
         Assert.NotSame(assembly, typeof(ResourceRequestIdentity).Assembly);
         Assert.DoesNotContain(typeof(IWorkspaceProvider).GetProperties(), p => p.Name.Contains("Root", StringComparison.Ordinal));

@@ -1,0 +1,21 @@
+using System.Runtime.CompilerServices;
+using Penghou.IO.Abstractions;
+
+[assembly: TypeForwardedTo(typeof(WorkspaceId))]
+[assembly: TypeForwardedTo(typeof(WorkspacePath))]
+[assembly: TypeForwardedTo(typeof(WebUrl))]
+[assembly: TypeForwardedTo(typeof(ResourceVersion))]
+[assembly: TypeForwardedTo(typeof(DirectoryContinuation))]
+[assembly: TypeForwardedTo(typeof(RequestIdentity))]
+[assembly: TypeForwardedTo(typeof(HostInvocation))]
+[assembly: TypeForwardedTo(typeof(IoLimits))]
+[assembly: TypeForwardedTo(typeof(WritePreconditionKind))]
+[assembly: TypeForwardedTo(typeof(WritePrecondition))]
+[assembly: TypeForwardedTo(typeof(FileWriteRequest))]
+[assembly: TypeForwardedTo(typeof(FileDeleteRequest))]
+[assembly: TypeForwardedTo(typeof(DirectoryCreateRequest))]
+[assembly: TypeForwardedTo(typeof(FileMoveRequest))]
+[assembly: TypeForwardedTo(typeof(FileReadRequest))]
+[assembly: TypeForwardedTo(typeof(FileMetadataRequest))]
+[assembly: TypeForwardedTo(typeof(DirectoryListRequest))]
+[assembly: TypeForwardedTo(typeof(WebReadRequest))]

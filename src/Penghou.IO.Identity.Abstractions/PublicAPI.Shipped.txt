@@ -1,0 +1,279 @@
+#nullable enable
+override Penghou.IO.Abstractions.DirectoryContinuation.GetHashCode() -> int
+override Penghou.IO.Abstractions.DirectoryCreateRequest.Equals(object? obj) -> bool
+override Penghou.IO.Abstractions.DirectoryCreateRequest.GetHashCode() -> int
+override Penghou.IO.Abstractions.DirectoryCreateRequest.ToString() -> string!
+override Penghou.IO.Abstractions.DirectoryListRequest.Equals(object? obj) -> bool
+override Penghou.IO.Abstractions.DirectoryListRequest.GetHashCode() -> int
+override Penghou.IO.Abstractions.DirectoryListRequest.ToString() -> string!
+override Penghou.IO.Abstractions.FileDeleteRequest.Equals(object? obj) -> bool
+override Penghou.IO.Abstractions.FileDeleteRequest.GetHashCode() -> int
+override Penghou.IO.Abstractions.FileDeleteRequest.ToString() -> string!
+override Penghou.IO.Abstractions.FileMetadataRequest.Equals(object? obj) -> bool
+override Penghou.IO.Abstractions.FileMetadataRequest.GetHashCode() -> int
+override Penghou.IO.Abstractions.FileMetadataRequest.ToString() -> string!
+override Penghou.IO.Abstractions.FileMoveRequest.Equals(object? obj) -> bool
+override Penghou.IO.Abstractions.FileMoveRequest.GetHashCode() -> int
+override Penghou.IO.Abstractions.FileMoveRequest.ToString() -> string!
+override Penghou.IO.Abstractions.FileReadRequest.Equals(object? obj) -> bool
+override Penghou.IO.Abstractions.FileReadRequest.GetHashCode() -> int
+override Penghou.IO.Abstractions.FileReadRequest.ToString() -> string!
+override Penghou.IO.Abstractions.FileWriteRequest.Equals(object? obj) -> bool
+override Penghou.IO.Abstractions.FileWriteRequest.GetHashCode() -> int
+override Penghou.IO.Abstractions.FileWriteRequest.ToString() -> string!
+override Penghou.IO.Abstractions.HostInvocation.Equals(object? obj) -> bool
+override Penghou.IO.Abstractions.HostInvocation.GetHashCode() -> int
+override Penghou.IO.Abstractions.HostInvocation.ToString() -> string!
+override Penghou.IO.Abstractions.IoLimits.Equals(object? obj) -> bool
+override Penghou.IO.Abstractions.IoLimits.GetHashCode() -> int
+override Penghou.IO.Abstractions.IoLimits.ToString() -> string!
+override Penghou.IO.Abstractions.RequestIdentity.GetHashCode() -> int
+override Penghou.IO.Abstractions.ResourceVersion.GetHashCode() -> int
+override Penghou.IO.Abstractions.WebReadRequest.Equals(object? obj) -> bool
+override Penghou.IO.Abstractions.WebReadRequest.GetHashCode() -> int
+override Penghou.IO.Abstractions.WebReadRequest.ToString() -> string!
+override Penghou.IO.Abstractions.WebUrl.GetHashCode() -> int
+override Penghou.IO.Abstractions.WorkspaceId.GetHashCode() -> int
+override Penghou.IO.Abstractions.WorkspacePath.GetHashCode() -> int
+override Penghou.IO.Abstractions.WritePrecondition.Equals(object? obj) -> bool
+override Penghou.IO.Abstractions.WritePrecondition.GetHashCode() -> int
+override Penghou.IO.Abstractions.WritePrecondition.ToString() -> string!
+Penghou.IO.Abstractions.DirectoryContinuation
+Penghou.IO.Abstractions.DirectoryContinuation.Deconstruct(out string! Value) -> void
+Penghou.IO.Abstractions.DirectoryContinuation.DirectoryContinuation() -> void
+Penghou.IO.Abstractions.DirectoryContinuation.DirectoryContinuation(string! Value) -> void
+Penghou.IO.Abstractions.DirectoryContinuation.Equals(Penghou.IO.Abstractions.DirectoryContinuation other) -> bool
+Penghou.IO.Abstractions.DirectoryContinuation.Value.get -> string!
+Penghou.IO.Abstractions.DirectoryContinuation.Value.init -> void
+Penghou.IO.Abstractions.DirectoryCreateRequest
+Penghou.IO.Abstractions.DirectoryCreateRequest.<Clone>$() -> Penghou.IO.Abstractions.DirectoryCreateRequest!
+Penghou.IO.Abstractions.DirectoryCreateRequest.Deconstruct(out Penghou.IO.Abstractions.HostInvocation! Invocation, out Penghou.IO.Abstractions.WorkspaceId Workspace, out Penghou.IO.Abstractions.WorkspacePath Path) -> void
+Penghou.IO.Abstractions.DirectoryCreateRequest.DirectoryCreateRequest(Penghou.IO.Abstractions.HostInvocation! Invocation, Penghou.IO.Abstractions.WorkspaceId Workspace, Penghou.IO.Abstractions.WorkspacePath Path) -> void
+Penghou.IO.Abstractions.DirectoryCreateRequest.Equals(Penghou.IO.Abstractions.DirectoryCreateRequest? other) -> bool
+Penghou.IO.Abstractions.DirectoryCreateRequest.Invocation.get -> Penghou.IO.Abstractions.HostInvocation!
+Penghou.IO.Abstractions.DirectoryCreateRequest.Invocation.init -> void
+Penghou.IO.Abstractions.DirectoryCreateRequest.Path.get -> Penghou.IO.Abstractions.WorkspacePath
+Penghou.IO.Abstractions.DirectoryCreateRequest.Path.init -> void
+Penghou.IO.Abstractions.DirectoryCreateRequest.Workspace.get -> Penghou.IO.Abstractions.WorkspaceId
+Penghou.IO.Abstractions.DirectoryCreateRequest.Workspace.init -> void
+Penghou.IO.Abstractions.DirectoryListRequest
+Penghou.IO.Abstractions.DirectoryListRequest.<Clone>$() -> Penghou.IO.Abstractions.DirectoryListRequest!
+Penghou.IO.Abstractions.DirectoryListRequest.Continuation.get -> Penghou.IO.Abstractions.DirectoryContinuation?
+Penghou.IO.Abstractions.DirectoryListRequest.Continuation.init -> void
+Penghou.IO.Abstractions.DirectoryListRequest.Deconstruct(out Penghou.IO.Abstractions.HostInvocation! Invocation, out Penghou.IO.Abstractions.WorkspaceId Workspace, out Penghou.IO.Abstractions.WorkspacePath Path, out int MaxEntries, out int MaxCandidatesScanned, out int MaxOutputBytes, out Penghou.IO.Abstractions.DirectoryContinuation? Continuation) -> void
+Penghou.IO.Abstractions.DirectoryListRequest.DirectoryListRequest(Penghou.IO.Abstractions.HostInvocation! Invocation, Penghou.IO.Abstractions.WorkspaceId Workspace, Penghou.IO.Abstractions.WorkspacePath Path, int MaxEntries, int MaxCandidatesScanned, int MaxOutputBytes, Penghou.IO.Abstractions.DirectoryContinuation? Continuation = null) -> void
+Penghou.IO.Abstractions.DirectoryListRequest.Equals(Penghou.IO.Abstractions.DirectoryListRequest? other) -> bool
+Penghou.IO.Abstractions.DirectoryListRequest.Invocation.get -> Penghou.IO.Abstractions.HostInvocation!
+Penghou.IO.Abstractions.DirectoryListRequest.Invocation.init -> void
+Penghou.IO.Abstractions.DirectoryListRequest.MaxCandidatesScanned.get -> int
+Penghou.IO.Abstractions.DirectoryListRequest.MaxCandidatesScanned.init -> void
+Penghou.IO.Abstractions.DirectoryListRequest.MaxEntries.get -> int
+Penghou.IO.Abstractions.DirectoryListRequest.MaxEntries.init -> void
+Penghou.IO.Abstractions.DirectoryListRequest.MaxOutputBytes.get -> int
+Penghou.IO.Abstractions.DirectoryListRequest.MaxOutputBytes.init -> void
+Penghou.IO.Abstractions.DirectoryListRequest.Path.get -> Penghou.IO.Abstractions.WorkspacePath
+Penghou.IO.Abstractions.DirectoryListRequest.Path.init -> void
+Penghou.IO.Abstractions.DirectoryListRequest.Workspace.get -> Penghou.IO.Abstractions.WorkspaceId
+Penghou.IO.Abstractions.DirectoryListRequest.Workspace.init -> void
+Penghou.IO.Abstractions.FileDeleteRequest
+Penghou.IO.Abstractions.FileDeleteRequest.<Clone>$() -> Penghou.IO.Abstractions.FileDeleteRequest!
+Penghou.IO.Abstractions.FileDeleteRequest.Deconstruct(out Penghou.IO.Abstractions.HostInvocation! Invocation, out Penghou.IO.Abstractions.WorkspaceId Workspace, out Penghou.IO.Abstractions.WorkspacePath Path, out Penghou.IO.Abstractions.ResourceVersion ExpectedVersion) -> void
+Penghou.IO.Abstractions.FileDeleteRequest.Equals(Penghou.IO.Abstractions.FileDeleteRequest? other) -> bool
+Penghou.IO.Abstractions.FileDeleteRequest.ExpectedVersion.get -> Penghou.IO.Abstractions.ResourceVersion
+Penghou.IO.Abstractions.FileDeleteRequest.ExpectedVersion.init -> void
+Penghou.IO.Abstractions.FileDeleteRequest.FileDeleteRequest(Penghou.IO.Abstractions.HostInvocation! Invocation, Penghou.IO.Abstractions.WorkspaceId Workspace, Penghou.IO.Abstractions.WorkspacePath Path, Penghou.IO.Abstractions.ResourceVersion ExpectedVersion) -> void
+Penghou.IO.Abstractions.FileDeleteRequest.Invocation.get -> Penghou.IO.Abstractions.HostInvocation!
+Penghou.IO.Abstractions.FileDeleteRequest.Invocation.init -> void
+Penghou.IO.Abstractions.FileDeleteRequest.Path.get -> Penghou.IO.Abstractions.WorkspacePath
+Penghou.IO.Abstractions.FileDeleteRequest.Path.init -> void
+Penghou.IO.Abstractions.FileDeleteRequest.Workspace.get -> Penghou.IO.Abstractions.WorkspaceId
+Penghou.IO.Abstractions.FileDeleteRequest.Workspace.init -> void
+Penghou.IO.Abstractions.FileMetadataRequest
+Penghou.IO.Abstractions.FileMetadataRequest.<Clone>$() -> Penghou.IO.Abstractions.FileMetadataRequest!
+Penghou.IO.Abstractions.FileMetadataRequest.Deconstruct(out Penghou.IO.Abstractions.HostInvocation! Invocation, out Penghou.IO.Abstractions.WorkspaceId Workspace, out Penghou.IO.Abstractions.WorkspacePath Path) -> void
+Penghou.IO.Abstractions.FileMetadataRequest.Equals(Penghou.IO.Abstractions.FileMetadataRequest? other) -> bool
+Penghou.IO.Abstractions.FileMetadataRequest.FileMetadataRequest(Penghou.IO.Abstractions.HostInvocation! Invocation, Penghou.IO.Abstractions.WorkspaceId Workspace, Penghou.IO.Abstractions.WorkspacePath Path) -> void
+Penghou.IO.Abstractions.FileMetadataRequest.Invocation.get -> Penghou.IO.Abstractions.HostInvocation!
+Penghou.IO.Abstractions.FileMetadataRequest.Invocation.init -> void
+Penghou.IO.Abstractions.FileMetadataRequest.Path.get -> Penghou.IO.Abstractions.WorkspacePath
+Penghou.IO.Abstractions.FileMetadataRequest.Path.init -> void
+Penghou.IO.Abstractions.FileMetadataRequest.Workspace.get -> Penghou.IO.Abstractions.WorkspaceId
+Penghou.IO.Abstractions.FileMetadataRequest.Workspace.init -> void
+Penghou.IO.Abstractions.FileMoveRequest
+Penghou.IO.Abstractions.FileMoveRequest.<Clone>$() -> Penghou.IO.Abstractions.FileMoveRequest!
+Penghou.IO.Abstractions.FileMoveRequest.Deconstruct(out Penghou.IO.Abstractions.HostInvocation! Invocation, out Penghou.IO.Abstractions.WorkspaceId Workspace, out Penghou.IO.Abstractions.WorkspacePath Source, out Penghou.IO.Abstractions.WorkspacePath Destination, out Penghou.IO.Abstractions.ResourceVersion ExpectedSourceVersion, out Penghou.IO.Abstractions.WritePrecondition! DestinationPrecondition) -> void
+Penghou.IO.Abstractions.FileMoveRequest.Destination.get -> Penghou.IO.Abstractions.WorkspacePath
+Penghou.IO.Abstractions.FileMoveRequest.Destination.init -> void
+Penghou.IO.Abstractions.FileMoveRequest.DestinationPrecondition.get -> Penghou.IO.Abstractions.WritePrecondition!
+Penghou.IO.Abstractions.FileMoveRequest.DestinationPrecondition.init -> void
+Penghou.IO.Abstractions.FileMoveRequest.Equals(Penghou.IO.Abstractions.FileMoveRequest? other) -> bool
+Penghou.IO.Abstractions.FileMoveRequest.ExpectedSourceVersion.get -> Penghou.IO.Abstractions.ResourceVersion
+Penghou.IO.Abstractions.FileMoveRequest.ExpectedSourceVersion.init -> void
+Penghou.IO.Abstractions.FileMoveRequest.FileMoveRequest(Penghou.IO.Abstractions.HostInvocation! Invocation, Penghou.IO.Abstractions.WorkspaceId Workspace, Penghou.IO.Abstractions.WorkspacePath Source, Penghou.IO.Abstractions.WorkspacePath Destination, Penghou.IO.Abstractions.ResourceVersion ExpectedSourceVersion, Penghou.IO.Abstractions.WritePrecondition! DestinationPrecondition) -> void
+Penghou.IO.Abstractions.FileMoveRequest.Invocation.get -> Penghou.IO.Abstractions.HostInvocation!
+Penghou.IO.Abstractions.FileMoveRequest.Invocation.init -> void
+Penghou.IO.Abstractions.FileMoveRequest.Source.get -> Penghou.IO.Abstractions.WorkspacePath
+Penghou.IO.Abstractions.FileMoveRequest.Source.init -> void
+Penghou.IO.Abstractions.FileMoveRequest.Workspace.get -> Penghou.IO.Abstractions.WorkspaceId
+Penghou.IO.Abstractions.FileMoveRequest.Workspace.init -> void
+Penghou.IO.Abstractions.FileReadRequest
+Penghou.IO.Abstractions.FileReadRequest.<Clone>$() -> Penghou.IO.Abstractions.FileReadRequest!
+Penghou.IO.Abstractions.FileReadRequest.Deconstruct(out Penghou.IO.Abstractions.HostInvocation! Invocation, out Penghou.IO.Abstractions.WorkspaceId Workspace, out Penghou.IO.Abstractions.WorkspacePath Path, out Penghou.IO.Abstractions.IoLimits! Limits) -> void
+Penghou.IO.Abstractions.FileReadRequest.Equals(Penghou.IO.Abstractions.FileReadRequest? other) -> bool
+Penghou.IO.Abstractions.FileReadRequest.FileReadRequest(Penghou.IO.Abstractions.HostInvocation! Invocation, Penghou.IO.Abstractions.WorkspaceId Workspace, Penghou.IO.Abstractions.WorkspacePath Path, Penghou.IO.Abstractions.IoLimits! Limits) -> void
+Penghou.IO.Abstractions.FileReadRequest.Invocation.get -> Penghou.IO.Abstractions.HostInvocation!
+Penghou.IO.Abstractions.FileReadRequest.Invocation.init -> void
+Penghou.IO.Abstractions.FileReadRequest.Limits.get -> Penghou.IO.Abstractions.IoLimits!
+Penghou.IO.Abstractions.FileReadRequest.Limits.init -> void
+Penghou.IO.Abstractions.FileReadRequest.Path.get -> Penghou.IO.Abstractions.WorkspacePath
+Penghou.IO.Abstractions.FileReadRequest.Path.init -> void
+Penghou.IO.Abstractions.FileReadRequest.Workspace.get -> Penghou.IO.Abstractions.WorkspaceId
+Penghou.IO.Abstractions.FileReadRequest.Workspace.init -> void
+Penghou.IO.Abstractions.FileWriteRequest
+Penghou.IO.Abstractions.FileWriteRequest.<Clone>$() -> Penghou.IO.Abstractions.FileWriteRequest!
+Penghou.IO.Abstractions.FileWriteRequest.Content.get -> System.ReadOnlyMemory<byte>
+Penghou.IO.Abstractions.FileWriteRequest.Content.init -> void
+Penghou.IO.Abstractions.FileWriteRequest.Deconstruct(out Penghou.IO.Abstractions.HostInvocation! Invocation, out Penghou.IO.Abstractions.WorkspaceId Workspace, out Penghou.IO.Abstractions.WorkspacePath Path, out System.ReadOnlyMemory<byte> Content, out Penghou.IO.Abstractions.IoLimits! Limits, out Penghou.IO.Abstractions.WritePrecondition! Precondition) -> void
+Penghou.IO.Abstractions.FileWriteRequest.Equals(Penghou.IO.Abstractions.FileWriteRequest? other) -> bool
+Penghou.IO.Abstractions.FileWriteRequest.FileWriteRequest(Penghou.IO.Abstractions.HostInvocation! Invocation, Penghou.IO.Abstractions.WorkspaceId Workspace, Penghou.IO.Abstractions.WorkspacePath Path, System.ReadOnlyMemory<byte> Content, Penghou.IO.Abstractions.IoLimits! Limits, Penghou.IO.Abstractions.WritePrecondition! Precondition) -> void
+Penghou.IO.Abstractions.FileWriteRequest.Invocation.get -> Penghou.IO.Abstractions.HostInvocation!
+Penghou.IO.Abstractions.FileWriteRequest.Invocation.init -> void
+Penghou.IO.Abstractions.FileWriteRequest.Limits.get -> Penghou.IO.Abstractions.IoLimits!
+Penghou.IO.Abstractions.FileWriteRequest.Limits.init -> void
+Penghou.IO.Abstractions.FileWriteRequest.Path.get -> Penghou.IO.Abstractions.WorkspacePath
+Penghou.IO.Abstractions.FileWriteRequest.Path.init -> void
+Penghou.IO.Abstractions.FileWriteRequest.Precondition.get -> Penghou.IO.Abstractions.WritePrecondition!
+Penghou.IO.Abstractions.FileWriteRequest.Precondition.init -> void
+Penghou.IO.Abstractions.FileWriteRequest.Workspace.get -> Penghou.IO.Abstractions.WorkspaceId
+Penghou.IO.Abstractions.FileWriteRequest.Workspace.init -> void
+Penghou.IO.Abstractions.HostInvocation
+Penghou.IO.Abstractions.HostInvocation.<Clone>$() -> Penghou.IO.Abstractions.HostInvocation!
+Penghou.IO.Abstractions.HostInvocation.AttemptId.get -> string!
+Penghou.IO.Abstractions.HostInvocation.AttemptId.init -> void
+Penghou.IO.Abstractions.HostInvocation.Deconstruct(out string! InvocationId, out string! SubjectId, out string! EffectId, out string! AttemptId, out string! EffectScopeId, out string? ParentEffectScopeId, out Penghou.IO.Abstractions.RequestIdentity RequestIdentity) -> void
+Penghou.IO.Abstractions.HostInvocation.EffectId.get -> string!
+Penghou.IO.Abstractions.HostInvocation.EffectId.init -> void
+Penghou.IO.Abstractions.HostInvocation.EffectScopeId.get -> string!
+Penghou.IO.Abstractions.HostInvocation.EffectScopeId.init -> void
+Penghou.IO.Abstractions.HostInvocation.Equals(Penghou.IO.Abstractions.HostInvocation? other) -> bool
+Penghou.IO.Abstractions.HostInvocation.HostInvocation(string! InvocationId, string! SubjectId, string! EffectId, string! AttemptId, string! EffectScopeId, string? ParentEffectScopeId, Penghou.IO.Abstractions.RequestIdentity RequestIdentity) -> void
+Penghou.IO.Abstractions.HostInvocation.InvocationId.get -> string!
+Penghou.IO.Abstractions.HostInvocation.InvocationId.init -> void
+Penghou.IO.Abstractions.HostInvocation.ParentEffectScopeId.get -> string?
+Penghou.IO.Abstractions.HostInvocation.ParentEffectScopeId.init -> void
+Penghou.IO.Abstractions.HostInvocation.RequestIdentity.get -> Penghou.IO.Abstractions.RequestIdentity
+Penghou.IO.Abstractions.HostInvocation.RequestIdentity.init -> void
+Penghou.IO.Abstractions.HostInvocation.SubjectId.get -> string!
+Penghou.IO.Abstractions.HostInvocation.SubjectId.init -> void
+Penghou.IO.Abstractions.IoLimits
+Penghou.IO.Abstractions.IoLimits.<Clone>$() -> Penghou.IO.Abstractions.IoLimits!
+Penghou.IO.Abstractions.IoLimits.Deconstruct(out int MaxBytes) -> void
+Penghou.IO.Abstractions.IoLimits.Equals(Penghou.IO.Abstractions.IoLimits? other) -> bool
+Penghou.IO.Abstractions.IoLimits.IoLimits(int MaxBytes) -> void
+Penghou.IO.Abstractions.IoLimits.MaxBytes.get -> int
+Penghou.IO.Abstractions.IoLimits.MaxBytes.init -> void
+Penghou.IO.Abstractions.RequestIdentity
+Penghou.IO.Abstractions.RequestIdentity.Deconstruct(out string! Value) -> void
+Penghou.IO.Abstractions.RequestIdentity.Equals(Penghou.IO.Abstractions.RequestIdentity other) -> bool
+Penghou.IO.Abstractions.RequestIdentity.RequestIdentity() -> void
+Penghou.IO.Abstractions.RequestIdentity.RequestIdentity(string! Value) -> void
+Penghou.IO.Abstractions.RequestIdentity.Value.get -> string!
+Penghou.IO.Abstractions.RequestIdentity.Value.init -> void
+Penghou.IO.Abstractions.ResourceVersion
+Penghou.IO.Abstractions.ResourceVersion.Deconstruct(out string! Value) -> void
+Penghou.IO.Abstractions.ResourceVersion.Equals(Penghou.IO.Abstractions.ResourceVersion other) -> bool
+Penghou.IO.Abstractions.ResourceVersion.ResourceVersion() -> void
+Penghou.IO.Abstractions.ResourceVersion.ResourceVersion(string! Value) -> void
+Penghou.IO.Abstractions.ResourceVersion.Value.get -> string!
+Penghou.IO.Abstractions.ResourceVersion.Value.init -> void
+Penghou.IO.Abstractions.WebReadRequest
+Penghou.IO.Abstractions.WebReadRequest.<Clone>$() -> Penghou.IO.Abstractions.WebReadRequest!
+Penghou.IO.Abstractions.WebReadRequest.Deconstruct(out Penghou.IO.Abstractions.HostInvocation! Invocation, out Penghou.IO.Abstractions.WebUrl Url, out Penghou.IO.Abstractions.IoLimits! Limits) -> void
+Penghou.IO.Abstractions.WebReadRequest.Equals(Penghou.IO.Abstractions.WebReadRequest? other) -> bool
+Penghou.IO.Abstractions.WebReadRequest.Invocation.get -> Penghou.IO.Abstractions.HostInvocation!
+Penghou.IO.Abstractions.WebReadRequest.Invocation.init -> void
+Penghou.IO.Abstractions.WebReadRequest.Limits.get -> Penghou.IO.Abstractions.IoLimits!
+Penghou.IO.Abstractions.WebReadRequest.Limits.init -> void
+Penghou.IO.Abstractions.WebReadRequest.Url.get -> Penghou.IO.Abstractions.WebUrl
+Penghou.IO.Abstractions.WebReadRequest.Url.init -> void
+Penghou.IO.Abstractions.WebReadRequest.WebReadRequest(Penghou.IO.Abstractions.HostInvocation! Invocation, Penghou.IO.Abstractions.WebUrl Url, Penghou.IO.Abstractions.IoLimits! Limits) -> void
+Penghou.IO.Abstractions.WebUrl
+Penghou.IO.Abstractions.WebUrl.Deconstruct(out System.Uri! Value) -> void
+Penghou.IO.Abstractions.WebUrl.Equals(Penghou.IO.Abstractions.WebUrl other) -> bool
+Penghou.IO.Abstractions.WebUrl.Value.get -> System.Uri!
+Penghou.IO.Abstractions.WebUrl.Value.init -> void
+Penghou.IO.Abstractions.WebUrl.WebUrl() -> void
+Penghou.IO.Abstractions.WebUrl.WebUrl(System.Uri! Value) -> void
+Penghou.IO.Abstractions.WorkspaceId
+Penghou.IO.Abstractions.WorkspaceId.Deconstruct(out string! Value) -> void
+Penghou.IO.Abstractions.WorkspaceId.Equals(Penghou.IO.Abstractions.WorkspaceId other) -> bool
+Penghou.IO.Abstractions.WorkspaceId.Value.get -> string!
+Penghou.IO.Abstractions.WorkspaceId.Value.init -> void
+Penghou.IO.Abstractions.WorkspaceId.WorkspaceId() -> void
+Penghou.IO.Abstractions.WorkspaceId.WorkspaceId(string! Value) -> void
+Penghou.IO.Abstractions.WorkspacePath
+Penghou.IO.Abstractions.WorkspacePath.Deconstruct(out string! Value) -> void
+Penghou.IO.Abstractions.WorkspacePath.Equals(Penghou.IO.Abstractions.WorkspacePath other) -> bool
+Penghou.IO.Abstractions.WorkspacePath.Value.get -> string!
+Penghou.IO.Abstractions.WorkspacePath.Value.init -> void
+Penghou.IO.Abstractions.WorkspacePath.WorkspacePath() -> void
+Penghou.IO.Abstractions.WorkspacePath.WorkspacePath(string! Value) -> void
+Penghou.IO.Abstractions.WritePrecondition
+Penghou.IO.Abstractions.WritePrecondition.<Clone>$() -> Penghou.IO.Abstractions.WritePrecondition!
+Penghou.IO.Abstractions.WritePrecondition.Deconstruct(out Penghou.IO.Abstractions.WritePreconditionKind Kind, out Penghou.IO.Abstractions.ResourceVersion? Version) -> void
+Penghou.IO.Abstractions.WritePrecondition.Equals(Penghou.IO.Abstractions.WritePrecondition? other) -> bool
+Penghou.IO.Abstractions.WritePrecondition.Kind.get -> Penghou.IO.Abstractions.WritePreconditionKind
+Penghou.IO.Abstractions.WritePrecondition.Kind.init -> void
+Penghou.IO.Abstractions.WritePrecondition.Version.get -> Penghou.IO.Abstractions.ResourceVersion?
+Penghou.IO.Abstractions.WritePrecondition.Version.init -> void
+Penghou.IO.Abstractions.WritePrecondition.WritePrecondition(Penghou.IO.Abstractions.WritePreconditionKind Kind, Penghou.IO.Abstractions.ResourceVersion? Version = null) -> void
+Penghou.IO.Abstractions.WritePreconditionKind
+Penghou.IO.Abstractions.WritePreconditionKind.MustMatchVersion = 1 -> Penghou.IO.Abstractions.WritePreconditionKind
+Penghou.IO.Abstractions.WritePreconditionKind.MustNotExist = 0 -> Penghou.IO.Abstractions.WritePreconditionKind
+static Penghou.IO.Abstractions.DirectoryContinuation.operator !=(Penghou.IO.Abstractions.DirectoryContinuation left, Penghou.IO.Abstractions.DirectoryContinuation right) -> bool
+static Penghou.IO.Abstractions.DirectoryContinuation.operator ==(Penghou.IO.Abstractions.DirectoryContinuation left, Penghou.IO.Abstractions.DirectoryContinuation right) -> bool
+static Penghou.IO.Abstractions.DirectoryCreateRequest.operator !=(Penghou.IO.Abstractions.DirectoryCreateRequest? left, Penghou.IO.Abstractions.DirectoryCreateRequest? right) -> bool
+static Penghou.IO.Abstractions.DirectoryCreateRequest.operator ==(Penghou.IO.Abstractions.DirectoryCreateRequest? left, Penghou.IO.Abstractions.DirectoryCreateRequest? right) -> bool
+static Penghou.IO.Abstractions.DirectoryListRequest.operator !=(Penghou.IO.Abstractions.DirectoryListRequest? left, Penghou.IO.Abstractions.DirectoryListRequest? right) -> bool
+static Penghou.IO.Abstractions.DirectoryListRequest.operator ==(Penghou.IO.Abstractions.DirectoryListRequest? left, Penghou.IO.Abstractions.DirectoryListRequest? right) -> bool
+static Penghou.IO.Abstractions.FileDeleteRequest.operator !=(Penghou.IO.Abstractions.FileDeleteRequest? left, Penghou.IO.Abstractions.FileDeleteRequest? right) -> bool
+static Penghou.IO.Abstractions.FileDeleteRequest.operator ==(Penghou.IO.Abstractions.FileDeleteRequest? left, Penghou.IO.Abstractions.FileDeleteRequest? right) -> bool
+static Penghou.IO.Abstractions.FileMetadataRequest.operator !=(Penghou.IO.Abstractions.FileMetadataRequest? left, Penghou.IO.Abstractions.FileMetadataRequest? right) -> bool
+static Penghou.IO.Abstractions.FileMetadataRequest.operator ==(Penghou.IO.Abstractions.FileMetadataRequest? left, Penghou.IO.Abstractions.FileMetadataRequest? right) -> bool
+static Penghou.IO.Abstractions.FileMoveRequest.operator !=(Penghou.IO.Abstractions.FileMoveRequest? left, Penghou.IO.Abstractions.FileMoveRequest? right) -> bool
+static Penghou.IO.Abstractions.FileMoveRequest.operator ==(Penghou.IO.Abstractions.FileMoveRequest? left, Penghou.IO.Abstractions.FileMoveRequest? right) -> bool
+static Penghou.IO.Abstractions.FileReadRequest.operator !=(Penghou.IO.Abstractions.FileReadRequest? left, Penghou.IO.Abstractions.FileReadRequest? right) -> bool
+static Penghou.IO.Abstractions.FileReadRequest.operator ==(Penghou.IO.Abstractions.FileReadRequest? left, Penghou.IO.Abstractions.FileReadRequest? right) -> bool
+static Penghou.IO.Abstractions.FileWriteRequest.operator !=(Penghou.IO.Abstractions.FileWriteRequest? left, Penghou.IO.Abstractions.FileWriteRequest? right) -> bool
+static Penghou.IO.Abstractions.FileWriteRequest.operator ==(Penghou.IO.Abstractions.FileWriteRequest? left, Penghou.IO.Abstractions.FileWriteRequest? right) -> bool
+static Penghou.IO.Abstractions.HostInvocation.operator !=(Penghou.IO.Abstractions.HostInvocation? left, Penghou.IO.Abstractions.HostInvocation? right) -> bool
+static Penghou.IO.Abstractions.HostInvocation.operator ==(Penghou.IO.Abstractions.HostInvocation? left, Penghou.IO.Abstractions.HostInvocation? right) -> bool
+static Penghou.IO.Abstractions.IoLimits.operator !=(Penghou.IO.Abstractions.IoLimits? left, Penghou.IO.Abstractions.IoLimits? right) -> bool
+static Penghou.IO.Abstractions.IoLimits.operator ==(Penghou.IO.Abstractions.IoLimits? left, Penghou.IO.Abstractions.IoLimits? right) -> bool
+static Penghou.IO.Abstractions.RequestIdentity.operator !=(Penghou.IO.Abstractions.RequestIdentity left, Penghou.IO.Abstractions.RequestIdentity right) -> bool
+static Penghou.IO.Abstractions.RequestIdentity.operator ==(Penghou.IO.Abstractions.RequestIdentity left, Penghou.IO.Abstractions.RequestIdentity right) -> bool
+static Penghou.IO.Abstractions.ResourceVersion.operator !=(Penghou.IO.Abstractions.ResourceVersion left, Penghou.IO.Abstractions.ResourceVersion right) -> bool
+static Penghou.IO.Abstractions.ResourceVersion.operator ==(Penghou.IO.Abstractions.ResourceVersion left, Penghou.IO.Abstractions.ResourceVersion right) -> bool
+static Penghou.IO.Abstractions.WebReadRequest.operator !=(Penghou.IO.Abstractions.WebReadRequest? left, Penghou.IO.Abstractions.WebReadRequest? right) -> bool
+static Penghou.IO.Abstractions.WebReadRequest.operator ==(Penghou.IO.Abstractions.WebReadRequest? left, Penghou.IO.Abstractions.WebReadRequest? right) -> bool
+static Penghou.IO.Abstractions.WebUrl.operator !=(Penghou.IO.Abstractions.WebUrl left, Penghou.IO.Abstractions.WebUrl right) -> bool
+static Penghou.IO.Abstractions.WebUrl.operator ==(Penghou.IO.Abstractions.WebUrl left, Penghou.IO.Abstractions.WebUrl right) -> bool
+static Penghou.IO.Abstractions.WorkspaceId.operator !=(Penghou.IO.Abstractions.WorkspaceId left, Penghou.IO.Abstractions.WorkspaceId right) -> bool
+static Penghou.IO.Abstractions.WorkspaceId.operator ==(Penghou.IO.Abstractions.WorkspaceId left, Penghou.IO.Abstractions.WorkspaceId right) -> bool
+static Penghou.IO.Abstractions.WorkspacePath.operator !=(Penghou.IO.Abstractions.WorkspacePath left, Penghou.IO.Abstractions.WorkspacePath right) -> bool
+static Penghou.IO.Abstractions.WorkspacePath.operator ==(Penghou.IO.Abstractions.WorkspacePath left, Penghou.IO.Abstractions.WorkspacePath right) -> bool
+static Penghou.IO.Abstractions.WorkspacePath.Root.get -> Penghou.IO.Abstractions.WorkspacePath
+static Penghou.IO.Abstractions.WritePrecondition.operator !=(Penghou.IO.Abstractions.WritePrecondition? left, Penghou.IO.Abstractions.WritePrecondition? right) -> bool
+static Penghou.IO.Abstractions.WritePrecondition.operator ==(Penghou.IO.Abstractions.WritePrecondition? left, Penghou.IO.Abstractions.WritePrecondition? right) -> bool
+~override Penghou.IO.Abstractions.DirectoryContinuation.Equals(object obj) -> bool
+~override Penghou.IO.Abstractions.DirectoryContinuation.ToString() -> string
+~override Penghou.IO.Abstractions.RequestIdentity.Equals(object obj) -> bool
+~override Penghou.IO.Abstractions.RequestIdentity.ToString() -> string
+~override Penghou.IO.Abstractions.ResourceVersion.Equals(object obj) -> bool
+~override Penghou.IO.Abstractions.ResourceVersion.ToString() -> string
+~override Penghou.IO.Abstractions.WebUrl.Equals(object obj) -> bool
+~override Penghou.IO.Abstractions.WebUrl.ToString() -> string
+~override Penghou.IO.Abstractions.WorkspaceId.Equals(object obj) -> bool
+~override Penghou.IO.Abstractions.WorkspaceId.ToString() -> string
+~override Penghou.IO.Abstractions.WorkspacePath.Equals(object obj) -> bool
+~override Penghou.IO.Abstractions.WorkspacePath.ToString() -> string

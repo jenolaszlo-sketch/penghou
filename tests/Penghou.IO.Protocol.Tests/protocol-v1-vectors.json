@@ -1,0 +1,173 @@
+{
+  "schema": 1,
+  "vectors": [
+    {
+      "name": "published-read",
+      "opcode": 1,
+      "workspace": "ws",
+      "path": "src/Foo.txt",
+      "canonicalPath": "SRC/FOO.TXT",
+      "maxBytes": 4096,
+      "canonicalHex": "50656e67686f752e494f2e5265736f75726365526571756573744964656e746974790001000000010200000077730b0000005352432f464f4f2e54585400100000",
+      "identity": "penghou-io:request:v1:sha256:c3f2dec4a7a5f1df22441d28c427781d5612d0a5b079a0aac5bcf0c8cef7087b"
+    },
+    {
+      "name": "read-unicode-composed",
+      "opcode": 1,
+      "workspace": "ws",
+      "path": "café/%20#x.txt",
+      "canonicalPath": "CAFé/%20#X.TXT",
+      "maxBytes": 0,
+      "canonicalHex": "50656e67686f752e494f2e5265736f75726365526571756573744964656e746974790001000000010200000077730f000000434146c3a92f25323023582e54585400000000",
+      "identity": "penghou-io:request:v1:sha256:60be237a9f7a320810133f8f9fcaf872f98782bf8a3812d474d12f11d74fb9f9"
+    },
+    {
+      "name": "read-unicode-decomposed",
+      "opcode": 1,
+      "workspace": "ws",
+      "path": "café/%20#x.txt",
+      "canonicalPath": "CAFÉ/%20#X.TXT",
+      "maxBytes": 16777216,
+      "canonicalHex": "50656e67686f752e494f2e5265736f75726365526571756573744964656e746974790001000000010200000077731000000043414645cc812f25323023582e54585400000001",
+      "identity": "penghou-io:request:v1:sha256:6eb4ac6bd34169095b6140a5610f262aebf2220feeda68ecad9e7a583b8d4e9c"
+    },
+    {
+      "name": "metadata",
+      "opcode": 2,
+      "workspace": "Workspace-main",
+      "path": "a.txt",
+      "canonicalPath": "A.TXT",
+      "canonicalHex": "50656e67686f752e494f2e5265736f75726365526571756573744964656e746974790001000000020e000000576f726b73706163652d6d61696e05000000412e545854",
+      "identity": "penghou-io:request:v1:sha256:233db6b88e444957588ec36b6704ed55e8f43533b91238dce8f2f624eb24fdc5"
+    },
+    {
+      "name": "published-root-list",
+      "opcode": 3,
+      "workspace": "ws",
+      "path": "",
+      "canonicalPath": "",
+      "maxEntries": 10,
+      "maxCandidatesScanned": 100,
+      "maxOutputBytes": 4096,
+      "continuation": null,
+      "canonicalHex": "50656e67686f752e494f2e5265736f75726365526571756573744964656e74697479000100000003020000007773000000000a000000640000000010000000",
+      "identity": "penghou-io:request:v1:sha256:f9c6225c276e1675b44c6f340a8ea3f55182974d6aa0acdb86e39dd5335c4b4d"
+    },
+    {
+      "name": "list-continuation",
+      "opcode": 3,
+      "workspace": "ws",
+      "path": "Src",
+      "canonicalPath": "SRC",
+      "maxEntries": 1,
+      "maxCandidatesScanned": 2,
+      "maxOutputBytes": 3,
+      "continuation": "é-next",
+      "canonicalHex": "50656e67686f752e494f2e5265736f75726365526571756573744964656e74697479000100000003020000007773030000005352430100000002000000030000000107000000c3a92d6e657874",
+      "identity": "penghou-io:request:v1:sha256:2f715a09a885367cb528e2ca7f4634bd2db6953c44c655c74e6f0ddb6e9bdeb7"
+    },
+    {
+      "name": "list-raw-int32",
+      "opcode": 3,
+      "workspace": "ws",
+      "path": "",
+      "canonicalPath": "",
+      "maxEntries": -2147483648,
+      "maxCandidatesScanned": 0,
+      "maxOutputBytes": 2147483647,
+      "continuation": "",
+      "canonicalHex": "50656e67686f752e494f2e5265736f75726365526571756573744964656e74697479000100000003020000007773000000000000008000000000ffffff7f0100000000",
+      "identity": "penghou-io:request:v1:sha256:99d2ff3879cafcaaeac577fb28c56eb3680e4fb1bc97e6ccb44357f315ccbcc8"
+    },
+    {
+      "name": "write-must-not-exist",
+      "opcode": 4,
+      "workspace": "ws",
+      "path": "a.bin",
+      "canonicalPath": "A.BIN",
+      "maxBytes": 3,
+      "contentHex": "00ff01",
+      "preconditionKind": 0,
+      "preconditionVersion": null,
+      "canonicalHex": "50656e67686f752e494f2e5265736f75726365526571756573744964656e7469747900010000000402000000777305000000412e42494e030000000300000000ff010000000000",
+      "identity": "penghou-io:request:v1:sha256:8ab84d009880b1fba5a4eeb4ea7da89be880fea7e3a85de0b50da0f40bd5fbe1"
+    },
+    {
+      "name": "write-match-version",
+      "opcode": 4,
+      "workspace": "ws",
+      "path": "a.bin",
+      "canonicalPath": "A.BIN",
+      "maxBytes": 0,
+      "contentHex": "",
+      "preconditionKind": 1,
+      "preconditionVersion": "v-é",
+      "canonicalHex": "50656e67686f752e494f2e5265736f75726365526571756573744964656e7469747900010000000402000000777305000000412e42494e0000000000000000010000000104000000762dc3a9",
+      "identity": "penghou-io:request:v1:sha256:8d1c56d280ebf97f2d809ec5b553ea444b0273013fffdcd26acacb759273234f"
+    },
+    {
+      "name": "write-unknown-precondition",
+      "opcode": 4,
+      "workspace": "ws",
+      "path": "a.bin",
+      "canonicalPath": "A.BIN",
+      "maxBytes": 0,
+      "contentHex": "",
+      "preconditionKind": 2147483647,
+      "preconditionVersion": "",
+      "canonicalHex": "50656e67686f752e494f2e5265736f75726365526571756573744964656e7469747900010000000402000000777305000000412e42494e0000000000000000ffffff7f0100000000",
+      "identity": "penghou-io:request:v1:sha256:1875b8047cd8e2ad30a0566d480f7a145afd9e2fa6f2a826377a025a838e9d98"
+    },
+    {
+      "name": "delete",
+      "opcode": 6,
+      "workspace": "ws",
+      "path": "a.txt",
+      "canonicalPath": "A.TXT",
+      "expectedVersion": "v1",
+      "canonicalHex": "50656e67686f752e494f2e5265736f75726365526571756573744964656e7469747900010000000602000000777305000000412e545854020000007631",
+      "identity": "penghou-io:request:v1:sha256:313a0b849d1ae9649ed4209417e21bfbcefc47333e448f7e1c888e1beb7987ce"
+    },
+    {
+      "name": "create",
+      "opcode": 7,
+      "workspace": "ws",
+      "path": "New",
+      "canonicalPath": "NEW",
+      "canonicalHex": "50656e67686f752e494f2e5265736f75726365526571756573744964656e74697479000100000007020000007773030000004e4557",
+      "identity": "penghou-io:request:v1:sha256:d3a9a2d89a86a018cb41da7d2bd5d992cff26dbdeb302a780f6129b24dc70b8e"
+    },
+    {
+      "name": "move",
+      "opcode": 8,
+      "workspace": "ws",
+      "source": "src/a",
+      "canonicalSource": "SRC/A",
+      "destination": "dst/b",
+      "canonicalDestination": "DST/B",
+      "expectedVersion": "v1",
+      "preconditionKind": 1,
+      "preconditionVersion": "v2",
+      "canonicalHex": "50656e67686f752e494f2e5265736f75726365526571756573744964656e74697479000100000008020000007773050000005352432f41050000004453542f420200000076310100000001020000007632",
+      "identity": "penghou-io:request:v1:sha256:6edbe66423c7716cb91bed1d616cb6fb032cc0bbeb8859f8dd39002b9e4b76d5"
+    },
+    {
+      "name": "web-normalized",
+      "opcode": 9,
+      "url": "HTTPS://ExAmPlE.test:443/a?q=x#fragment",
+      "canonicalUrl": "https://example.test/a?q=x",
+      "maxBytes": 4096,
+      "canonicalHex": "50656e67686f752e494f2e5265736f75726365526571756573744964656e746974790001000000091a00000068747470733a2f2f6578616d706c652e746573742f613f713d7800100000",
+      "identity": "penghou-io:request:v1:sha256:28593dabaf85c1152c1d620b1c2b3a22c21366becca6b2a9ce345411ffd2325b"
+    },
+    {
+      "name": "web-escaped",
+      "opcode": 9,
+      "url": "https://example.test/a%20b?q=%2F#fragment",
+      "canonicalUrl": "https://example.test/a%20b?q=%2F",
+      "maxBytes": 0,
+      "canonicalHex": "50656e67686f752e494f2e5265736f75726365526571756573744964656e746974790001000000092000000068747470733a2f2f6578616d706c652e746573742f61253230623f713d25324600000000",
+      "identity": "penghou-io:request:v1:sha256:102c5bece673303c512250df3660c80c662fb9c1c84b21b6448915a6cfa96d3d"
+    }
+  ]
+}
