@@ -1,0 +1,109 @@
+{
+  "Repository": "https://github.com/jenolaszlo-sketch/penghou",
+  "Branch": null,
+  "Commit": "b2366a2933298b1a7f8a8e0c632f3cfdbbdcac2c",
+  "WorkingTreeStatus": [],
+  "QualifiedAt": "2026-10-13T17:21:15.3733080+00:00",
+  "PackageVersion": "1.0.0-rc.1",
+  "BaselineVersion": "0.1.0-preview.2",
+  "ZhinuVersion": "0.2.0-preview.3",
+  "PublicPackage": false,
+  "OS": "macOS 15.7.9",
+  "Commands": "restore clean cache; build package-only; execute; replace assembly without rebuilding; execute unchanged binaries",
+  "Results": [
+    {
+      "Consumer": "neutral",
+      "Version": "0.1.0-preview.2",
+      "Framework": "net8.0",
+      "Probe": "compiled-package-behavior",
+      "Result": "SUPPORTED BY THIS PROBE"
+    },
+    {
+      "Consumer": "neutral",
+      "Version": "0.1.0-preview.2",
+      "Framework": "net10.0",
+      "Probe": "compiled-package-behavior",
+      "Result": "SUPPORTED BY THIS PROBE"
+    },
+    {
+      "Consumer": "neutral",
+      "Version": "1.0.0-rc.1",
+      "Framework": "net8.0",
+      "Probe": "compiled-package-behavior",
+      "Result": "SUPPORTED BY THIS PROBE"
+    },
+    {
+      "Consumer": "neutral",
+      "Version": "1.0.0-rc.1",
+      "Framework": "net10.0",
+      "Probe": "compiled-package-behavior",
+      "Result": "SUPPORTED BY THIS PROBE"
+    },
+    {
+      "Consumer": "neutral",
+      "CompiledAgainst": "0.1.0-preview.2",
+      "RunsAgainst": "1.0.0-rc.1",
+      "Framework": "net8.0",
+      "ConsumerSHA256": "C5D3FACD8B739595E4220A9AFA515D2A5CFCF8C93BAB2B5BAEA22444E9E938B0",
+      "Probe": "unchanged-binary-loading-and-behavior",
+      "Result": "SUPPORTED BY THIS PROBE"
+    },
+    {
+      "Consumer": "neutral",
+      "CompiledAgainst": "0.1.0-preview.2",
+      "RunsAgainst": "1.0.0-rc.1",
+      "Framework": "net10.0",
+      "ConsumerSHA256": "906C5347ADFE5EFC24ECD722543541EBAA48EB50F8CFA6AB8AFC62475A8DFDD4",
+      "Probe": "unchanged-binary-loading-and-behavior",
+      "Result": "SUPPORTED BY THIS PROBE"
+    },
+    {
+      "Consumer": "zhinu",
+      "Version": "0.1.0-preview.2",
+      "Framework": "net8.0",
+      "Probe": "compiled-package-behavior",
+      "Result": "SUPPORTED WITH QUALIFICATION"
+    },
+    {
+      "Consumer": "zhinu",
+      "Version": "0.1.0-preview.2",
+      "Framework": "net10.0",
+      "Probe": "compiled-package-behavior",
+      "Result": "SUPPORTED WITH QUALIFICATION"
+    },
+    {
+      "Consumer": "zhinu",
+      "Version": "1.0.0-rc.1",
+      "Framework": "net8.0",
+      "Probe": "compiled-package-behavior",
+      "Result": "SUPPORTED WITH QUALIFICATION"
+    },
+    {
+      "Consumer": "zhinu",
+      "Version": "1.0.0-rc.1",
+      "Framework": "net10.0",
+      "Probe": "compiled-package-behavior",
+      "Result": "SUPPORTED WITH QUALIFICATION"
+    },
+    {
+      "Consumer": "zhinu",
+      "CompiledAgainst": "0.1.0-preview.2",
+      "RunsAgainst": "1.0.0-rc.1",
+      "Framework": "net8.0",
+      "ConsumerSHA256": "249E1BB8CC3DCC3A6290DC66A38C146C3FA8E717B28D564E29B40361B04DB46F",
+      "Probe": "unchanged-binary-loading-and-behavior",
+      "Result": "SUPPORTED WITH QUALIFICATION"
+    },
+    {
+      "Consumer": "zhinu",
+      "CompiledAgainst": "0.1.0-preview.2",
+      "RunsAgainst": "1.0.0-rc.1",
+      "Framework": "net10.0",
+      "ConsumerSHA256": "413F7C169EFE0F215456D196EDF8339DD72F8AEF569B85328F80C3F90ABF5A73",
+      "Probe": "unchanged-binary-loading-and-behavior",
+      "Result": "SUPPORTED WITH QUALIFICATION"
+    }
+  ],
+  "Limits": "Only neutral value/interface behavior and published Zhinu direct SQLite/protected builder paths; no Hufu implementation or full runtime certification. Published Zhinu exact old contract pin overridden in isolated compatibility probe.",
+  "ArtifactSHA256": "7AACA80B3BC3ADE54334B915D89C79054382E9E9AEAF7BE1AED29E0BABC315B0"
+}

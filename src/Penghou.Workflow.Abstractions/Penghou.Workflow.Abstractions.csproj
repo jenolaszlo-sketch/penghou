@@ -2,9 +2,10 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
     <PackageId>Penghou.Workflow.Abstractions</PackageId>
-    <PackageVersion>1.0.0-rc.1</PackageVersion>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Version>$(PackageVersion)</Version>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <PackageValidationBaselineVersion>0.1.0-preview.2</PackageValidationBaselineVersion>
+    <PackageValidationBaselineVersion>1.0.0-rc.1</PackageValidationBaselineVersion>
     <Title>Penghou Workflow Abstractions</Title>
     <Authors>Penghou contributors</Authors>
     <Description>Product-neutral, bounded execution authorization contracts for replaceable workflow runtimes and authority adapters.</Description>

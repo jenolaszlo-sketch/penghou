@@ -1,0 +1,26 @@
+{
+  "Repository": "https://github.com/jenolaszlo-sketch/penghou",
+  "ReleaseBranch": "main",
+  "ReleaseCommit": "b2366a2933298b1a7f8a8e0c632f3cfdbbdcac2c",
+  "Version": "1.0.0-rc.1",
+  "ReleaseRun": "https://github.com/jenolaszlo-sketch/penghou/actions/runs/38437789310",
+  "EarlierFailedRun": "https://github.com/jenolaszlo-sketch/penghou/actions/runs/38437085652",
+  "EarlierFailure": "Harness read native LASTEXITCODE after PowerShell verifier; failed before publication. Preserved explicit PowerShell-success checks corrected it.",
+  "ArtifactSHA256": "7AACA80B3BC3ADE54334B915D89C79054382E9E9AEAF7BE1AED29E0BABC315B0",
+  "SymbolSHA256": "E359DF11B083666D5A13CAF0D3301EFD7AF61191DD3338B6594E48743275A330",
+  "ExactArtifactContracts": "15 passed net8.0 + 15 passed net10.0 per Windows/Linux/macOS; 90 total",
+  "Consumers": "Package-only neutral and published Zhinu 0.2.0-preview.3; source and unchanged preview.2 binary on every OS/TFM",
+  "CompatibilityStatus": "Zhinu SUPPORTED WITH QUALIFICATION: published exact preview.2 pin explicitly overridden only in probe; no adoption metadata claim",
+  "PublicStatus": "SUPPORTED: exact published payload comparison and fresh public-only package consumers passed Windows/Linux/macOS net8.0/net10.0 in run attempt2",
+  "MetadataNote": "RC NuGet version and repository commit correctly identify immutable artifact. SDK Version default gave informational 1.0.0+commit; final source sets Version to PackageVersion for future release metadata. Not an API/behavior change.",
+  "Durability": "OUT OF SCOPE for dependency-free value/interface package; Zhinu direct SQLite/protected path is probe evidence only",
+  "Commands": [
+    "dotnet pack -c Release -p:ContinuousIntegrationBuild=true",
+    "eng/verify-package-set.ps1 -Profile Workflow",
+    "eng/qualify-workflow-artifact.ps1 (exact nupkg contract suite and consumer/binary proof)",
+    "eng/check-nuget-version.ps1 -Profile Workflow -RequirePublished (payload comparison ignoring repository signature)",
+    "eng/qualify-workflow-package.ps1 -PublicPackage (fresh public-only caches)"
+  ],
+  "PublicSignedSHA256": "6759AF10C238CFF1A19EDBF463F7E70EF88EE6DD88977BCAA669CB8EC8F5FA6A",
+  "PublicRetry": "Attempt 1 public jobs timed out solely during NuGet indexing at 3600 seconds. Once the public index became available, only failed public jobs reran in attempt 2 with the same qualified artifacts retained; all passed."
+}
