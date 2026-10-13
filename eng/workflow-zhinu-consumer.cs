@@ -35,6 +35,7 @@ await using (var builderEngine = new WorkflowEngineBuilder()
         throw new InvalidOperationException("Protected execution did not pass its declared requirement to the authorizer.");
 }
 
+Console.WriteLine($"Workflow loaded {typeof(ExecutionIdentity).Assembly.GetName().Version} at {typeof(ExecutionIdentity).Assembly.Location}");
 Console.WriteLine("Package closure consumer completed both direct SQLite and protected builder execution.");
 
 sealed class OrdinaryWorkflow : IWorkflow<string, string>
@@ -81,4 +82,5 @@ sealed class AllowAuthorizer : IExecutionAuthorizer
             now.AddMinutes(2)));
     }
 }
+
 

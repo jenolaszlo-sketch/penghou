@@ -14,8 +14,10 @@ var result = await authorizer.AuthorizeAsync(context);
 if (result.Decision != ExecutionAuthorizationDecision.Denied || result.AuthorizationRequestId != "request") throw new Exception("Binding failure");
 try { new ExecutionIdentity("execution", "operation", 0, "revision"); throw new Exception("Accepted invalid attempt"); }
 catch (ArgumentOutOfRangeException) { }
+Console.WriteLine($"Workflow loaded {typeof(ExecutionIdentity).Assembly.GetName().Version} at {typeof(ExecutionIdentity).Assembly.Location}");
 Console.WriteLine("Neutral packaged behavior passed: ownership, JSON, interface dispatch, denial and bounds.");
 sealed class DenyAuthorizer : IExecutionAuthorizer
 {
     public ValueTask<ExecutionAuthorizationResult> AuthorizeAsync(ExecutionAuthorizationContext context, CancellationToken cancellationToken = default) => ValueTask.FromResult(new ExecutionAuthorizationResult(ExecutionAuthorizationDecision.Denied, context.AuthorizationRequestId, "provider", "decision", DateTimeOffset.UtcNow));
 }
+
