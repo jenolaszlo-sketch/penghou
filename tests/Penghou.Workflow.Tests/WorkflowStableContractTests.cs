@@ -57,7 +57,9 @@ public sealed class WorkflowStableContractTests
         Assert.NotNull(JsonSerializer.Deserialize<ExecutionAuthorizationContext>(missingSchema.ToJsonString(), Strict));
         Assert.ThrowsAny<Exception>(() => JsonSerializer.Deserialize<ExecutionAuthorizationContext>(json.Replace("\"SchemaVersion\":1", "\"SchemaVersion\":2"), Strict));
         Assert.ThrowsAny<Exception>(() => JsonSerializer.Deserialize<ExecutionAuthorizationContext>("{\"AuthorizationRequestId\":\"request\",\"Requirements\":[]}", Strict));
-        Assert.ThrowsAny<Exception>(() => JsonSerializer.Deserialize<ExecutionAuthorizationContext>(json.Replace("\"Requirements\":[", "\"Requirements\":null,\"Discard\":["), Strict));
+        var nullRequirements = System.Text.Json.Nodes.JsonNode.Parse(json)!;
+        nullRequirements["Requirements"] = null;
+        Assert.Throws<ArgumentNullException>(() => JsonSerializer.Deserialize<ExecutionAuthorizationContext>(nullRequirements.ToJsonString(), Strict));
         Assert.ThrowsAny<Exception>(() => JsonSerializer.Deserialize<ExecutionAuthorizationResult>(Vector("allowed-v1.json").Replace("\"Decision\":1", "\"Decision\":99"), Strict));
         var defaultDecision = Vector("allowed-v1.json").Replace("\"Decision\":1,", "");
         Assert.Equal(ExecutionAuthorizationDecision.Unavailable, JsonSerializer.Deserialize<ExecutionAuthorizationResult>(defaultDecision, Strict)!.Decision);
