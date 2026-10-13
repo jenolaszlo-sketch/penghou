@@ -54,7 +54,7 @@ foreach ($kind in @('neutral', 'zhinu')) {
             Checked @('build', $project, '-c', 'Release', '-f', $framework, '--no-restore') "$kind-$label-$framework-build.log"
             $binary = Join-Path $directory "bin/Release/$framework/Consumer.dll"
             Checked @($binary) "$kind-$label-$framework-run.log"
-            $results.Add([ordered]@{ Consumer=$kind; Version=$version; Framework=$framework; Probe='compiled-package-behavior'; Result='SUPPORTED BY THIS PROBE' })
+            $results.Add([ordered]@{ Consumer=$kind; Version=$version; Framework=$framework; Probe='compiled-package-behavior'; Result=$(if ($kind -eq 'zhinu') { 'SUPPORTED WITH QUALIFICATION' } else { 'SUPPORTED BY THIS PROBE' }) })
         }
     }
     foreach ($framework in @('net8.0', 'net10.0')) {
@@ -66,11 +66,10 @@ foreach ($kind in @('neutral', 'zhinu')) {
         Checked @($binary) "$kind-unchanged-$framework-run.log"
         $after = (Get-FileHash $binary -Algorithm SHA256).Hash
         if ($before -ne $after) { throw 'Previously compiled consumer changed' }
-        $results.Add([ordered]@{ Consumer=$kind; CompiledAgainst=$BaselineVersion; RunsAgainst=$PackageVersion; Framework=$framework; ConsumerSHA256=$before; Probe='unchanged-binary-loading-and-behavior'; Result='SUPPORTED BY THIS PROBE' })
+        $results.Add([ordered]@{ Consumer=$kind; CompiledAgainst=$BaselineVersion; RunsAgainst=$PackageVersion; Framework=$framework; ConsumerSHA256=$before; Probe='unchanged-binary-loading-and-behavior'; Result=$(if ($kind -eq 'zhinu') { 'SUPPORTED WITH QUALIFICATION' } else { 'SUPPORTED BY THIS PROBE' }) })
     }
 }
 $evidence = [ordered]@{ Repository='https://github.com/jenolaszlo-sketch/penghou'; Branch=(git -C $repository branch --show-current); Commit=(git -C $repository rev-parse HEAD); WorkingTreeStatus=@(git -C $repository status --porcelain); QualifiedAt=[DateTimeOffset]::UtcNow.ToString('O'); PackageVersion=$PackageVersion; BaselineVersion=$BaselineVersion; ZhinuVersion=$ZhinuVersion; PublicPackage=[bool]$PublicPackage; OS=[Runtime.InteropServices.RuntimeInformation]::OSDescription; Commands='restore clean cache; build package-only; execute; replace assembly without rebuilding; execute unchanged binaries'; Results=$results.ToArray(); Limits='Only neutral value/interface behavior and published Zhinu direct SQLite/protected builder paths; no Hufu implementation or full runtime certification. Published Zhinu exact old contract pin overridden in isolated compatibility probe.' }
 if (-not $PublicPackage) { $evidence.ArtifactSHA256 = (Get-FileHash (Join-Path $PackageDirectory "Penghou.Workflow.Abstractions.$PackageVersion.nupkg") -Algorithm SHA256).Hash }
 $evidence | ConvertTo-Json -Depth 12 | Set-Content (Join-Path $run 'qualification.json')
 Write-Output (Join-Path $run 'qualification.json')
-
