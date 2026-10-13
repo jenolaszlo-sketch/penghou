@@ -22,6 +22,16 @@ foreach ($id in @('Penghou.IO.Abstractions', 'Penghou.IO.Protocols', 'Penghou.IO
     if (-not (Test-Path -LiteralPath $archive)) { throw "Missing exact public preview baseline: $archive" }
     Copy-Item -LiteralPath $archive -Destination $feed
 }
+$binaryStages = @('baseline')
+if ($StableVersion -eq '1.0.0') {
+    foreach ($entry in @(@('Penghou.IO.Identity.Abstractions', '1.0.0-rc.1'), @('Penghou.IO.Protocols', '1.0.0-rc.1'), @('Penghou.IO.Abstractions', '0.1.0-preview.2'))) {
+        $id = $entry[0]; $version = $entry[1]
+        $archive = Join-Path $baseline "$($id.ToLowerInvariant())/$version/$($id.ToLowerInvariant()).$version.nupkg"
+        if (-not (Test-Path -LiteralPath $archive)) { throw "Missing public RC binary baseline: $archive" }
+        Copy-Item -LiteralPath $archive -Destination $feed
+    }
+    $binaryStages += 'rc-baseline'
+}
 $expected = @{
     'Penghou.IO.Identity.Abstractions' = $StableVersion
     'Penghou.IO.Protocols' = $StableVersion
@@ -84,17 +94,19 @@ try {
         dotnet run --project (Join-Path $protocolConsumer 'Consumer.csproj') -c Release -f $tfm --no-restore
         if ($LASTEXITCODE -ne 0) { throw "$tfm stable package-only vectors failed." }
     }
-    foreach ($stage in @('baseline', 'candidate')) {
+    foreach ($stage in @($binaryStages + 'candidate')) {
         $consumer = Join-Path $outputDirectory $stage
         New-Item -ItemType Directory -Path $consumer | Out-Null
         $references = if ($stage -eq 'baseline') {
             @('Penghou.IO.Abstractions', 'Penghou.IO.Protocols', 'Penghou.IO.Local', 'Penghou.Luban') | ForEach-Object { "<PackageReference Include=`"$_`" Version=`"[0.1.0-preview.1]`" />" }
+        } elseif ($stage -eq 'rc-baseline') {
+            @('<PackageReference Include="Penghou.IO.Identity.Abstractions" Version="[1.0.0-rc.1]"/>', '<PackageReference Include="Penghou.IO.Protocols" Version="[1.0.0-rc.1]"/>', '<PackageReference Include="Penghou.IO.Abstractions" Version="[0.1.0-preview.2]"/>')
         } else {
             @("<PackageReference Include=`"Penghou.IO.Identity.Abstractions`" Version=`"[$StableVersion]`" />", "<PackageReference Include=`"Penghou.IO.Protocols`" Version=`"[$StableVersion]`" />", "<PackageReference Include=`"Penghou.IO.Abstractions`" Version=`"[$FacadeVersion]`" />")
         }
         # Candidate consumer references already-published, unchanged Local/Luban DLLs,
         # rather than overriding Luban's exact preview PackageReference constraints.
-        if ($stage -eq 'candidate') {
+        if ($stage -ne 'baseline') {
             foreach ($id in @('Penghou.IO.Local', 'Penghou.Luban')) {
                 $dll = Join-Path $env:NUGET_PACKAGES "$($id.ToLowerInvariant())/0.1.0-preview.1/lib/`$(TargetFramework)/$id.dll"
                 $references += "<Reference Include=`"$id`"><HintPath>$([Security.SecurityElement]::Escape($dll))</HintPath></Reference>"
@@ -117,13 +129,14 @@ $($references -join "`n")
             $program = Join-Path $consumer "bin/Release/$tfm/IOGraduationConsumer.dll"
             $json = Join-Path $outputDirectory "$tfm-preview-data.json"
             $arguments = @($program, "--json=$json")
-            if ($stage -eq 'candidate') { $arguments += '--expect-forwarded' }
+            if ($stage -ne 'baseline') { $arguments += '--expect-forwarded' }
             & dotnet @arguments
             if ($LASTEXITCODE -ne 0) { throw "$stage $tfm behavior failed." }
         }
     }
-    foreach ($tfm in @('net8.0', 'net10.0')) {
-        $oldOutput = Join-Path $outputDirectory "baseline/bin/Release/$tfm"
+    foreach ($binaryStage in $binaryStages) {
+      foreach ($tfm in @('net8.0', 'net10.0')) {
+        $oldOutput = Join-Path $outputDirectory "$binaryStage/bin/Release/$tfm"
         $newOutput = Join-Path $outputDirectory "candidate/bin/Release/$tfm"
         $compiled = Join-Path $oldOutput 'IOGraduationConsumer.dll'
         $before = (Get-FileHash -LiteralPath $compiled -Algorithm SHA256).Hash
@@ -133,7 +146,8 @@ $($references -join "`n")
         if ((Get-FileHash -LiteralPath $compiled -Algorithm SHA256).Hash -cne $before) { throw 'Previously compiled consumer changed.' }
         dotnet $compiled '--expect-forwarded' "--json=$(Join-Path $outputDirectory "$tfm-preview-data.json")"
         if ($LASTEXITCODE -ne 0) { throw "$tfm unchanged binary behavior failed." }
-        $artifacts += [ordered]@{ consumer = 'unchanged-preview-compiled-consumer'; framework = $tfm; sha256 = $before.ToLowerInvariant(); result = 'SUPPORTED BY THIS PROBE' }
+        $artifacts += [ordered]@{ consumer = "unchanged-$binaryStage-compiled-consumer"; framework = $tfm; sha256 = $before.ToLowerInvariant(); result = 'SUPPORTED BY THIS PROBE' }
+      }
     }
     foreach ($id in @('Penghou.IO.Abstractions', 'Penghou.IO.Protocols', 'Penghou.IO.Local', 'Penghou.Luban')) {
         $archive = Join-Path $baseline "$($id.ToLowerInvariant())/0.1.0-preview.1/$($id.ToLowerInvariant()).0.1.0-preview.1.nupkg"

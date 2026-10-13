@@ -3,7 +3,7 @@
     <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
     <PackageId>Penghou.IO.Identity.Abstractions</PackageId>
     <PackageVersion>1.0.0-rc.1</PackageVersion>
-    <Version>1.0.0-rc.1</Version>
+    <Version>$(PackageVersion)</Version>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <Title>Penghou I/O Identity Abstractions</Title>
     <Description>Data-only request and identity contracts for Penghou I/O protocol schema v1. No provider or authorization capabilities.</Description>
@@ -11,6 +11,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <EnablePackageValidation>true</EnablePackageValidation>
+    <PackageValidationBaselineVersion Condition="'$(PackageVersion)' == '1.0.0'">1.0.0-rc.1</PackageValidationBaselineVersion>
     <EnableStrictModeForCompatibleTfms>true</EnableStrictModeForCompatibleTfms>
   </PropertyGroup>
   <ItemGroup>

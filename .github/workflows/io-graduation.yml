@@ -73,6 +73,9 @@ jobs:
         with:
           name: io-identity-release-packages-${{ github.sha }}
           path: io-identity-release-artifacts
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
       - name: Prove source conformance on both runtimes
         shell: pwsh
         run: |
@@ -84,7 +87,9 @@ jobs:
         run: python eng/verify-io-protocol-vectors.py
       - name: Restore original public consumer baselines
         shell: pwsh
-        run: ./eng/restore-io-preview-baseline.ps1 -OutputDirectory io-preview-baseline
+        env:
+          PACKAGE_VERSION: ${{ needs.pack.outputs.package_version }}
+        run: ./eng/restore-io-preview-baseline.ps1 -OutputDirectory io-preview-baseline -IncludeReleaseCandidate:($env:PACKAGE_VERSION -eq '1.0.0')
       - name: Qualify the same exact packed artifacts and unchanged binaries
         shell: pwsh
         env:
