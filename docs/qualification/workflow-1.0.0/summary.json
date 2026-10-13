@@ -1,0 +1,30 @@
+{
+  "Repository": "https://github.com/jenolaszlo-sketch/penghou",
+  "ReleaseBranch": "main",
+  "ReleaseCommit": "1c856745c58339b0ea190ff6d639f97dc65c0861",
+  "Tag": "workflow-v1.0.0",
+  "Version": "1.0.0",
+  "ReleaseRun": "https://github.com/jenolaszlo-sketch/penghou/actions/runs/38484433010",
+  "RCCommit": "b2366a2933298b1a7f8a8e0c632f3cfdbbdcac2c",
+  "RCRun": "https://github.com/jenolaszlo-sketch/penghou/actions/runs/38437789310/attempts/2",
+  "ArtifactSHA256": "2F2ACC797C3EB34CBE0AF1D100545B4BEB367DAC8474C828A437D0235CED576E",
+  "SymbolSHA256": "3F9B8CC2E010DDF82F18CF58D263D58C373DAF133F9422E3B3D407BB20FE741D",
+  "PublicSignedSHA256": "31E41BDA6385EAE6B3D7E89806E0858C73252F63C275F2D711DC2D77B70552E3",
+  "PublicStatus": "SUPPORTED: indexed NuGet package; every payload entry equals the exact qualified artifact, repository signature excluded; fresh public-only cache restore/consumer probes passed on all OS/TFMs",
+  "ArtifactContractTests": "15 passed net8.0 + 15 passed net10.0 per Windows/Linux/macOS; 90 total, none failed/skipped",
+  "BinaryProof": "Unchanged RC1-compiled neutral and published Zhinu consumer DLLs ran against final 1.0.0 without rebuilding; hashes retained per OS/TFM. Preview.2-to-RC proof separately preserved.",
+  "SDKValidation": "Effective EnablePackageValidation=true; EnableStrictModeForCompatibleTfms=true; PackageValidationBaselineVersion=1.0.0-rc.1; AssemblyVersion=1.0.0.0",
+  "SourceChangeAfterRC": "PackageVersion, SDK Version metadata and SDK baseline only; no API, semantics, ownership, serialization or runtime implementation changes",
+  "ConsumerVersion": "Penghou.Zhinu and Penghou.Zhinu.Sqlite 0.2.0-preview.3",
+  "ConsumerStatus": "SUPPORTED WITH QUALIFICATION: direct SQLite and protected builder paths; published exact old Workflow pin overridden only in isolated probe; no downstream adoption or full-runtime certification claim",
+  "StableContract": "docs/workflow-stable-contract.md",
+  "Migration": "Update exact pins and review preview context equality/hash-key assumptions; no version-one value JSON migration; host envelopes independent",
+  "Deferred": "No graduation blocker remains. Runtime durability, authority implementation, host canonical codecs/digests, Hufu/Gagamba and downstream engine graduation are OUT OF SCOPE. Future releases select public stable 1.0.0 as SDK baseline and preserve 1.x promises.",
+  "Commands": [
+    "dotnet pack -c Release -p:ContinuousIntegrationBuild=true (single exact artifact reused by all jobs)",
+    "eng/verify-package-set.ps1 -Profile Workflow",
+    "eng/qualify-workflow-artifact.ps1 -BaselineVersion 1.0.0-rc.1",
+    "eng/check-nuget-version.ps1 -Profile Workflow -RequirePublished",
+    "eng/qualify-workflow-package.ps1 -PublicPackage -BaselineVersion 1.0.0-rc.1"
+  ]
+}

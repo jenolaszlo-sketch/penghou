@@ -9,3 +9,9 @@ The RC informational-version metadata uses SDK default 1.0.0 plus source commit,
 Preview-to-stable migration: update exact package pins; context equality now compares requirements structurally in declared order. Review HashSet/Dictionary assumptions and never persist process-local hashes. No version-one JSON data migration; host engine/journal/digest envelopes retain separate migration rules. Published Zhinu's old exact dependency pin was overridden only in an isolated compatibility probe: SUPPORTED WITH QUALIFICATION, not an adoption metadata claim. Hufu/Gagamba implementation remains excluded.
 
 Non-goals: no runtime redesign, authority implementation, new capability, storage, codec/digest, framework, production-host authority certification or downstream graduation. Future package releases validate against published stable 1.0.0 baseline after completion.
+
+## Final status
+
+**Published and qualified: Penghou.Workflow.Abstractions 1.0.0.** [Stable run 38484433010](https://github.com/jenolaszlo-sketch/penghou/actions/runs/38484433010) passed every exact artifact/public gate on Windows, Linux and macOS, net8.0/net10.0, including unchanged RC-compiled neutral and published Zhinu consumer behavior. The stable source is `1c856745c58339b0ea190ff6d639f97dc65c0861`, tagged `workflow-v1.0.0`. See [per-platform final qualification](qualification/workflow-1.0.0/summary.json) and the [public package](https://www.nuget.org/packages/Penghou.Workflow.Abstractions/1.0.0).
+
+No graduation blocker remains. The qualified release uses RC1 as its SDK baseline; before the next release select public stable 1.0.0, retaining the shipped API and documented 1.x promises. Future runtime/authority/codec work stays outside this foundation. Graduation is closed.
