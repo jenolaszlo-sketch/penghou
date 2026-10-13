@@ -72,12 +72,18 @@ then its nullable version string. Current values are `MustNotExist = 0` and
 `MustMatchVersion = 1`. Providers separately validate that the combination is
 supported and enforce it atomically; an identity does not validate or grant it.
 
-The codec bounds canonical requests to 16 MiB. Text-patch identities and
+The codec bounds file content and file/web MaxBytes to 16 MiB. The complete
+canonical envelope also contains bounded metadata fields and can therefore
+exceed 16 MiB. General encoded strings have a 16 KiB UTF-8 bound. Text-patch identities and
 materialization are now Luban semantics; Local receives a frozen byte payload
 and a version precondition. Existing read/list/write/delete/move/web encodings
 and golden vectors remain v1. Opcode `05` is reserved and must not be reused.
 
 ## Golden vectors
+
+The permanent independently checkable [JSON vector set](../tests/Penghou.IO.Protocol.Tests/protocol-v1-vectors.json)
+covers all eight opcodes and boundary/canonicalization cases. The Python verifier
+and packaged consumers qualify the same fixed bytes and hashes.
 
 These vectors are generated from the envelope and primitive encodings above,
 independently of the C# codec. They should remain fixed for schema v1.

@@ -90,7 +90,9 @@ probe and does not graduate or reactivate Luban's parked capability work.
 No IO.Local/provider, writer/web/journal capability graduation, security-sensitive
 consumer implementation, VFS, new format, generalized Unicode case equivalence,
 physical namespace confinement, storage durability or performance rewrite.
-Stable requires shipped APIs, exact nupkg/hash/commit records, Windows/Linux
-net8/net10 vectors, package-only behavior, unchanged binary/type forwarding,
-representative unchanged Local/Luban consumers, RC publication/restoration and
-qualified stable lineage. Local/source passes are bounded evidence only.
+The release passed shipped API and strict SDK RC-baseline validation, exact
+nupkg/hash/commit recording, Windows/Linux/macOS net8/net10 vectors, fresh public
+package-only behavior, unchanged preview/RC binaries/type forwarding, and the
+bounded unchanged Windows Local/Luban deployment probes. Future 1.x packages
+retain an unconditional stable 1.0.0 SDK baseline plus the shipped API gate.
+Ordinary Luban NuGet graph adoption remains separate and is not claimed.

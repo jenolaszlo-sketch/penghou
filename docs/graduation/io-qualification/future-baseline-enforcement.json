@@ -1,0 +1,29 @@
+{
+  "dateUtc": "2026-10-13T23:49:37.8516415Z",
+  "reason": "Unconditional stable baseline enforcement for future 1.x releases; no released artifact rebuilt",
+  "command": "dotnet msbuild -getProperty:PackageVersion,Version,EnablePackageValidation,PackageValidationBaselineVersion,EnableStrictModeForBaselineValidation -p:PackageVersion=1.0.1",
+  "evidence": [
+    {
+      "package": "Penghou.IO.Identity.Abstractions",
+      "hypotheticalVersion": "1.0.1",
+      "effectiveProperties": {
+        "PackageVersion": "1.0.1",
+        "Version": "1.0.1",
+        "EnablePackageValidation": "true",
+        "PackageValidationBaselineVersion": "1.0.0",
+        "EnableStrictModeForBaselineValidation": "true"
+      }
+    },
+    {
+      "package": "Penghou.IO.Protocols",
+      "hypotheticalVersion": "1.0.1",
+      "effectiveProperties": {
+        "PackageVersion": "1.0.1",
+        "Version": "1.0.1",
+        "EnablePackageValidation": "true",
+        "PackageValidationBaselineVersion": "1.0.0",
+        "EnableStrictModeForBaselineValidation": "true"
+      }
+    }
+  ]
+}

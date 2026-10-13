@@ -1,0 +1,46 @@
+{
+  "repository": "https://github.com/jenolaszlo-sketch/penghou",
+  "branch": "refs/heads/main",
+  "sourceCommit": "b6a2c4acd301508afcb465e4f96836d3aaa0913c",
+  "tag": "io-identity-v1.0.0",
+  "qualificationRun": "https://github.com/jenolaszlo-sketch/penghou/actions/runs/38485095225",
+  "successfulAttempt": 1,
+  "qualifiedUtc": "2026-10-13T23:47:15.3379164Z",
+  "supportedOS": [
+    "Windows",
+    "Linux",
+    "macOS"
+  ],
+  "frameworks": [
+    "net8.0",
+    "net10.0"
+  ],
+  "unchangedBinaryBaselines": [
+    "0.1.0-preview.1",
+    "1.0.0-rc.1"
+  ],
+  "nativeConsumerScope": "Windows-only unchanged public Local/Luban DLL behavior; ordinary Luban NuGet graph adoption NOT PROVEN",
+  "packages": [
+    {
+      "id": "Penghou.IO.Identity.Abstractions",
+      "version": "1.0.0",
+      "publicSha256": "d88853e1253b6e45b87dc7671ffd3748c7c6e2907440e4616aadb4d8c32fbb6f",
+      "qualifiedArtifactSha256": "fddd8696a0c65df6e966a1d5aefa6aaa0c8262f165d62d0260aeb287579d07cc",
+      "entriesEquivalentExcludingOnlyRepositorySignature": true
+    },
+    {
+      "id": "Penghou.IO.Protocols",
+      "version": "1.0.0",
+      "publicSha256": "f01d3bee11b47e1cabcad8e94419bace4c8d3d7afdcf9631105b320c8b28b39d",
+      "qualifiedArtifactSha256": "8bee3db3f10c4d8b18765be90e51a193768e2a03a6dadd988b14b62e709322fe",
+      "entriesEquivalentExcludingOnlyRepositorySignature": true
+    },
+    {
+      "id": "Penghou.IO.Abstractions",
+      "version": "0.1.0-preview.3",
+      "publicSha256": "20d64f8955f4a8b44c83f77568e8b705262c7dc6131f09f7ff7f5c76b931ca58",
+      "qualifiedArtifactSha256": "6df2762ef3a4ff05953e1acc5c29172ebebd5c08baa388d10943cc3a86cd485a",
+      "entriesEquivalentExcludingOnlyRepositorySignature": true
+    }
+  ]
+}

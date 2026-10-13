@@ -1,8 +1,10 @@
 # IO identity graduation release handoff
 
-Updated 2026-10-14. The exact RC artifacts and public packages passed all
-Windows/Linux/macOS qualification gates on .NET 8/10. Final stable publication
-and its public-package gates remain open.
+Completed 2026-10-14. Identity.Abstractions and Protocols 1.0.0 are published
+and qualified on Windows/Linux/macOS, .NET 8/10. Their exact release source is
+`b6a2c4acd301508afcb465e4f96836d3aaa0913c`, tagged `io-identity-v1.0.0`.
+All source/artifact/public and unchanged preview/RC binary gates passed in
+[stable run 38485095225](https://github.com/jenolaszlo-sketch/penghou/actions/runs/38485095225).
 
 ## Release set and lineage
 
@@ -13,9 +15,9 @@ and its public-package gates remain open.
 | Penghou.IO.Abstractions | 0.1.0-preview.2 | Remains preview | Forwarding facade plus existing provider/capability contracts |
 | Penghou.IO.Local | Existing 0.1.0-preview.1 | Remains preview | No implementation or publication change |
 
-Stable source promotion changes Identity/Protocols versions to 1.0.0 and uses
-a new facade preview version (preview.3) if its dependency metadata changes.
-Never repack/reuse the published preview.2 facade after its dependency changes.
+Stable source promotion changed Identity/Protocols versions to 1.0.0 and used
+fresh facade preview.3 for its stable Identity dependency. Preview.2 remains
+immutable and was not rebuilt or republished.
 The graduated family contains only Identity and Protocols; the facade is a
 compatibility bridge outside the stable promise.
 
@@ -58,7 +60,7 @@ Full machine-readable artifacts/hashes/commands are retained under the local
 `artifacts/io-exact-source-proof` evidence directory. Those local checks do not
 prove public candidate availability or Linux/macOS execution.
 
-## Remaining release gates
+## Closed release gates
 
 RC source `9ff78f2b840444c717a281464351e200171357a2` is qualified by
 [release run 38439907657](https://github.com/jenolaszlo-sketch/penghou/actions/runs/38439907657),
@@ -74,15 +76,20 @@ the final metadata candidate. Its API/code/vector files are unchanged. Stable
 qualification additionally preserves and runs an unchanged RC-compiled consumer
 alongside the original preview-compiled consumer.
 
-1. Review and integrate the final metadata after coordinated Workflow main changes.
-2. Dispatch trusted publisher `publish.yml`, family `IOProtocols`, from selected main.
-3. Reusable `io-graduation.yml` packs once, then qualifies those same archives on
-   Windows/Linux/macOS, both frameworks. Native Local/Luban is Windows-only.
-4. Publish only qualified Identity/Protocols candidates and preview forwarding facade.
-5. Compare public payloads with the exact artifact (NuGet signature excluded), then
-   run fresh public package restoration and unchanged-binary qualification on all OSes.
-6. Only after RC gates pass: promote versions, require compatible baseline, qualify
-   exact final artifacts, publish stable and record tags/remote run evidence.
+The trusted publisher selected only IOProtocols after coordinated Workflow
+integration. It packed once, qualified the same archives across three OSes/two
+frameworks, published Identity before Protocols and the preview facade, compared
+public entry payloads excluding only the repository signature, and reran fresh
+public restores and unchanged preview/RC compiled consumers. All gates passed.
+Main CI [38485094762](https://github.com/jenolaszlo-sketch/penghou/actions/runs/38485094762)
+also passed. Permanent [stable evidence](io-qualification/stable-release.json)
+records source/tag/run, exact signed-public and qualified artifact hashes, and
+three OS qualification records. Future 1.x baseline enforcement is unconditional
+against stable 1.0.0, verified effective under a hypothetical 1.0.1 version.
+That enforcement/evidence bookkeeping does not repack the released 1.0.0 artifacts.
+
+No graduation blocker remains. Ordinary Luban package-pin adoption is a bounded
+consumer metadata follow-up, not a claim of this release or a foundation gate.
 
 No Hufu/Gagamba implementation, IO.Local graduation, capability redesign,
 additional providers, VFS, new codecs or features are part of this release.
