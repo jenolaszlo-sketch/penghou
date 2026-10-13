@@ -1,0 +1,103 @@
+name: Qualify exact IO identity graduation artifacts
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    outputs:
+      package_version:
+        value: ${{ jobs.pack.outputs.package_version }}
+      facade_version:
+        value: ${{ jobs.pack.outputs.facade_version }}
+      artifact_name:
+        value: ${{ jobs.pack.outputs.artifact_name }}
+
+permissions:
+  contents: read
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    outputs:
+      package_version: ${{ steps.version.outputs.package_version }}
+      facade_version: ${{ steps.version.outputs.facade_version }}
+      artifact_name: io-identity-release-packages-${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+      - id: version
+        shell: pwsh
+        run: |
+          $identity = (dotnet msbuild src/Penghou.IO.Identity.Abstractions/Penghou.IO.Identity.Abstractions.csproj -getProperty:PackageVersion -nologo).Trim()
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot resolve identity version.' }
+          $protocol = (dotnet msbuild src/Penghou.IO.Protocols/Penghou.IO.Protocols.csproj -getProperty:PackageVersion -nologo).Trim()
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot resolve protocol version.' }
+          $facade = (dotnet msbuild src/Penghou.IO.Abstractions/Penghou.IO.Abstractions.csproj -getProperty:PackageVersion -nologo).Trim()
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot resolve preview facade version.' }
+          if ($identity -ne $protocol -or $identity -notin @('1.0.0-rc.1','1.0.0') -or $facade -notmatch '^0\.1\.0-preview\.[2-9][0-9]*$') { throw 'Unexpected graduation package versions.' }
+          "package_version=$identity" >> $env:GITHUB_OUTPUT
+          "facade_version=$facade" >> $env:GITHUB_OUTPUT
+          foreach ($id in @('Penghou.IO.Identity.Abstractions','Penghou.IO.Protocols','Penghou.IO.Abstractions')) {
+            dotnet pack "src/$id/$id.csproj" -c Release -o io-identity-release-artifacts -p:ContinuousIntegrationBuild=true
+            if ($LASTEXITCODE -ne 0) { throw "Packing $id failed." }
+          }
+          Get-FileHash io-identity-release-artifacts/* -Algorithm SHA256 | ConvertTo-Json | Set-Content io-identity-release-artifacts/sha256.json
+      - uses: actions/upload-artifact@v6
+        with:
+          name: io-identity-release-packages-${{ github.sha }}
+          path: io-identity-release-artifacts/*
+          if-no-files-found: error
+          retention-days: 30
+  qualify:
+    needs: pack
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-15]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+      - uses: actions/download-artifact@v7
+        with:
+          name: io-identity-release-packages-${{ github.sha }}
+          path: io-identity-release-artifacts
+      - name: Prove source conformance on both runtimes
+        shell: pwsh
+        run: |
+          foreach ($tfm in @('net8.0','net10.0')) {
+            dotnet test tests/Penghou.IO.Protocol.Tests/Penghou.IO.Protocol.Tests.csproj -c Release -f $tfm --logger "trx;LogFileName=protocol-$tfm.trx" --results-directory io-protocol-tests
+            if ($LASTEXITCODE -ne 0) { throw "$tfm protocol conformance failed." }
+          }
+      - name: Verify vectors independently
+        run: python eng/verify-io-protocol-vectors.py
+      - name: Restore original public consumer baselines
+        shell: pwsh
+        run: ./eng/restore-io-preview-baseline.ps1 -OutputDirectory io-preview-baseline
+      - name: Qualify the same exact packed artifacts and unchanged binaries
+        shell: pwsh
+        env:
+          PACKAGE_VERSION: ${{ needs.pack.outputs.package_version }}
+          FACADE_VERSION: ${{ needs.pack.outputs.facade_version }}
+        run: ./eng/qualify-io-graduation.ps1 -PackageDirectory io-identity-release-artifacts -StableVersion $env:PACKAGE_VERSION -FacadeVersion $env:FACADE_VERSION -BaselinePackageDirectory io-preview-baseline/packages -OutputDirectory io-identity-evidence
+      - name: Preserve qualified evidence
+        uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: io-identity-evidence-${{ matrix.os }}-${{ github.sha }}
+          path: |
+            io-identity-evidence/qualification.json
+            io-identity-evidence/*-preview-data.json
+            io-protocol-tests/*.trx
+          retention-days: 30

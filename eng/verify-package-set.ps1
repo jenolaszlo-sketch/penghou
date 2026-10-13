@@ -16,7 +16,7 @@ $packageDirectory = [System.IO.Path]::GetFullPath($PackageDirectory)
 [string[]] $expectedIds = switch ($Profile) {
     'Workflow' { @('Penghou.Workflow.Abstractions') }
     'Transport' { @('Penghou.Model.Abstractions', 'Penghou.Http.Abstractions') }
-    default { @('Penghou.IO.Protocols', 'Penghou.IO.Abstractions', 'Penghou.IO.Local') }
+    default { @('Penghou.IO.Identity.Abstractions', 'Penghou.IO.Protocols', 'Penghou.IO.Abstractions', 'Penghou.IO.Local') }
 }
 $packages = @(Get-ChildItem -LiteralPath $packageDirectory -File -Filter '*.nupkg' |
     Where-Object { $_.Name -notlike '*.snupkg' })
@@ -107,8 +107,9 @@ foreach ($package in $packages) {
         $internalDependencies = @($dependencies | Where-Object { $_.Id -in $expectedIds })
         $internalDependencyIds = @($internalDependencies | ForEach-Object Id | Select-Object -Unique)
         $requiredInternalDependencies = if ($Profile -in @('Workflow', 'Transport')) { @() } else { switch ($id) {
-            'Penghou.IO.Abstractions' { @() }
-            'Penghou.IO.Protocols' { @('Penghou.IO.Abstractions') }
+            'Penghou.IO.Identity.Abstractions' { @() }
+            'Penghou.IO.Abstractions' { @('Penghou.IO.Identity.Abstractions') }
+            'Penghou.IO.Protocols' { @('Penghou.IO.Identity.Abstractions') }
             'Penghou.IO.Local' { @('Penghou.IO.Abstractions', 'Penghou.IO.Protocols') }
         } }
         foreach ($requiredDependency in $requiredInternalDependencies) {

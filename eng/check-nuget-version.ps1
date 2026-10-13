@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('IO', 'Workflow', 'Transport')]
+    [ValidateSet('IO', 'Workflow', 'Transport', 'IOProtocols', 'IOFacade')]
     [string] $Profile = 'IO',
 
     [Parameter(Mandatory = $true)]
@@ -22,6 +22,8 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 [string[]] $packageIds = switch ($Profile) {
     'Workflow' { @('Penghou.Workflow.Abstractions') }
     'Transport' { @('Penghou.Model.Abstractions', 'Penghou.Http.Abstractions') }
+    'IOProtocols' { @('Penghou.IO.Identity.Abstractions', 'Penghou.IO.Protocols') }
+    'IOFacade' { @('Penghou.IO.Abstractions') }
     default { @('Penghou.IO.Protocols', 'Penghou.IO.Abstractions', 'Penghou.IO.Local') }
 }
 $packageDirectory = [System.IO.Path]::GetFullPath($PackageDirectory)

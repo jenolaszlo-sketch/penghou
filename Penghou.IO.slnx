@@ -2,6 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/Penghou.Model.Abstractions/Penghou.Model.Abstractions.csproj" />
     <Project Path="src/Penghou.Http.Abstractions/Penghou.Http.Abstractions.csproj" />
+    <Project Path="src/Penghou.IO.Identity.Abstractions/Penghou.IO.Identity.Abstractions.csproj" />
     <Project Path="src/Penghou.IO.Abstractions/Penghou.IO.Abstractions.csproj" />
     <Project Path="src/Penghou.IO.Local/Penghou.IO.Local.csproj" />
     <Project Path="src/Penghou.IO.Protocols/Penghou.IO.Protocols.csproj" />
@@ -10,6 +11,7 @@
   <Folder Name="/tests/">
     <Project Path="tests/Penghou.Model.Tests/Penghou.Model.Tests.csproj" />
     <Project Path="tests/Penghou.Http.Tests/Penghou.Http.Tests.csproj" />
+    <Project Path="tests/Penghou.IO.Protocol.Tests/Penghou.IO.Protocol.Tests.csproj" />
     <Project Path="tests/Penghou.IO.Tests/Penghou.IO.Tests.csproj" />
     <Project Path="tests/Penghou.Workflow.Tests/Penghou.Workflow.Tests.csproj" />
   </Folder>

@@ -62,7 +62,7 @@ jobs:
         run: dotnet test tests/Penghou.Workflow.Tests/Penghou.Workflow.Tests.csproj --configuration Release --framework ${{ matrix.framework }}
 
   neutral-build:
-    name: Neutral IO contract and protocol build (${{ matrix.framework }})
+    name: Neutral IO contract and protocol qualification (${{ matrix.framework }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -86,7 +86,7 @@ jobs:
         run: |
           set -euo pipefail
           dotnet build src/Penghou.IO.Abstractions/Penghou.IO.Abstractions.csproj --configuration Release --framework ${{ matrix.framework }}
-          dotnet build src/Penghou.IO.Protocols/Penghou.IO.Protocols.csproj --configuration Release --framework ${{ matrix.framework }}
+          dotnet test tests/Penghou.IO.Protocol.Tests/Penghou.IO.Protocol.Tests.csproj --configuration Release --framework ${{ matrix.framework }}
 
   package-consumer:
     name: Pack and consume package closure
@@ -107,8 +107,10 @@ jobs:
             8.0.x
             10.0.x
 
-      - name: Pack three-package release closure
+      - name: Pack four-package IO closure
         run: |
+          dotnet pack src/Penghou.IO.Identity.Abstractions/Penghou.IO.Identity.Abstractions.csproj --configuration Release --output artifacts --property:PackageVersion=$env:PACKAGE_VERSION
+          if ($LASTEXITCODE -ne 0) { throw 'Packing Penghou.IO.Identity.Abstractions failed.' }
           dotnet pack src/Penghou.IO.Protocols/Penghou.IO.Protocols.csproj --configuration Release --output artifacts --property:PackageVersion=$env:PACKAGE_VERSION
           if ($LASTEXITCODE -ne 0) { throw 'Packing Penghou.IO.Protocols failed.' }
           dotnet pack src/Penghou.IO.Abstractions/Penghou.IO.Abstractions.csproj --configuration Release --output artifacts --property:PackageVersion=$env:PACKAGE_VERSION

@@ -2,7 +2,8 @@ param(
     [Parameter(Mandatory)][string] $PackageDirectory,
     [string] $StableVersion = '1.0.0-rc.1',
     [string] $FacadeVersion = '0.1.0-preview.2',
-    [string] $BaselinePackageDirectory = (Join-Path $env:USERPROFILE '.nuget/packages'),
+    [string] $BaselinePackageDirectory = (Join-Path ([Environment]::GetFolderPath('UserProfile')) '.nuget/packages'),
+    [switch] $PublicPackage,
     [string] $OutputDirectory = (Join-Path $PSScriptRoot '../artifacts/io-qualification')
 )
 $ErrorActionPreference = 'Stop'
@@ -65,7 +66,8 @@ try {
 "@ | Set-Content -LiteralPath (Join-Path $protocolConsumer 'Consumer.csproj') -Encoding utf8
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'io-protocol-only-consumer.cs') -Destination (Join-Path $protocolConsumer 'Program.cs')
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot '../tests/Penghou.IO.Protocol.Tests/protocol-v1-vectors.json') -Destination $protocolConsumer
-    $feedXml = [Security.SecurityElement]::Escape($feed)
+    $restoreSource = if ($PublicPackage) { 'https://api.nuget.org/v3/index.json' } else { $feed }
+    $feedXml = [Security.SecurityElement]::Escape($restoreSource)
     "<configuration><packageSources><clear/><add key=`"exact-artifacts-only`" value=`"$feedXml`"/></packageSources></configuration>" | Set-Content -LiteralPath (Join-Path $protocolConsumer 'NuGet.Config') -Encoding utf8
     dotnet restore (Join-Path $protocolConsumer 'Consumer.csproj') --configfile (Join-Path $protocolConsumer 'NuGet.Config')
     if ($LASTEXITCODE -ne 0) { throw 'Stable protocol-only package restore failed.' }
@@ -99,7 +101,8 @@ $($references -join "`n")
 </ItemGroup></Project>
 "@ | Set-Content -LiteralPath (Join-Path $consumer 'Consumer.csproj') -Encoding utf8
         Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'io-graduation-consumer.cs') -Destination (Join-Path $consumer 'Program.cs')
-        $feedXml = [Security.SecurityElement]::Escape($feed)
+        $restoreSource = if ($PublicPackage) { 'https://api.nuget.org/v3/index.json' } else { $feed }
+    $feedXml = [Security.SecurityElement]::Escape($restoreSource)
         "<configuration><packageSources><clear/><add key=`"exact-artifacts-only`" value=`"$feedXml`"/></packageSources></configuration>" | Set-Content -LiteralPath (Join-Path $consumer 'NuGet.Config') -Encoding utf8
         dotnet restore (Join-Path $consumer 'Consumer.csproj') --configfile (Join-Path $consumer 'NuGet.Config')
         if ($LASTEXITCODE -ne 0) { throw "$stage isolated restore failed." }
@@ -131,7 +134,7 @@ $($references -join "`n")
         $archive = Join-Path $baseline "$($id.ToLowerInvariant())/0.1.0-preview.1/$($id.ToLowerInvariant()).0.1.0-preview.1.nupkg"
         $artifacts += [ordered]@{ consumerBaseline = $id; version = '0.1.0-preview.1'; sha256 = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant() }
     }
-    [ordered]@{ dateUtc = [DateTime]::UtcNow.ToString('o'); repository = 'https://github.com/jenolaszlo-sketch/penghou'; branch = (& git -C (Join-Path $PSScriptRoot '..') branch --show-current); sourceCommit = (& git -C (Join-Path $PSScriptRoot '..') rev-parse HEAD); command = 'eng/qualify-io-graduation.ps1'; os = [Environment]::OSVersion.ToString(); frameworks = @('net8.0', 'net10.0'); stableVersion = $StableVersion; facadeVersion = $FacadeVersion; publicPackageRestore = 'NOT PROVEN: local exact artifact feed'; ordinaryLubanPackageAdoption = 'NOT PROVEN: published Luban pins IO preview.1 exactly; unchanged DLL deployment qualified only'; evidence = $artifacts } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $outputDirectory 'qualification.json') -Encoding utf8
+    [ordered]@{ dateUtc = [DateTime]::UtcNow.ToString('o'); repository = 'https://github.com/jenolaszlo-sketch/penghou'; branch = (& git -C (Join-Path $PSScriptRoot '..') branch --show-current); sourceCommit = (& git -C (Join-Path $PSScriptRoot '..') rev-parse HEAD); command = 'eng/qualify-io-graduation.ps1'; os = [Environment]::OSVersion.ToString(); frameworks = @('net8.0', 'net10.0'); stableVersion = $StableVersion; facadeVersion = $FacadeVersion; publicPackageRestore = $(if ($PublicPackage) { 'SUPPORTED BY THIS PROBE: fresh public NuGet restore' } else { 'NOT PROVEN: local exact artifact feed' }); ordinaryLubanPackageAdoption = 'NOT PROVEN: published Luban pins IO preview.1 exactly; unchanged DLL deployment qualified only'; evidence = $artifacts } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $outputDirectory 'qualification.json') -Encoding utf8
 }
 finally {
     if ($null -eq $previousCache) { Remove-Item Env:NUGET_PACKAGES -ErrorAction SilentlyContinue } else { $env:NUGET_PACKAGES = $previousCache }

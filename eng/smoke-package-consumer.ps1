@@ -18,7 +18,7 @@ $consumerDirectory = Join-Path $workDirectory 'consumer'
 [string[]] $packageIds = switch ($Profile) {
     'Workflow' { @('Penghou.Workflow.Abstractions') }
     'Transport' { @('Penghou.Model.Abstractions', 'Penghou.Http.Abstractions') }
-    default { @('Penghou.IO.Protocols', 'Penghou.IO.Abstractions', 'Penghou.IO.Local') }
+    default { @('Penghou.IO.Identity.Abstractions', 'Penghou.IO.Protocols', 'Penghou.IO.Abstractions', 'Penghou.IO.Local') }
 }
 $previousNugetPackages = $env:NUGET_PACKAGES
 
