@@ -4,7 +4,7 @@ $feed = [IO.Path]::GetFullPath($PackageDirectory)
 $evidence = [IO.Path]::GetFullPath($OutputDirectory)
 New-Item -ItemType Directory -Path $evidence -Force | Out-Null
 & "$PSScriptRoot/verify-package-set.ps1" -Profile Workflow -PackageVersion $PackageVersion -PackageDirectory $feed
-if ($LASTEXITCODE -ne 0) { throw 'Package verification failed' }
+if (-not $?) { throw 'Package verification failed' }
 $cache = Join-Path $evidence ('contract-cache-' + [Guid]::NewGuid().ToString('N'))
 $config = Join-Path $evidence 'NuGet.Config'
 $escaped = [Security.SecurityElement]::Escape($feed)
@@ -23,4 +23,4 @@ foreach ($tfm in @('net8.0','net10.0')) {
     if ((Get-FileHash $used).Hash -ne (Get-FileHash $artifactDll).Hash) { throw 'Tests loaded a different DLL from artifact' }
 }
 & "$PSScriptRoot/qualify-workflow-package.ps1" -PackageVersion $PackageVersion -PackageDirectory $feed -OutputDirectory $evidence -BaselineVersion $BaselineVersion
-if ($LASTEXITCODE -ne 0) { throw 'Consumer proof failed' }
+if (-not $?) { throw 'Consumer proof failed' }
