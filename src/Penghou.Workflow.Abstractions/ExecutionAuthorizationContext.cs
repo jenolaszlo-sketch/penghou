@@ -62,4 +62,21 @@ public sealed record ExecutionAuthorizationContext
     [JsonIgnore] public string? PlanId => Identity.PlanId;
     /// <summary>Gets the optional exact plan revision.</summary>
     [JsonIgnore] public string? PlanRevision => Identity.PlanRevision;
+
+    /// <summary>Compares identity, request ID and requirements in declared order by value.</summary>
+    public bool Equals(ExecutionAuthorizationContext? other) =>
+        ReferenceEquals(this, other) || (other is not null
+            && Identity == other.Identity
+            && string.Equals(AuthorizationRequestId, other.AuthorizationRequestId, StringComparison.Ordinal)
+            && Requirements.SequenceEqual(other.Requirements));
+
+    /// <summary>Returns a process-local hash consistent with ordered value equality, never a durable digest.</summary>
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(Identity);
+        hash.Add(AuthorizationRequestId, StringComparer.Ordinal);
+        foreach (var requirement in Requirements) hash.Add(requirement);
+        return hash.ToHashCode();
+    }
 }

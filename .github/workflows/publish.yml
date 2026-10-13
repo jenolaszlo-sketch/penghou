@@ -1,13 +1,21 @@
-name: Publish transport abstractions to NuGet
+name: Publish selected Penghou package family to NuGet
 
 on:
   workflow_dispatch:
+    inputs:
+      family:
+        description: 'Explicit package family to publish'
+        type: choice
+        options: [Transport, Workflow]
+        default: Transport
+        required: true
 
 permissions:
   contents: read
 
 jobs:
   validate:
+    if: inputs.family == 'Transport'
     name: Validate exact transport release commit
     runs-on: windows-latest
     outputs:
@@ -92,6 +100,7 @@ jobs:
           retention-days: 7
 
   transport-release-check:
+    if: inputs.family == 'Transport'
     name: Transport tests (${{ matrix.os }}, ${{ matrix.framework }})
     runs-on: ${{ matrix.os }}
     strategy:
@@ -253,3 +262,97 @@ jobs:
         run: |
           ./eng/check-nuget-version.ps1 -Profile Transport -PackageVersion $env:PACKAGE_VERSION -PackageDirectory ./transport-release-artifacts -RequirePublished -IndexingTimeoutSeconds 3600 -RetryIntervalSeconds 30
           "Both public transport packages match the validated release artifacts for $env:GITHUB_SHA (NuGet repository signature excluded)." | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+
+
+  workflow-qualify:
+    if: inputs.family == 'Workflow'
+    uses: ./.github/workflows/workflow-graduation.yml
+    permissions:
+      contents: read
+
+  workflow-publish:
+    if: inputs.family == 'Workflow'
+    needs: workflow-qualify
+    runs-on: ubuntu-latest
+    environment: nuget
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+      - name: Require selected main release commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.workflow-qualify.outputs.artifact_name }}
+          path: workflow-release-artifacts
+      - name: Verify exact qualified package before publication
+        shell: pwsh
+        env:
+          PACKAGE_VERSION: ${{ needs.workflow-qualify.outputs.package_version }}
+        run: |
+          ./eng/verify-package-set.ps1 -Profile Workflow -PackageVersion $env:PACKAGE_VERSION -PackageDirectory workflow-release-artifacts
+          ./eng/check-nuget-version.ps1 -Profile Workflow -PackageVersion $env:PACKAGE_VERSION -PackageDirectory workflow-release-artifacts
+      - uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+      - name: Publish only exact qualified Workflow artifacts
+        shell: bash
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+          PACKAGE_VERSION: ${{ needs.workflow-qualify.outputs.package_version }}
+        run: |
+          set -euo pipefail
+          dotnet nuget push "workflow-release-artifacts/Penghou.Workflow.Abstractions.${PACKAGE_VERSION}.nupkg" --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" --no-symbols --skip-duplicate
+          dotnet nuget push "workflow-release-artifacts/Penghou.Workflow.Abstractions.${PACKAGE_VERSION}.snupkg" --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" --skip-duplicate
+
+  workflow-public:
+    if: inputs.family == 'Workflow'
+    needs: [workflow-qualify, workflow-publish]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 70
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+      - uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.workflow-qualify.outputs.artifact_name }}
+          path: workflow-release-artifacts
+      - name: Compare public package payload then prove fresh public consumers
+        shell: pwsh
+        env:
+          PACKAGE_VERSION: ${{ needs.workflow-qualify.outputs.package_version }}
+        run: |
+          ./eng/check-nuget-version.ps1 -Profile Workflow -PackageVersion $env:PACKAGE_VERSION -PackageDirectory workflow-release-artifacts -RequirePublished -IndexingTimeoutSeconds 3600
+          $baseline = if ($env:PACKAGE_VERSION -eq '1.0.0') { '1.0.0-rc.1' } else { '0.1.0-preview.2' }
+          ./eng/qualify-workflow-package.ps1 -PackageVersion $env:PACKAGE_VERSION -OutputDirectory workflow-public-evidence -BaselineVersion $baseline -PublicPackage
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: workflow-public-evidence-${{ matrix.os }}-${{ github.sha }}
+          path: |
+            workflow-public-evidence/**/qualification.json
+            workflow-public-evidence/**/*.log
+          retention-days: 30

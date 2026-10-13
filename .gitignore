@@ -10,3 +10,9 @@ TestResults/
 artifacts/
 coverage/
 coverage-*/
+
+workflow-artifacts/
+workflow-evidence/
+workflow-packed-evidence/
+workflow-release-artifacts/
+workflow-public-evidence/

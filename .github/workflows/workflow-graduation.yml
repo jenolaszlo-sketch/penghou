@@ -1,0 +1,81 @@
+name: Qualify exact Workflow graduation artifacts
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    outputs:
+      package_version:
+        value: ${{ jobs.pack.outputs.package_version }}
+      artifact_name:
+        value: ${{ jobs.pack.outputs.artifact_name }}
+
+permissions:
+  contents: read
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    outputs:
+      package_version: ${{ steps.version.outputs.package_version }}
+      artifact_name: workflow-release-packages-${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+      - id: version
+        shell: pwsh
+        run: |
+          $version = (dotnet msbuild src/Penghou.Workflow.Abstractions/Penghou.Workflow.Abstractions.csproj -getProperty:PackageVersion -nologo).Trim()
+          if ($LASTEXITCODE -ne 0 -or $version -notin @('1.0.0-rc.1','1.0.0')) { throw 'Unsupported Workflow graduation version' }
+          "package_version=$version" >> $env:GITHUB_OUTPUT
+          dotnet pack src/Penghou.Workflow.Abstractions/Penghou.Workflow.Abstractions.csproj -c Release -o workflow-release-artifacts -p:ContinuousIntegrationBuild=true
+          if ($LASTEXITCODE -ne 0) { throw 'Workflow pack failed' }
+          ./eng/verify-package-set.ps1 -Profile Workflow -PackageVersion $version -PackageDirectory workflow-release-artifacts
+          Get-FileHash workflow-release-artifacts/* -Algorithm SHA256 | ConvertTo-Json | Set-Content workflow-release-artifacts/sha256.json
+      - uses: actions/upload-artifact@v6
+        with:
+          name: workflow-release-packages-${{ github.sha }}
+          path: workflow-release-artifacts/*
+          if-no-files-found: error
+          retention-days: 30
+  qualify:
+    needs: pack
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-15]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+      - uses: actions/download-artifact@v7
+        with:
+          name: workflow-release-packages-${{ github.sha }}
+          path: workflow-release-artifacts
+      - shell: pwsh
+        env:
+          PACKAGE_VERSION: ${{ needs.pack.outputs.package_version }}
+        run: |
+          $baseline = if ($env:PACKAGE_VERSION -eq '1.0.0') { '1.0.0-rc.1' } else { '0.1.0-preview.2' }
+          ./eng/qualify-workflow-artifact.ps1 -PackageVersion $env:PACKAGE_VERSION -PackageDirectory workflow-release-artifacts -OutputDirectory workflow-evidence -BaselineVersion $baseline
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: workflow-evidence-${{ matrix.os }}-${{ github.sha }}
+          path: |
+            workflow-evidence/**/*.json
+            workflow-evidence/**/*.log
+            workflow-evidence/*.trx
+          retention-days: 30
+
