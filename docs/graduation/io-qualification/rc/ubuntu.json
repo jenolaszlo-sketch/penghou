@@ -1,0 +1,68 @@
+{
+  "dateUtc": "2026-10-13T23:23:22.2662815Z",
+  "repository": "https://github.com/jenolaszlo-sketch/penghou",
+  "branch": null,
+  "sourceCommit": "9ff78f2b840444c717a281464351e200171357a2",
+  "command": "eng/qualify-io-graduation.ps1",
+  "os": "Unix 6.17.0.1022",
+  "frameworks": [
+    "net8.0",
+    "net10.0"
+  ],
+  "stableVersion": "1.0.0-rc.1",
+  "facadeVersion": "0.1.0-preview.2",
+  "publicPackageRestore": "SUPPORTED BY THIS PROBE: fresh public NuGet restore",
+  "ordinaryLubanPackageAdoption": "NOT PROVEN: published Luban pins IO preview.1 exactly; unchanged DLL deployment qualified only",
+  "evidence": [
+    {
+      "package": "Penghou.IO.Identity.Abstractions",
+      "version": "1.0.0-rc.1",
+      "sha256": "4750e97c5a2f4b75db532a16bfdbadbd79e46eb5a54d788ce0be427d1684bded",
+      "symbolsSha256": "a3370c69305c8179b96b05b08a223e0e00feb8f850e84b4961f5e10d348fdd95"
+    },
+    {
+      "package": "Penghou.IO.Abstractions",
+      "version": "0.1.0-preview.2",
+      "sha256": "abe87ccaa658ad4c5f9ee3ce54e81156574828190176f9111b217c86d6d99f8a",
+      "symbolsSha256": "0e9371ef8be71099e754915974c505b2cb41813e3772b28340ef38abb45747ca"
+    },
+    {
+      "package": "Penghou.IO.Protocols",
+      "version": "1.0.0-rc.1",
+      "sha256": "5c4f6fd5f8b7bdba7d743dd3d5fb741a8e167668f38f9c0c5612fd0a3e62ea99",
+      "symbolsSha256": "8515e7f46985957cb915068ee6edf23ba8a6c6df70fd9917016f93afa3a1149b"
+    },
+    {
+      "consumer": "unchanged-baseline-compiled-consumer",
+      "framework": "net8.0",
+      "sha256": "bcc301bceca48a3e8f044a059c15421a4fb672d6198fae8115ab5ab600ea8a89",
+      "result": "SUPPORTED BY THIS PROBE"
+    },
+    {
+      "consumer": "unchanged-baseline-compiled-consumer",
+      "framework": "net10.0",
+      "sha256": "927a896a0aec7e34fdd1d18832143e4e85e3490b7660ad8cb9947e2edaf82127",
+      "result": "SUPPORTED BY THIS PROBE"
+    },
+    {
+      "consumerBaseline": "Penghou.IO.Abstractions",
+      "version": "0.1.0-preview.1",
+      "sha256": "c91d7234eff52a8315de3aeab956d2b62faef22d633b0dc44417d0ce3b8b23c2"
+    },
+    {
+      "consumerBaseline": "Penghou.IO.Protocols",
+      "version": "0.1.0-preview.1",
+      "sha256": "fd92fb0811777e94d799bbe72049529e62ba8cbf9ecd74c34c9b770c75715fbc"
+    },
+    {
+      "consumerBaseline": "Penghou.IO.Local",
+      "version": "0.1.0-preview.1",
+      "sha256": "4caa0b7ebbb15c15e67960f1662d8d5ced6bd5a01ddd23c7400f72fb59b9a8ed"
+    },
+    {
+      "consumerBaseline": "Penghou.Luban",
+      "version": "0.1.0-preview.1",
+      "sha256": "1e81e10475ca4dcb8bd0ba6bc7e0702b730f10abe01ea7590db3a3dea2580246"
+    }
+  ]
+}

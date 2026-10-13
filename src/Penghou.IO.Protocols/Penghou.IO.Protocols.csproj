@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
     <PackageId>Penghou.IO.Protocols</PackageId>
-    <PackageVersion>1.0.0-rc.1</PackageVersion>
+    <PackageVersion>1.0.0</PackageVersion>
     <Version>$(PackageVersion)</Version>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -10,6 +10,7 @@
     <EnablePackageValidation>true</EnablePackageValidation>
     <PackageValidationBaselineVersion Condition="'$(PackageVersion)' == '1.0.0'">1.0.0-rc.1</PackageValidationBaselineVersion>
     <EnableStrictModeForCompatibleTfms>true</EnableStrictModeForCompatibleTfms>
+    <EnableStrictModeForBaselineValidation>true</EnableStrictModeForBaselineValidation>
     <Title>Penghou I/O Protocols</Title>
     <Description>Versioned resource identity and path protocol implementations shared by Penghou I/O contracts and providers.</Description>
     <PackageTags>Penghou;resource-io;protocols;identity;paths</PackageTags>

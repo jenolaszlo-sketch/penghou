@@ -1,7 +1,8 @@
 # IO identity graduation release handoff
 
-Prepared 2026-10-14. Source implementation and Windows package qualification
-are complete; remote cross-platform/public-package gates remain open.
+Updated 2026-10-14. The exact RC artifacts and public packages passed all
+Windows/Linux/macOS qualification gates on .NET 8/10. Final stable publication
+and its public-package gates remain open.
 
 ## Release set and lineage
 
@@ -59,7 +60,21 @@ prove public candidate availability or Linux/macOS execution.
 
 ## Remaining release gates
 
-1. Review and integrate the clean IO branch after coordinated Workflow main changes.
+RC source `9ff78f2b840444c717a281464351e200171357a2` is qualified by
+[release run 38439907657](https://github.com/jenolaszlo-sketch/penghou/actions/runs/38439907657),
+successful attempt 2. Attempt 1's public jobs reached the one-hour indexing
+deadline after successful uploads; only failed verification jobs were retried,
+using the original qualified artifacts. Public nupkg entries match exactly,
+excluding only NuGet's repository signature. Permanent RC evidence and raw
+public/qualified archive hashes are in [rc-release.json](io-qualification/rc-release.json)
+and the three OS records in `io-qualification/rc`.
+
+Strict SDK package validation against public `1.0.0-rc.1` passed locally for
+the final metadata candidate. Its API/code/vector files are unchanged. Stable
+qualification additionally preserves and runs an unchanged RC-compiled consumer
+alongside the original preview-compiled consumer.
+
+1. Review and integrate the final metadata after coordinated Workflow main changes.
 2. Dispatch trusted publisher `publish.yml`, family `IOProtocols`, from selected main.
 3. Reusable `io-graduation.yml` packs once, then qualifies those same archives on
    Windows/Linux/macOS, both frameworks. Native Local/Luban is Windows-only.
