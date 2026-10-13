@@ -20,4 +20,3 @@ sealed class DenyAuthorizer : IExecutionAuthorizer
 {
     public ValueTask<ExecutionAuthorizationResult> AuthorizeAsync(ExecutionAuthorizationContext context, CancellationToken cancellationToken = default) => ValueTask.FromResult(new ExecutionAuthorizationResult(ExecutionAuthorizationDecision.Denied, context.AuthorizationRequestId, "provider", "decision", DateTimeOffset.UtcNow));
 }
-

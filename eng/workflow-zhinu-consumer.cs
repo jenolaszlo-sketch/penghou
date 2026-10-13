@@ -82,5 +82,3 @@ sealed class AllowAuthorizer : IExecutionAuthorizer
             now.AddMinutes(2)));
     }
 }
-
-

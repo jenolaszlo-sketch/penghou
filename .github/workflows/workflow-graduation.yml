@@ -78,5 +78,3 @@ jobs:
             workflow-evidence/**/*.log
             workflow-evidence/*.trx
           retention-days: 30
-
-
